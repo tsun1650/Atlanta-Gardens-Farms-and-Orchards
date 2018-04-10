@@ -1,11 +1,43 @@
 from tkinter import *
+class login:
+    def __init__(self, parent=None):
+        self.parent = parent
+        self.make_window()
 
+    def make_window(self):
+       Label(text='ATL Gardens, Farms, and Orchards').grid(row = 0, padx = 10, pady = 10)
+        email = Label(loginPage, text="Email: ")
+        email.grid(row = 1, column = 0, padx = 20, pady = 10)
+
+        password = Label(loginPage, text="Password: ")
+        password.grid(row = 2, column = 0, padx = 20, pady = 10)
+
+ 
+        email_text=StringVar()
+        entry1 = Entry(loginPage, textvariable=email_text)
+        entry1.grid(row = 1, column = 1, padx = 20, pady = 10)
+
+        password_text=StringVar()
+        entry2 = Entry(loginPage, textvariable=password_text)
+        entry2.grid(row = 2, column = 1, padx = 20, pady = 10)
+
+        b1 = Button(loginPage, text = "Login", width = 20)
+        b1.grid(row = 3, column = 1, padx = 20, pady = 10)
+
+        b2 = Button(loginPage, text = "New Owner Registration", width = 35)
+        b2.grid(row = 5, column = 0, padx = 20, pady = 10)
+
+        b3 = Button(loginPage, text = "New Visitor Registration", width = 25)
+        b3.grid(row = 5, column = 1, padx = 20, pady = 10)
+
+loginPage=Tk()
+loginPage.title("Login")
+login = login(loginPage)
+loginPage.mainloop()
 
 class visitorRegistration:
     def __init__(self, parent=None):
-
         self.parent = parent
-
         self.make_window()
 
     def make_window(self):
@@ -57,7 +89,6 @@ class OwnerRegistration:
         self.parent = parent
         self.make_window()
 
-    @staticmethod
     def make_window(self):
         Label(text='New Owner Registration').grid(row=0, padx=10, pady=10)
 
@@ -182,8 +213,9 @@ class OwnerRegistration:
         cancelBtn = Button(ownerRegistrationPage, text="Cancel", width=15)
         cancelBtn.grid(row=13, column=10, padx=20, pady=10)
 
-
-ownerRegistrationPage = Tk()
+ownerRegistrationPage=Tk()
 ownerRegistrationPage.title("New Owner Registration")
 ownerRegistration = OwnerRegistration(ownerRegistrationPage)
 ownerRegistrationPage.mainloop()
+
+#admin functionality and admin manage property
