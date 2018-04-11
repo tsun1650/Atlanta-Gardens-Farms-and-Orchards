@@ -1,221 +1,232 @@
-from tkinter import *
-class login:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.make_window()
 
-    def make_window(self):
-       Label(text='ATL Gardens, Farms, and Orchards').grid(row = 0, padx = 10, pady = 10)
-        email = Label(loginPage, text="Email: ")
-        email.grid(row = 1, column = 0, padx = 20, pady = 10)
+import tkinter as tk
 
-        password = Label(loginPage, text="Password: ")
-        password.grid(row = 2, column = 0, padx = 20, pady = 10)
-
- 
-        email_text=StringVar()
-        entry1 = Entry(loginPage, textvariable=email_text)
-        entry1.grid(row = 1, column = 1, padx = 20, pady = 10)
-
-        password_text=StringVar()
-        entry2 = Entry(loginPage, textvariable=password_text)
-        entry2.grid(row = 2, column = 1, padx = 20, pady = 10)
-
-        b1 = Button(loginPage, text = "Login", width = 20)
-        b1.grid(row = 3, column = 1, padx = 20, pady = 10)
-
-        b2 = Button(loginPage, text = "New Owner Registration", width = 35)
-        b2.grid(row = 5, column = 0, padx = 20, pady = 10)
-
-        b3 = Button(loginPage, text = "New Visitor Registration", width = 25)
-        b3.grid(row = 5, column = 1, padx = 20, pady = 10)
-
-loginPage=Tk()
-loginPage.title("Login")
-login = login(loginPage)
-loginPage.mainloop()
-
-class visitorRegistration:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.make_window()
-
-    def make_window(self):
-        Label(text='New Visitor Registration').grid(row = 0, padx = 10, pady = 10)
-
-        email = Label(visitorRegistrationPage, text="Email*: ")
-        email.grid(row = 1, column = 0, padx = 20, pady = 10)
-
-        username = Label(visitorRegistrationPage, text="Username*: ")
-        username.grid(row = 2, column = 0, padx = 20, pady = 10)
-
-        password = Label(visitorRegistrationPage, text="Password*: ")
-        password.grid(row = 3, column = 0, padx = 20, pady = 10)
-
-        confirmPassword = Label(visitorRegistrationPage, text="Confirm Password*: ")
-        confirmPassword.grid(row = 4, column = 0, padx = 20, pady = 10)
-
-        email_text=StringVar()
-        entry1 = Entry(visitorRegistrationPage, textvariable=email_text)
-        entry1.grid(row = 1, column = 1, padx = 20, pady = 10)
-
-        username_text=StringVar()
-        entry2 = Entry(visitorRegistrationPage, textvariable=username_text)
-        entry2.grid(row = 2, column = 1, padx = 20, pady = 10)
-
-        password_text=StringVar()
-        entry3 = Entry(visitorRegistrationPage, textvariable=password_text)
-        entry3.grid(row = 3, column = 1, padx = 20, pady = 10)
-
-        confirmPassword_text=StringVar()
-        entry4 = Entry(visitorRegistrationPage, textvariable=confirmPassword_text)
-        entry4.grid(row = 4, column = 1, padx = 20, pady = 10)
-
-        b1 = Button(visitorRegistrationPage, text = "Register Visitor", width = 15)
-        b1.grid(row = 5, column = 0, padx = 20, pady = 10)
-
-        b2 = Button(visitorRegistrationPage, text = "Cancel", width = 15)
-        b2.grid(row = 5, column = 1, padx = 20, pady = 10)
+LARGE_FONT= ("Verdana", 12)
 
 
-visitorRegistrationPage=Tk()
-visitorRegistrationPage.title("New Visitor Registration")
-visitorRegistration = visitorRegistration(visitorRegistrationPage)
-visitorRegistrationPage.mainloop()
+class Atlanta(tk.Tk):
+
+    def __init__(self, *args, **kwargs):
+        
+        tk.Tk.__init__(self, *args, **kwargs)
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand = True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        self.frames = {}
+
+        for F in (loginPage, visitorRegistration, ownerRegistration):
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+        self.show_frame(loginPage)
+
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
+
+class loginPage(tk.Frame):
+     def __init__(self, parent, controller):
+        tk.Frame.__init__(self,parent)
+        label = tk.Label(self, text="Login Page", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
 
 
-class OwnerRegistration:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.make_window()
+        f = tk.Frame(self)
+        f.pack(padx=5, pady=20, side=tk.LEFT)
+        
+        email = tk.Label(f, text="Email: ")
+        email.grid(row=0, column=0, sticky='w')
+        email.focus_set()
 
-    def make_window(self):
-        Label(text='New Owner Registration').grid(row=0, padx=10, pady=10)
+        self.emailEntry = tk.Entry(f, background='white', width=24)
+        self.emailEntry.grid(row=0, column=1, sticky='w')
+        self.emailEntry.focus_set()
 
-        # Define textbox labels
-        email = Label(ownerRegistrationPage, text="Email:* ")
-        email.grid(row=1, column=0, padx=20, pady=10)
+        password = tk.Label(f, text="Password: ")
+        password.grid(row=1, column=0, sticky='w')
+        password.focus_set()
 
-        username = Label(ownerRegistrationPage, text="Username:* ")
-        username.grid(row=2, column=0, padx=20, pady=10)
+        self.passwordEntry = tk.Entry(f, background='white', width=24)
+        self.passwordEntry.grid(row=1, column=1, sticky='w')
 
-        password = Label(ownerRegistrationPage, text="Password:* ")
-        password.grid(row=3, column=0, padx=20, pady=10)
+        button0 = tk.Button(f, text="Login", command=lambda: controller.show_frame(loginPage))
+        button0.grid(row=2, column=1, sticky='w')
 
-        confirmPassword = Label(ownerRegistrationPage, text="Confirm Password:* ")
-        confirmPassword.grid(row=4, column=0, padx=20, pady=10)
+        button1 = tk.Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerRegistration))
+        button1.grid(row=3, column=0, sticky='w')
 
-        propName = Label(ownerRegistrationPage, text="Property Name:* ")
-        propName.grid(row=5, column=0, padx=20, pady=10)
+        button2 = tk.Button(f, text="New Visitor Registration", command=lambda: controller.show_frame(visitorRegistration))
+        button2.grid(row=3, column=1, sticky='w')
 
-        propAddress = Label(ownerRegistrationPage, text="Street Address:* ")
-        propAddress.grid(row=6, column=0, padx=20, pady=10)
+class visitorRegistration(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="New Visitor Registration", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
 
-        propCity = Label(ownerRegistrationPage, text="City:* ")
-        propCity.grid(row=7, column=0, padx=20, pady=10)
+        
+        #email.grid(row = 1, column = 0, padx = 20, pady = 10)
+        dialog_frame = tk.Frame(self)
+        dialog_frame.pack(padx=5, pady=20, side=tk.LEFT)
+        
+        email = tk.Label(dialog_frame, text="Email*: ")
+        email.grid(row=0, column=0, sticky='w')
+        self.email = tk.Entry(dialog_frame, background='white', width=24)
+        self.email.grid(row=0, column=1, sticky='w')
+        self.email.focus_set()
+        
+        username = tk.Label(dialog_frame, text="Username:* ")
+        username.grid(row=1, column=0, sticky='w')
+        self.username = tk.Entry(dialog_frame, background='white', width=24)
+        self.username.grid(row=1, column=1, sticky='w')
+        self.username.focus_set()
 
-        propZip = Label(ownerRegistrationPage, text="Zip:* ")
-        propZip.grid(row=8, column=0, padx=20, pady=10)
+        password = tk.Label(dialog_frame, text="Password:* ")
+        password.grid(row=2, column=0, sticky='w')
+        self.password = tk.Entry(dialog_frame, background='white', width=24)
+        self.password.grid(row=2, column=1, sticky='w')
+        self.password.focus_set()
 
-        propAcres = Label(ownerRegistrationPage, text="Acres:* ")
-        propAcres.grid(row=9, column=0, padx=20, pady=10)
+        confirmPassword = tk.Label(dialog_frame, text="Confirm Password:* ")
+        confirmPassword.grid(row=3, column=0, sticky='w')
+        self.confirmPassword = tk.Entry(dialog_frame, background='white', width=24)
+        self.confirmPassword.grid(row=3, column=1, sticky='w')
+        self.confirmPassword.focus_set()
 
-        propType = Label(ownerRegistrationPage, text="Property Type:* ")
-        propType.grid(row=10, column=0, padx=20, pady=10)
+        
+        button1 = tk.Button(dialog_frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button1.grid(row=4, column=0, sticky='w')
+        #TODO: REGISTER COMPLETE PAGE
+        button2 = tk.Button(dialog_frame, text="Register Visitor", command=lambda: controller.show_frame(loginPage))
+        button2.grid(row=4, column=1, sticky='w')
 
-        # User input section
-        email_text = StringVar()
-        entry1 = Entry(ownerRegistrationPage, textvariable=email_text)
-        entry1.grid(row=1, column=1, padx=20, pady=10)
+class ownerRegistration(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        label = tk.Label(self, text="New Owner Registration", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
 
-        username_text = StringVar()
-        entry2 = Entry(ownerRegistrationPage, textvariable=username_text)
-        entry2.grid(row=2, column=1, padx=20, pady=10)
+        frame = tk.Frame(self)
+        frame.pack(padx=5, pady=20, side=tk.LEFT)
+        
+        email = tk.Label(frame, text="Email:* ")
+        email.grid(row=0, column=0, sticky='w')
+        self.email = tk.Entry(frame, background='white', width=24)
+        self.email.grid(row=0, column=1, sticky='w')
+        self.email.focus_set()
+        
+        username = tk.Label(frame, text="Username:* ")
+        username.grid(row=1, column=0, sticky='w')
+        self.username = tk.Entry(frame, background='white', width=24)
+        self.username.grid(row=1, column=1, sticky='w')
+        self.username.focus_set()
 
-        password_text = StringVar()
-        entry3 = Entry(ownerRegistrationPage, textvariable=password_text)
-        entry3.grid(row=3, column=1, padx=20, pady=10)
+        password = tk.Label(frame, text="Password:* ")
+        password.grid(row=2, column=0, sticky='w')
+        self.password = tk.Entry(frame, background='white', width=24)
+        self.password.grid(row=2, column=1, sticky='w')
+        self.password.focus_set()
 
-        confirmPassword_text = StringVar()
-        entry4 = Entry(ownerRegistrationPage, textvariable=confirmPassword_text)
-        entry4.grid(row=4, column=1, padx=20, pady=10)
+        confirmPassword = tk.Label(frame, text="Confirm Password:* ")
+        confirmPassword.grid(row=3, column=0, sticky='w')
+        self.confirmPassword = tk.Entry(frame, background='white', width=24)
+        self.confirmPassword.grid(row=3, column=1, sticky='w')
+        self.confirmPassword.focus_set()
 
-        propName_text = StringVar()
-        entry5 = Entry(ownerRegistrationPage, textvariable=propName_text)
-        entry5.grid(row=5, column=1, padx=20, pady=10)
+        propName = tk.Label(frame, text="Property Name:* ")
+        propName.grid(row=4, column=0, sticky='w')
+        self.propName = tk.Entry(frame, background='white', width=24)
+        self.propName.grid(row=4, column=1, sticky='w')
+        self.propName.focus_set()
+        
+        propAddress = tk.Label(frame, text="Street Address:* ")
+        propAddress.grid(row=5, column=0, sticky='w')
+        self.propAddress = tk.Entry(frame, background='white', width=24)
+        self.propAddress.grid(row=5, column=1, sticky='w')
+        self.propAddress.focus_set()
+       
+        propCity = tk.Label(frame, text="City:* ")
+        propCity.grid(row=6, column=0, sticky='w')
+        self.propCity = tk.Entry(frame, background='white', width=24)
+        self.propCity.grid(row=6, column=1, sticky='w')
+        self.propCity.focus_set()
 
-        propAddress_text = StringVar()
-        entry6 = Entry(ownerRegistrationPage, textvariable=propAddress_text)
-        entry6.grid(row=6, column=1, padx=20, pady=10)
+        propZip = tk.Label(frame, text="Zip:* ")
+        propZip.grid(row=7, column=0, sticky='w')
+        self.propZip = tk.Entry(frame, background='white', width=24)
+        self.propZip.grid(row=7, column=1, sticky='w')
+        self.propZip.focus_set()
+        
+        propAcres = tk.Label(frame, text="Acres:* ")
+        propAcres.grid(row=8, column=0, sticky='w')
+        self.propAcres = tk.Entry(frame, background='white', width=24)
+        self.propAcres.grid(row=8, column=1, sticky='w')
+        self.propAcres.focus_set()
 
-        propCity_text = StringVar()
-        entry7 = Entry(ownerRegistrationPage, textvariable=propCity_text)
-        entry7.grid(row=7, column=1, padx=20, pady=10)
-
-        propZip_text = StringVar()
-        entry8 = Entry(ownerRegistrationPage, textvariable=propZip_text)
-        entry8.grid(row=8, column=1, padx=20, pady=10)
-
-        propAcres_text = StringVar()
-        entry9 = Entry(ownerRegistrationPage, textvariable=propAcres_text)
-        entry9.grid(row=9, column=1, padx=20, pady=10)
-
+        propType = tk.Label(frame, text="Property Type:* ")
+        propType.grid(row=9, column=0, sticky='w')
         # Rest of GUI depends on property type selected
         types = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-
-        propTypeVar = StringVar()
+        
+        propTypeVar = tk.StringVar()
         propTypeVar.set('Garden')   # Set garden as the default prop type
-        propType_menu = OptionMenu(ownerRegistrationPage, propTypeVar, *types)
-        propType_menu.grid(row=10, column=1, padx=20, pady=10)
+        propType_menu = tk.OptionMenu(frame, propTypeVar, *types)
+        propType_menu.grid(row=9, column=1, padx=20, pady=10)
 
         if propTypeVar.get() == 'Garden':
             # Garden GUI
             # TODO: create a dictionary with approved vegetables and flowers (from DB)
-            crop = Label(ownerRegistrationPage, text="Crop:* ")
-            crop.grid(row=11, column=0, padx=20, pady=10)
+            crop = tk.Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
 
             # TODO: replace entry box with drop down populated by crop dictionary
-            cropTxt = StringVar()
-            entry10 = Entry(ownerRegistrationPage, textvariable=cropTxt)
-            entry10.grid(row=11, column=1, padx=20, pady=10)
+            cropTxt = tk.StringVar()
+            entry10 = tk.Entry(frame, textvariable=cropTxt)
+            entry10.grid(row=10, column=1, padx=20, pady=10)
         elif propTypeVar.get() == 'Farm':
             # Farm GUI
             # TODO: create a dictionary with approved fruits, nuts, vegetables, and flowers (from DB)
-            crop = Label(ownerRegistrationPage, text="Crop:* ")
-            crop.grid(row=11, column=0, padx=20, pady=10)
+            crop = tk.Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
 
             # TODO: replace entry box with drop down populated by crop dictionary
-            cropTxt = StringVar()
-            entry10 = Entry(ownerRegistrationPage, textvariable=cropTxt)
-            entry10.grid(row=11, column=1, padx=20, pady=10)
+            cropTxt = tk.StringVar()
+            entry10 = tk.Entry(frame, textvariable=cropTxt)
+            entry10.grid(row=10, column=1, padx=20, pady=10)
 
             # TODO: Do same thing with animals as crops ^
-            animal = Label(ownerRegistrationPage, text="Animal:* ")
-            animal.grid(row=12, column=0, padx=20, pady=10)
-            animalTxt = StringVar()
-            entry11 = Entry(ownerRegistrationPage, textvariable=animalTxt)
+            animal = tk.Label(frame, text="Animal:* ")
+            animal.grid(row=11, column=0, padx=20, pady=10)
+            animalTxt = tk.StringVar()
+            entry11 = tk.Entry(frame, textvariable=animalTxt)
             entry11.grid(row=11, column=1, padx=20, pady=10)
         else:
             # Orchard GUI
             # TODO: create a dictionary with approved fruits and nuts (from DB)
-            crop = Label(ownerRegistrationPage, text="Crop:* ")
-            crop.grid(row=11, column=0, padx=20, pady=10)
+            crop = tk.Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
 
             # TODO: replace entry box with drop down populated by crop dictionary
-            cropTxt = StringVar()
-            entry10 = Entry(ownerRegistrationPage, textvariable=cropTxt)
-            entry10.grid(row=11, column=1, padx=20, pady=10)
+            cropTxt = tk.StringVar()
+            entry10 = tk.Entry(frame, textvariable=cropTxt)
+            entry10.grid(row=10, column=1, padx=20, pady=10)
 
         # Buttons
-        registerBtn = Button(ownerRegistrationPage, text="Register Owner", width=15)
-        registerBtn.grid(row=13, column=0, padx=20, pady=10)
+        button1 = tk.Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button1.grid(row=11, column=0, sticky='w')
+        #TODO: REGISTER COMPLETE PAGE
+        button2 = tk.Button(frame, text="Register Owner", command=lambda: controller.show_frame(loginPage))
+        button2.grid(row=11, column=1, sticky='w')
 
-        cancelBtn = Button(ownerRegistrationPage, text="Cancel", width=15)
-        cancelBtn.grid(row=13, column=10, padx=20, pady=10)
 
-ownerRegistrationPage=Tk()
-ownerRegistrationPage.title("New Owner Registration")
-ownerRegistration = OwnerRegistration(ownerRegistrationPage)
-ownerRegistrationPage.mainloop()
 
-#admin functionality and admin manage property
+
+
+
+
+
+
+app = Atlanta()
+app.mainloop()
