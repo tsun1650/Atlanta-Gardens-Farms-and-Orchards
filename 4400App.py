@@ -53,7 +53,8 @@ class loginPage(Frame):
 
         button0 = Button(f, text="Login", command=lambda: controller.show_frame(loginPage))
         button0.grid(row=2, column=1, sticky='w')
-
+        #button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerFunctions))
+        #button1.grid(row=3, column=0, sticky='w')
         button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(adminFunctions))
         button1.grid(row=3, column=0, sticky='w')
 
@@ -227,30 +228,25 @@ class adminFunctions(Frame):
         label = Label(self, text="Admin Functionality", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
-        #email.grid(row = 1, column = 0, padx = 20, pady = 10)
-        #dialog_frame = Frame(self)
-        #dialog_frame.pack(padx=5, pady=20, side=LEFT)
-                
         visListB = Button(self, text="View Visitor List", command=lambda: controller.show_frame(loginPage))
-        #visListB.grid(row=0, column=0, sticky='w')
         visListB.pack(fill = X)
+
         ownListB = Button(self, text="View Owner List", command=lambda: controller.show_frame(loginPage))
-        #ownListB.grid(row=1, column=0, sticky='w')
         ownListB.pack(fill = X)
-        conPropB = Button(self, text="View Confirmed Properties", command=lambda: controller.show_frame(loginPage))
-        #conPropB.grid(row=2, column=0, sticky='w')
+
+        conPropB = Button(self, text="View Confirmed Properties", command=lambda: controller.show_frame(loginPage))       
         conPropB.pack(fill = X)
+
         unconPropB = Button(self, text="View Unconfirmed Properties", command=lambda: controller.show_frame(loginPage))
-        #unconPropB.grid(row=3, column=0, sticky='w')
         unconPropB.pack(fill =X)
+
         approvedB = Button(self, text="View Approved Animals and Crops", command=lambda: controller.show_frame(loginPage))
-        #approvedB.grid(row=4, column=0, sticky='w')
         approvedB.pack(fill = X)
+
         pendingB = Button(self, text="View Pending Animals and Crops", command=lambda: controller.show_frame(loginPage))
-        #pendingB.grid(row=5, column=0, sticky='w')
         pendingB.pack(fill =X)
+
         logoutB = Button(self, text="Logout", command=lambda: controller.show_frame(loginPage))
-       
         logoutB.pack(fill =X)
 
 
