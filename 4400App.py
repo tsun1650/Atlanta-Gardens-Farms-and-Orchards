@@ -1,189 +1,385 @@
+#import tkinter as tk
 from tkinter import *
+from tkinter.ttk import *
+
+LARGE_FONT= ("Verdana", 12)
 
 
-class visitorRegistration:
-    def __init__(self, parent=None):
+class Atlanta(Tk):
 
-        self.parent = parent
+    def __init__(self, *args, **kwargs):
+        
+        Tk.__init__(self, *args, **kwargs)
+        container = Frame(self)
+        container.pack(side="top", fill="both", expand = True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
 
-        self.make_window()
+        self.frames = {}
 
-    def make_window(self):
-        Label(text='New Visitor Registration').grid(row = 0, padx = 10, pady = 10)
+        for F in (loginPage, visitorRegistration, ownerRegistration, visitorView, visitHistory):
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+        self.show_frame(loginPage)
 
-        email = Label(visitorRegistrationPage, text="Email*: ")
-        email.grid(row = 1, column = 0, padx = 20, pady = 10)
+    def show_frame(self, cont):
+        frame = self.frames[cont]
+        frame.tkraise()
 
-        username = Label(visitorRegistrationPage, text="Username*: ")
-        username.grid(row = 2, column = 0, padx = 20, pady = 10)
-
-        password = Label(visitorRegistrationPage, text="Password*: ")
-        password.grid(row = 3, column = 0, padx = 20, pady = 10)
-
-        confirmPassword = Label(visitorRegistrationPage, text="Confirm Password*: ")
-        confirmPassword.grid(row = 4, column = 0, padx = 20, pady = 10)
-
-        email_text=StringVar()
-        entry1 = Entry(visitorRegistrationPage, textvariable=email_text)
-        entry1.grid(row = 1, column = 1, padx = 20, pady = 10)
-
-        username_text=StringVar()
-        entry2 = Entry(visitorRegistrationPage, textvariable=username_text)
-        entry2.grid(row = 2, column = 1, padx = 20, pady = 10)
-
-        password_text=StringVar()
-        entry3 = Entry(visitorRegistrationPage, textvariable=password_text)
-        entry3.grid(row = 3, column = 1, padx = 20, pady = 10)
-
-        confirmPassword_text=StringVar()
-        entry4 = Entry(visitorRegistrationPage, textvariable=confirmPassword_text)
-        entry4.grid(row = 4, column = 1, padx = 20, pady = 10)
-
-        b1 = Button(visitorRegistrationPage, text = "Register Visitor", width = 15)
-        b1.grid(row = 5, column = 0, padx = 20, pady = 10)
-
-        b2 = Button(visitorRegistrationPage, text = "Cancel", width = 15)
-        b2.grid(row = 5, column = 1, padx = 20, pady = 10)
+class loginPage(Frame):
+     def __init__(self, parent, controller):
+        Frame.__init__(self,parent)
+        label = Label(self, text="Login Page", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
 
 
-visitorRegistrationPage=Tk()
-visitorRegistrationPage.title("New Visitor Registration")
-visitorRegistration = visitorRegistration(visitorRegistrationPage)
-visitorRegistrationPage.mainloop()
+        f = Frame(self)
+        f.pack(padx=5, pady=20, side=LEFT)
+        
+        email = Label(f, text="Email: ")
+        email.grid(row=0, column=0, sticky='w')
+        email.focus_set()
+
+        self.emailEntry = Entry(f, background='white', width=24)
+        self.emailEntry.grid(row=0, column=1, sticky='w')
+        self.emailEntry.focus_set()
+
+        password = Label(f, text="Password: ")
+        password.grid(row=1, column=0, sticky='w')
+        password.focus_set()
+
+        self.passwordEntry = Entry(f, background='white', width=24)
+        self.passwordEntry.grid(row=1, column=1, sticky='w')
+
+        button0 = Button(f, text="Login", command=lambda: controller.show_frame(loginPage))
+        button0.grid(row=2, column=1, sticky='w')
+
+        button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerRegistration))
+        button1.grid(row=3, column=0, sticky='w')
+
+        button2 = Button(f, text="New Visitor Registration", command=lambda: controller.show_frame(visitorRegistration))
+        button2.grid(row=3, column=1, sticky='w')
+
+class visitorRegistration(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="New Visitor Registration", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        
+        #email.grid(row = 1, column = 0, padx = 20, pady = 10)
+        dialog_frame = Frame(self)
+        dialog_frame.pack(padx=5, pady=20, side=LEFT)
+        
+        email = Label(dialog_frame, text="Email*: ")
+        email.grid(row=0, column=0, sticky='w')
+        self.email = Entry(dialog_frame, background='white', width=24)
+        self.email.grid(row=0, column=1, sticky='w')
+        self.email.focus_set()
+        
+        username = Label(dialog_frame, text="Username:* ")
+        username.grid(row=1, column=0, sticky='w')
+        self.username = Entry(dialog_frame, background='white', width=24)
+        self.username.grid(row=1, column=1, sticky='w')
+        self.username.focus_set()
+
+        password = Label(dialog_frame, text="Password:* ")
+        password.grid(row=2, column=0, sticky='w')
+        self.password = Entry(dialog_frame, background='white', width=24)
+        self.password.grid(row=2, column=1, sticky='w')
+        self.password.focus_set()
+
+        confirmPassword = Label(dialog_frame, text="Confirm Password:* ")
+        confirmPassword.grid(row=3, column=0, sticky='w')
+        self.confirmPassword = Entry(dialog_frame, background='white', width=24)
+        self.confirmPassword.grid(row=3, column=1, sticky='w')
+        self.confirmPassword.focus_set()
+
+        
+        button1 = Button(dialog_frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button1.grid(row=4, column=0, sticky='w')
+        #TODO: REGISTER COMPLETE PAGE
+        button2 = Button(dialog_frame, text="Register Visitor", command=lambda: controller.show_frame(visitorView))
+        button2.grid(row=4, column=1, sticky='w')
+
+class visitorView(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="Welcome Visitor", font =LARGE_FONT)
+        label.grid(row=0, column=0)
+
+        props = Label(self, text="All public, validated properties:")
+        props.grid(row=1, column=0)
+
+        frame = Frame(self)
+
+        table = Treeview(frame)
+        table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'visits', 'rating')
+        table.heading('#0', text='Name', anchor='w')
+        table.column('#0', anchor='w')
+        table.heading('address', text='Address')
+        table.column('address', anchor='center', width = 100)
+        table.heading('city', text='City')
+        table.column('city', anchor='center', width = 100)
+        table.heading('zip', text='Zip')
+        table.column('zip', anchor='center', width = 100)
+        table.heading('size', text='Size')
+        table.column('size', anchor='center', width = 100)
+        table.heading('type', text='Type')
+        table.column('type', anchor='center', width = 100)
+        table.heading('public', text='Public')
+        table.column('public', anchor='center', width = 100)
+        table.heading('commercial', text='Commercial')
+        table.column('commercial', anchor='center', width = 100)
+        table.heading('id', text='ID')
+        table.column('id', anchor='center', width = 100)
+        table.heading('visits', text='Visits')
+        table.column('visits', anchor='center', width = 100)
+        table.heading('rating', text='Avg Rating')
+        table.column('rating', anchor='center', width = 100)
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+        frame.grid(sticky=(N,S,W,E))
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
+
+        # Loads temp Data
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
 
 
-class OwnerRegistration:
-    def __init__(self, parent=None):
-        self.parent = parent
-        self.make_window()
+        types = {'Search by...', 'Name', 'City', 'Type', 'Visits','Avg Rating'}
+        
+        search = StringVar()
+        search.set('Search by...')
+        search_menu = OptionMenu(frame, search, *types)
+        search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
 
-    @staticmethod
-    def make_window(self):
-        Label(text='New Owner Registration').grid(row=0, padx=10, pady=10)
+        term = Entry(self, text="Search Term")
+        term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
 
-        # Define textbox labels
-        email = Label(ownerRegistrationPage, text="Email:* ")
-        email.grid(row=1, column=0, padx=20, pady=10)
+        searchprop = Button(self, text="Search Properties", command=lambda: controller.show_frame(loginPage))
+        searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        username = Label(ownerRegistrationPage, text="Username:* ")
-        username.grid(row=2, column=0, padx=20, pady=10)
+        viewprop = Button(self, text="View Property", command=lambda: controller.show_frame(loginPage))
+        viewprop.grid(row=3, column=0, padx=50, pady=10)
 
-        password = Label(ownerRegistrationPage, text="Password:* ")
-        password.grid(row=3, column=0, padx=20, pady=10)
+        viewhist = Button(self, text="View Visit History", command=lambda: controller.show_frame(visitHistory))
+        viewhist.grid(row=4, column=0, padx=50, pady=10)
 
-        confirmPassword = Label(ownerRegistrationPage, text="Confirm Password:* ")
-        confirmPassword.grid(row=4, column=0, padx=20, pady=10)
+        logout = Button(self, text="Log Out", command=lambda: controller.show_frame(loginPage))
+        logout.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
-        propName = Label(ownerRegistrationPage, text="Property Name:* ")
-        propName.grid(row=5, column=0, padx=20, pady=10)
 
-        propAddress = Label(ownerRegistrationPage, text="Street Address:* ")
-        propAddress.grid(row=6, column=0, padx=20, pady=10)
+class visitHistory(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="Your Visit History", font=LARGE_FONT)
+        label.grid(row=0, column=0, padx=50, pady=20)
 
-        propCity = Label(ownerRegistrationPage, text="City:* ")
-        propCity.grid(row=7, column=0, padx=20, pady=10)
+        frame = Frame(self)
 
-        propZip = Label(ownerRegistrationPage, text="Zip:* ")
-        propZip.grid(row=8, column=0, padx=20, pady=10)
+        table = Treeview(frame)
+        table['columns'] = ('date', 'rating')
+        table.heading('#0', text='Name', anchor='w')
+        table.column('#0', anchor='w')
+        table.heading('date', text='Date Logged')
+        table.column('date', anchor='center', width = 100)
+        table.heading('rating', text='Rating')
+        table.column('rating', anchor='center', width = 100)
 
-        propAcres = Label(ownerRegistrationPage, text="Acres:* ")
-        propAcres.grid(row=9, column=0, padx=20, pady=10)
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
 
-        propType = Label(ownerRegistrationPage, text="Property Type:* ")
-        propType.grid(row=10, column=0, padx=20, pady=10)
+        frame.grid(sticky=(N,S,W,E))
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
 
-        # User input section
-        email_text = StringVar()
-        entry1 = Entry(ownerRegistrationPage, textvariable=email_text)
-        entry1.grid(row=1, column=1, padx=20, pady=10)
+        # loads temp data
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
 
-        username_text = StringVar()
-        entry2 = Entry(ownerRegistrationPage, textvariable=username_text)
-        entry2.grid(row=2, column=1, padx=20, pady=10)
+        propdetails = Button(self, text="View Property Details", command=lambda: controller.show_frame(loginPage))
+        propdetails.grid(row=2, column=0, pady=10)
 
-        password_text = StringVar()
-        entry3 = Entry(ownerRegistrationPage, textvariable=password_text)
-        entry3.grid(row=3, column=1, padx=20, pady=10)
+        back = Button(self, text="Back", command=lambda: controller.show_frame(visitorView))
+        back.grid(row=3, column=0, pady=10)
 
-        confirmPassword_text = StringVar()
-        entry4 = Entry(ownerRegistrationPage, textvariable=confirmPassword_text)
-        entry4.grid(row=4, column=1, padx=20, pady=10)
+class ownerRegistration(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="New Owner Registration", font=LARGE_FONT)
+        label.pack(pady=10,padx=10)
 
-        propName_text = StringVar()
-        entry5 = Entry(ownerRegistrationPage, textvariable=propName_text)
-        entry5.grid(row=5, column=1, padx=20, pady=10)
+        frame = Frame(self)
+        frame.pack(padx=5, pady=20, side=LEFT)
+        
+        email = Label(frame, text="Email:* ")
+        email.grid(row=0, column=0, sticky='w')
+        self.email = Entry(frame, background='white', width=24)
+        self.email.grid(row=0, column=1, sticky='w')
+        self.email.focus_set()
+        
+        username = Label(frame, text="Username:* ")
+        username.grid(row=1, column=0, sticky='w')
+        self.username = Entry(frame, background='white', width=24)
+        self.username.grid(row=1, column=1, sticky='w')
+        self.username.focus_set()
 
-        propAddress_text = StringVar()
-        entry6 = Entry(ownerRegistrationPage, textvariable=propAddress_text)
-        entry6.grid(row=6, column=1, padx=20, pady=10)
+        password = Label(frame, text="Password:* ")
+        password.grid(row=2, column=0, sticky='w')
+        self.password = Entry(frame, background='white', width=24)
+        self.password.grid(row=2, column=1, sticky='w')
+        self.password.focus_set()
 
-        propCity_text = StringVar()
-        entry7 = Entry(ownerRegistrationPage, textvariable=propCity_text)
-        entry7.grid(row=7, column=1, padx=20, pady=10)
+        confirmPassword = Label(frame, text="Confirm Password:* ")
+        confirmPassword.grid(row=3, column=0, sticky='w')
+        self.confirmPassword = Entry(frame, background='white', width=24)
+        self.confirmPassword.grid(row=3, column=1, sticky='w')
+        self.confirmPassword.focus_set()
 
-        propZip_text = StringVar()
-        entry8 = Entry(ownerRegistrationPage, textvariable=propZip_text)
-        entry8.grid(row=8, column=1, padx=20, pady=10)
+        propName = Label(frame, text="Property Name:* ")
+        propName.grid(row=4, column=0, sticky='w')
+        self.propName = Entry(frame, background='white', width=24)
+        self.propName.grid(row=4, column=1, sticky='w')
+        self.propName.focus_set()
+        
+        propAddress = Label(frame, text="Street Address:* ")
+        propAddress.grid(row=5, column=0, sticky='w')
+        self.propAddress = Entry(frame, background='white', width=24)
+        self.propAddress.grid(row=5, column=1, sticky='w')
+        self.propAddress.focus_set()
+       
+        propCity = Label(frame, text="City:* ")
+        propCity.grid(row=6, column=0, sticky='w')
+        self.propCity = Entry(frame, background='white', width=24)
+        self.propCity.grid(row=6, column=1, sticky='w')
+        self.propCity.focus_set()
 
-        propAcres_text = StringVar()
-        entry9 = Entry(ownerRegistrationPage, textvariable=propAcres_text)
-        entry9.grid(row=9, column=1, padx=20, pady=10)
+        propZip = Label(frame, text="Zip:* ")
+        propZip.grid(row=7, column=0, sticky='w')
+        self.propZip = Entry(frame, background='white', width=24)
+        self.propZip.grid(row=7, column=1, sticky='w')
+        self.propZip.focus_set()
+        
+        propAcres = Label(frame, text="Acres:* ")
+        propAcres.grid(row=8, column=0, sticky='w')
+        self.propAcres = Entry(frame, background='white', width=24)
+        self.propAcres.grid(row=8, column=1, sticky='w')
+        self.propAcres.focus_set()
 
+        propType = Label(frame, text="Property Type:* ")
+        propType.grid(row=9, column=0, sticky='w')
         # Rest of GUI depends on property type selected
         types = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-
+        
         propTypeVar = StringVar()
         propTypeVar.set('Garden')   # Set garden as the default prop type
-        propType_menu = OptionMenu(ownerRegistrationPage, propTypeVar, *types)
-        propType_menu.grid(row=10, column=1, padx=20, pady=10)
+        propType_menu = OptionMenu(frame, propTypeVar, *types)
+        propType_menu.grid(row=9, column=1, padx=20, pady=10)
 
         if propTypeVar.get() == 'Garden':
             # Garden GUI
             # TODO: create a dictionary with approved vegetables and flowers (from DB)
-            crop = Label(ownerRegistrationPage, text="Crop:* ")
-            crop.grid(row=11, column=0, padx=20, pady=10)
+            crop = Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
 
             # TODO: replace entry box with drop down populated by crop dictionary
             cropTxt = StringVar()
-            entry10 = Entry(ownerRegistrationPage, textvariable=cropTxt)
-            entry10.grid(row=11, column=1, padx=20, pady=10)
+            entry10 = Entry(frame, textvariable=cropTxt)
+            entry10.grid(row=10, column=1, padx=20, pady=10)
         elif propTypeVar.get() == 'Farm':
             # Farm GUI
             # TODO: create a dictionary with approved fruits, nuts, vegetables, and flowers (from DB)
-            crop = Label(ownerRegistrationPage, text="Crop:* ")
-            crop.grid(row=11, column=0, padx=20, pady=10)
+            crop = Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
 
             # TODO: replace entry box with drop down populated by crop dictionary
             cropTxt = StringVar()
-            entry10 = Entry(ownerRegistrationPage, textvariable=cropTxt)
-            entry10.grid(row=11, column=1, padx=20, pady=10)
+            entry10 = Entry(frame, textvariable=cropTxt)
+            entry10.grid(row=10, column=1, padx=20, pady=10)
 
             # TODO: Do same thing with animals as crops ^
-            animal = Label(ownerRegistrationPage, text="Animal:* ")
-            animal.grid(row=12, column=0, padx=20, pady=10)
+            animal = Label(frame, text="Animal:* ")
+            animal.grid(row=11, column=0, padx=20, pady=10)
             animalTxt = StringVar()
-            entry11 = Entry(ownerRegistrationPage, textvariable=animalTxt)
+            entry11 = Entry(frame, textvariable=animalTxt)
             entry11.grid(row=11, column=1, padx=20, pady=10)
         else:
             # Orchard GUI
             # TODO: create a dictionary with approved fruits and nuts (from DB)
-            crop = Label(ownerRegistrationPage, text="Crop:* ")
-            crop.grid(row=11, column=0, padx=20, pady=10)
+            crop = Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
 
             # TODO: replace entry box with drop down populated by crop dictionary
             cropTxt = StringVar()
-            entry10 = Entry(ownerRegistrationPage, textvariable=cropTxt)
-            entry10.grid(row=11, column=1, padx=20, pady=10)
+            entry10 = Entry(frame, textvariable=cropTxt)
+            entry10.grid(row=10, column=1, padx=20, pady=10)
 
         # Buttons
-        registerBtn = Button(ownerRegistrationPage, text="Register Owner", width=15)
-        registerBtn.grid(row=13, column=0, padx=20, pady=10)
+        button1 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button1.grid(row=11, column=0, sticky='w')
+        #TODO: REGISTER COMPLETE PAGE
+        button2 = Button(frame, text="Register Owner", command=lambda: controller.show_frame(loginPage))
+        button2.grid(row=11, column=1, sticky='w')
 
-        cancelBtn = Button(ownerRegistrationPage, text="Cancel", width=15)
-        cancelBtn.grid(row=13, column=10, padx=20, pady=10)
 
 
-ownerRegistrationPage = Tk()
-ownerRegistrationPage.title("New Owner Registration")
-ownerRegistration = OwnerRegistration(ownerRegistrationPage)
-ownerRegistrationPage.mainloop()
+
+
+
+
+
+
+app = Atlanta()
+app.mainloop()
