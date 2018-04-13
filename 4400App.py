@@ -17,7 +17,13 @@ class Atlanta(Tk):
 
         self.frames = {}
 
-        for F in (loginPage, visitorRegistration, ownerRegistration, adminFunctions, visitorView, visitHistory):
+
+        #########################################
+        #          Make sure you add            #
+        #          your new page here           #
+        #########################################
+        allPages = (loginPage, visitorRegistration, ownerRegistration, adminFunctions, visitorView, visitHistory, viewVisitorList, viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties)
+        for F in allPages:
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -52,12 +58,12 @@ class loginPage(Frame):
         self.passwordEntry = Entry(f, background='white', width=24)
         self.passwordEntry.grid(row=1, column=1, sticky='w')
 
-        button0 = Button(f, text="Login", command=lambda: controller.show_frame(loginPage))
+        button0 = Button(f, text="Login", command=lambda: controller.show_frame(adminFunctions))
         button0.grid(row=2, column=1, sticky='w')
-        #button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerFunctions))
-        #button1.grid(row=3, column=0, sticky='w')
-        button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(adminFunctions))
+        button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerRegistration))
         button1.grid(row=3, column=0, sticky='w')
+        # button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(adminFunctions))
+        # button1.grid(row=3, column=0, sticky='w')
 
         button2 = Button(f, text="New Visitor Registration", command=lambda: controller.show_frame(visitorRegistration))
         button2.grid(row=3, column=1, sticky='w')
@@ -381,32 +387,244 @@ class adminFunctions(Frame):
         label = Label(self, text="Admin Functionality", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
-        visListB = Button(self, text="View Visitor List", command=lambda: controller.show_frame(loginPage))
+        visListB = Button(self, text="View Visitor List", command=lambda: controller.show_frame(viewVisitorList))
         visListB.pack(fill = X)
 
-        ownListB = Button(self, text="View Owner List", command=lambda: controller.show_frame(loginPage))
+        ownListB = Button(self, text="View Owner List", command=lambda: controller.show_frame(viewOwnerList))
         ownListB.pack(fill = X)
 
-        conPropB = Button(self, text="View Confirmed Properties", command=lambda: controller.show_frame(loginPage))       
+        conPropB = Button(self, text="View Confirmed Properties", command=lambda: controller.show_frame(confirmedProperties))       
         conPropB.pack(fill = X)
 
-        unconPropB = Button(self, text="View Unconfirmed Properties", command=lambda: controller.show_frame(loginPage))
+        unconPropB = Button(self, text="View Unconfirmed Properties", command=lambda: controller.show_frame(unconfirmedProperties))
         unconPropB.pack(fill =X)
 
-        approvedB = Button(self, text="View Approved Animals and Crops", command=lambda: controller.show_frame(loginPage))
+        approvedB = Button(self, text="View Approved Animals and Crops", command=lambda: controller.show_frame(approvedOrganisms))
         approvedB.pack(fill = X)
 
-        pendingB = Button(self, text="View Pending Animals and Crops", command=lambda: controller.show_frame(loginPage))
+        pendingB = Button(self, text="View Pending Animals and Crops", command=lambda: controller.show_frame(pendingOrganisms))
         pendingB.pack(fill =X)
 
         logoutB = Button(self, text="Logout", command=lambda: controller.show_frame(loginPage))
         logoutB.pack(fill =X)
 
+class viewVisitorList(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="All Visitors in System", font =LARGE_FONT)
+        label.grid(row=0, column=0)
+
+        frame = Frame(self)
 
 
+        table = Treeview(frame)
+        table['columns'] = ('Email', 'Logged Visits')
+        table.heading('#0', text='Username', anchor='w')
+        table.column('#0', anchor='w')
+        
+        table.heading('Email', text='Email')
+        table.column('Email', anchor='center', width = 100)
+        table.heading('Logged Visits', text='Logged Visits')
+        table.column('Logged Visits', anchor='center', width = 100)
+       
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+        frame.grid(sticky=(N,S,W,E))
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
+
+        # Loads temp Data
+        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
+        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
+        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
+
+        types = { 'Username', 'Email', 'Logged Visits'}
+        
+        search = StringVar()
+        search.set('Search by...')
+        search_menu = OptionMenu(frame, search, *types)
+        search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
+
+        term = Entry(self, text="Search Term")
+        term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
+
+        searchprop = Button(self, text="Search Visitors", command=lambda: controller.show_frame(adminFunctions))
+        searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
+
+        deletevisitor = Button(self, text="Delete Visitor Account", command=lambda: controller.show_frame(adminFunctions))
+        deletevisitor.grid(row=3, column=0, padx=50, pady=10)
+
+        deletelog = Button(self, text="Delete Log History", command=lambda: controller.show_frame(adminFunctions))
+        deletelog.grid(row=4, column=0, padx=50, pady=10)
+
+        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
+class viewOwnerList(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="All Owners in System", font =LARGE_FONT)
+        label.grid(row=0, column=0)
+
+        frame = Frame(self)
 
 
+        table = Treeview(frame)
+        table['columns'] = ('Email', 'Number of Properties')
+        table.heading('#0', text='Username', anchor='w')
+        table.column('#0', anchor='w')
+        
+        table.heading('Email', text='Email')
+        table.column('Email', anchor='center', width = 100)
+        table.heading('Number of Properties', text='Number of Properties')
+        table.column('Number of Properties', anchor='center', width = 120)
+       
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
 
+        frame.grid(sticky=(N,S,W,E))
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
+
+        # Loads temp Data
+        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
+        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
+        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
+
+        types = { 'Username', 'Email', 'Number of Properties'}
+        
+        search = StringVar()
+        search.set('Search by...')
+        search_menu = OptionMenu(frame, search, *types)
+        search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
+
+        term = Entry(self, text="Search Term")
+        term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
+
+        searchowners = Button(self, text="Search Owners", command=lambda: controller.show_frame(adminFunctions))
+        searchowners.grid(row=4, column=0, sticky='w', padx=50, pady=10)
+
+        deletevisitor = Button(self, text="Delete Owner Account", command=lambda: controller.show_frame(adminFunctions))
+        deletevisitor.grid(row=3, column=0, padx=50, pady=10)
+
+        deletelog = Button(self, text="Delete Owner Account", command=lambda: controller.show_frame(adminFunctions))
+        deletelog.grid(row=4, column=0, padx=50, pady=10)
+
+        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
+class approvedOrganisms(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="Approved Owners/Crops", font =LARGE_FONT)
+        label.grid(row=0, column=0)
+
+        frame = Frame(self)
+
+        table = Treeview(frame)
+        table['columns'] = ('Type')
+        table.heading('#0', text='Name', anchor='w')
+        table.column('#0', anchor='w')
+        
+        table.heading('Type', text='Type')
+        table.column('Type', anchor='center', width = 100)
+        
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+        frame.grid(sticky=(N,S,W,E))
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
+
+        # Loads temp Data
+        frame.treeview.insert('', 'end', text='Apple', values=('Fruit'))
+        frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
+        frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
+
+        types = {'Fruit', 'Animal', 'Vegetable'}
+        
+        search = StringVar()
+        search.set('Enter name')
+        search_menu = OptionMenu(frame, search, *types)
+        search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
+
+        nameterm = Entry(self, text="Enter Name")
+        nameterm.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
+
+        addB = Button(self, text="Add to Approval List", command=lambda: controller.show_frame(adminFunctions))
+        addB.grid(row=4, column=0, sticky='w', padx=50, pady=10)
+
+        searchterm = Entry(self, text="Search Term")
+        searchterm.grid(row=3, column = 1, sticky='w', padx=50, pady=10)
+
+        searchB = Button(self, text="Search", command=lambda: controller.show_frame(adminFunctions))
+        searchB.grid(row=4, column=1, sticky='w', padx=50, pady=10)
+
+
+        deleteselection = Button(self, text="Delete Selection", command=lambda: controller.show_frame(adminFunctions))
+        deleteselection.grid(row=5, column=0, padx=50, pady=10)
+
+
+        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back.grid(row=5, column=1, sticky='e', padx=50, pady=10)
+
+class pendingOrganisms(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="Pending Owners/Crops", font =LARGE_FONT)
+        label.grid(row=0, column=0)
+
+        frame = Frame(self)
+        table = Treeview(frame)
+        table['columns'] = ('Type')
+        table.heading('#0', text='Name', anchor='w')
+        table.column('#0', anchor='w')
+        
+        table.heading('Type', text='Type')
+        table.column('Type', anchor='center', width = 100)
+        
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+        frame.grid(sticky=(N,S,W,E))
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
+
+        # Loads temp Data
+        frame.treeview.insert('', 'end', text='Apple', values=('Fruit'))
+        frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
+        frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
+
+        types = {'Fruit', 'Animal', 'Vegetable'}
+        
+        
+        approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
+        approveB.grid(row=4, column=0, sticky='w')
+
+        deleteselection = Button(self, text="Delete Selection", command=lambda: controller.show_frame(adminFunctions))
+        deleteselection.grid(row=5, column=0)
+
+        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back.grid(row=6, column=0, sticky='e')
+
+#### TO DO
+class confirmedProperties(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+
+#### TO DO
+class unconfirmedProperties(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
 
 
 app = Atlanta()
