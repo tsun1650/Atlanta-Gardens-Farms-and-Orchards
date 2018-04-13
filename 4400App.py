@@ -616,11 +616,91 @@ class pendingOrganisms(Frame):
         back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e')
 
-#### TO DO
+
 class confirmedProperties(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
+        label = Label(self, text="Confirmed Properties:", font =LARGE_FONT)
+        label.grid(row=0, column=0)
 
+        frame = Frame(self)
+
+        table = Treeview(frame)
+        table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'verified', 'rating')
+        table.heading('#0', text='Name', anchor='w')
+        table.column('#0', anchor='w')
+        table.heading('address', text='Address')
+        table.column('address', anchor='center', width = 100)
+        table.heading('city', text='City')
+        table.column('city', anchor='center', width = 100)
+        table.heading('zip', text='Zip')
+        table.column('zip', anchor='center', width = 100)
+        table.heading('size', text='Size')
+        table.column('size', anchor='center', width = 100)
+        table.heading('type', text='Type')
+        table.column('type', anchor='center', width = 100)
+        table.heading('public', text='Public')
+        table.column('public', anchor='center', width = 100)
+        table.heading('commercial', text='Commercial')
+        table.column('commercial', anchor='center', width = 100)
+        table.heading('id', text='ID')
+        table.column('id', anchor='center', width = 100)
+        table.heading('verified', text='Verified By')
+        table.column('verified', anchor='center', width = 100)
+        table.heading('rating', text='Avg Rating')
+        table.column('rating', anchor='center', width = 100)
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+        frame.grid(sticky=(N,S,W,E))
+        parent.grid_rowconfigure(0, weight=1)
+        parent.grid_columnconfigure(0, weight=1)
+
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'admin2', '5.0'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'admin2', '5.0'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'admin2', '5.0'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
+        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
+
+        types = {'Search by...', 'Name', 'Zip', 'Type', 'Verified By','Avg Rating'}
+        
+        search = StringVar()
+        search.set('Search by...')
+        search_menu = OptionMenu(frame, search, *types)
+        search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
+
+        term = Entry(self, text="Search Term")
+        term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
+
+        searchprop = Button(self, text="Search Properties", command=lambda: controller.show_frame(loginPage))
+        searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
+
+        mprop = Button(self, text="Manage Selected Property", command=lambda: controller.show_frame(loginPage))
+        mprop.grid(row=3, column=0, padx=50, pady=10)
+
+        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 #### TO DO
 class unconfirmedProperties(Frame):
     def __init__(self, parent, controller):
