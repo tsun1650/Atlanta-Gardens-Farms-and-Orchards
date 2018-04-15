@@ -22,7 +22,8 @@ class Atlanta(Tk):
         #          Make sure you add            #
         #          your new page here           #
         #########################################
-        allPages = (loginPage, visitorRegistration, ownerRegistration, adminFunctions, visitorView, visitHistory, viewVisitorList, viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties)
+        allPages = (loginPage, visitorRegistration, ownerRegistration, adminFunctions, visitorView, visitHistory, viewVisitorList, 
+            viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties)
         for F in allPages:
             frame = F(container, self)
             self.frames[F] = frame
@@ -605,7 +606,6 @@ class pendingOrganisms(Frame):
         frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
 
         types = {'Fruit', 'Animal', 'Vegetable'}
-        
         
         approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
         approveB.grid(row=4, column=0, sticky='w')
