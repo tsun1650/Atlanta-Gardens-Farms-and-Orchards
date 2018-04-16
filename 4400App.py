@@ -23,7 +23,7 @@ class Atlanta(Tk):
         #          your new page here           #
         #########################################
         allPages = (loginPage, visitorRegistration, ownerRegistration, adminFunctions, visitorView, visitHistory, viewVisitorList, 
-            viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties)
+            viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties, addNewProperty)
         for F in allPages:
             frame = F(container, self)
             self.frames[F] = frame
@@ -785,6 +785,103 @@ class unconfirmedProperties(Frame):
 
         back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
+class addNewProperty(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="Add New Property:", font =LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        frame = Frame(self)
+        frame.pack(padx=5, pady=20, side=LEFT)
+        
+        name = Label(frame, text="Property Name:* ")
+        name.grid(row=0, column=0, sticky='w')
+        self.name = Entry(frame, background='white', width=24)
+        self.name.grid(row=0, column=1, sticky='w')
+        self.name.focus_set()
+        
+        street = Label(frame, text="Street Address:* ")
+        street.grid(row=1, column=0, sticky='w')
+        self.street = Entry(frame, background='white', width=24)
+        self.street.grid(row=1, column=1, sticky='w')
+        self.street.focus_set()
+
+        city = Label(frame, text="City:* ")
+        city.grid(row=2, column=0, sticky='w')
+        self.city = Entry(frame, background='white', width=24)
+        self.city.grid(row=2, column=1, sticky='w')
+        self.city.focus_set()
+
+        zipcode = Label(frame, text="Zip:* ")
+        zipcode.grid(row=2, column=2, sticky='w')
+        self.zipcode = Entry(frame, background='white', width=24)
+        self.zipcode.grid(row=2, column=3, sticky='w')
+        self.zipcode.focus_set()
+
+        acres = Label(frame, text="Acres:* ")
+        acres.grid(row=2, column=4, sticky='w')
+        self.acres = Entry(frame, background='white', width=24)
+        self.acres.grid(row=2, column=5, sticky='w')
+        self.acres.focus_set()
+
+        propType = Label(frame, text="Property Type:* ")
+        propType.grid(row=3, column=0, sticky='w')
+        # Rest of GUI depends on property type selected
+        proptypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
+        
+        propTypeVar = StringVar()
+        propTypeVar.set('Garden')   # Set garden as the default prop type
+        propType_menu = OptionMenu(frame, propTypeVar, *proptypes)
+        propType_menu.grid(row=3, column=1, padx=5, pady=10)
+
+        animalType = Label(frame, text="Animal Type:* ")
+        animalType.grid(row=3, column=2, sticky='w')
+        # Rest of GUI depends on property type selected
+        animaltypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
+        
+        animalTypeVar = StringVar()
+        animalTypeVar.set('Garden')   # Set garden as the default prop type
+        animalType_menu = OptionMenu(frame, animalTypeVar, *animaltypes)
+        animalType_menu.grid(row=3, column=4, padx=5, pady=10)
+
+        cropType = Label(frame, text="Crop Type:* ")
+        cropType.grid(row=3, column=5, sticky='w')
+        # Rest of GUI depends on property type selected
+        croptypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
+        
+        cropTypeVar = StringVar()
+        cropTypeVar.set('Garden')   # Set garden as the default prop type
+        cropTypeVar_menu = OptionMenu(frame, cropTypeVar, *croptypes)
+        cropTypeVar_menu.grid(row=3, column=6, padx=5, pady=10)
+
+        pubType = Label(frame, text="Public?:* ")
+        pubType.grid(row=4, column=0, sticky='w')
+        # Rest of GUI depends on property type selected
+        pubtypes = {'Yes', 'No'}   # Dictionary holding different prop types
+        
+        pubTypeVar = StringVar()
+        pubTypeVar.set('No')   # Set garden as the default prop type
+        pubTypeVar_menu = OptionMenu(frame, pubTypeVar, *pubtypes)
+        pubTypeVar_menu.grid(row=4, column=1, padx=5, pady=10)
+
+        comType = Label(frame, text="Commercial?:* ")
+        comType.grid(row=5, column=0, sticky='w')
+        # Rest of GUI depends on property type selected
+        comtypes = {'Yes', 'No'}   # Dictionary holding different prop types
+        
+        comTypeVar = StringVar()
+        comTypeVar.set('No')   # Set garden as the default prop type
+        comTypeVar_menu = OptionMenu(frame, comTypeVar, *comtypes)
+        comTypeVar_menu.grid(row=5, column=1, padx=5, pady=10)
+
+        # Buttons
+        button1 = Button(frame, text="Add Property", command=lambda: controller.show_frame(loginPage))
+        button1.grid(row=6, column=0, sticky='w')
+        #TODO: REGISTER COMPLETE PAGE
+        button2 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button2.grid(row=6, column=1, sticky='w')
+
 
 
 app = Atlanta()
