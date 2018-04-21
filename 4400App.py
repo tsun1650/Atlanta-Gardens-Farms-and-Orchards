@@ -3,6 +3,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import messagebox
+from WebService import *
 
 LARGE_FONT= ("Verdana", 12)
 
@@ -115,8 +116,11 @@ class visitorRegistration(Frame):
         button1 = Button(dialog_frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
         button1.grid(row=4, column=0, sticky='w')
         #TODO: REGISTER COMPLETE PAGE
-        button2 = Button(dialog_frame, text="Register Visitor", command=lambda: controller.show_frame(visitorView))
+        button2 = Button(dialog_frame, text="Register Visitor", command=self.registervisitor)
         button2.grid(row=4, column=1, sticky='w')
+
+    def registervisitor(self):
+        print("afegsgsgg")
 
 class visitorView(Frame):
     def __init__(self, parent, controller):
@@ -385,9 +389,11 @@ class ownerRegistration(Frame):
         button1 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
         button1.grid(row=11, column=0, sticky='w')
         #TODO: REGISTER COMPLETE PAGE
-        button2 = Button(frame, text="Register Owner", command=lambda: controller.show_frame(ownerFunctionality))
+        button2 = Button(frame, text="Register Owner", command=self.registerowner)
         button2.grid(row=11, column=1, sticky='w')
 
+    def registerowner(self):
+        print("gwsegnoisegnoiseg")
 
 class adminFunctions(Frame):
     def __init__(self, parent, controller):
