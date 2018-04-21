@@ -74,7 +74,7 @@ class loginPage(Frame):
 
     #login onclick event
     def login(self):
-        print("wgw4gw")
+        
 
 class visitorRegistration(Frame):
     def __init__(self, parent, controller):
@@ -1245,10 +1245,6 @@ class propertyManagement(Frame):
 
         button1 = Button(frame, text="Add crop to property", command=self.addCrop)
         button1.grid(row=6, column=1, sticky='w')
-
-
-
-
 
         crop = Label(frame, text="Request crop approval: ")
         crop.grid(row=7, column=0, sticky='w')
