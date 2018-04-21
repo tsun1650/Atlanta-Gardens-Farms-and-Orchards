@@ -41,12 +41,13 @@ class Atlanta(Tk):
 
 class loginPage(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self,parent)
         label = Label(self, text="Login Page", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
-
         f = Frame(self)
+        self.f = f
         f.pack(padx=5, pady=20, side=LEFT)
         
         email = Label(f, text="Email: ")
@@ -68,8 +69,6 @@ class loginPage(Frame):
         button0.grid(row=2, column=1, sticky='w')
         button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerRegistration))
         button1.grid(row=3, column=0, sticky='w')
-        # button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(adminFunctions))
-        # button1.grid(row=3, column=0, sticky='w')
 
         button2 = Button(f, text="New Visitor Registration", command=lambda: controller.show_frame(visitorRegistration))
         button2.grid(row=3, column=1, sticky='w')
@@ -79,9 +78,27 @@ class loginPage(Frame):
         # Initialize hash function
         hashfunc = hashlib.sha256()
         # Add the password string inputted into hash function
-        hashfunc.update(self.passwordEntry)
+        hashfunc.update(str(self.passwordEntry).encode())
         # Get hashed password
         hashPass = hashfunc.digest()
+
+        # Call verifyLogin function from web service
+        verify = DBManager.verifyLogin(self, self.emailEntry, hashPass)
+
+        if verify:
+            # log in was successful; fetch user type
+            userType = DBManager.getUserType(self.emailEntry)
+
+            if userType == "Owner":
+                self.controller.show_frame(ownerFunctionality)
+            elif userType == "Visitor":
+                self.controller.show_frame(visitorView)
+            else:
+                self.controller.show_frame(adminFunctions)
+        else:
+            error = Label(self.f, text="Email or password was incorrect")
+            error.grid(row=4, column=0)
+
 
 class visitorRegistration(Frame):
     def __init__(self, parent, controller):
@@ -93,7 +110,8 @@ class visitorRegistration(Frame):
         #email.grid(row = 1, column = 0, padx = 20, pady = 10)
         dialog_frame = Frame(self)
         dialog_frame.pack(padx=5, pady=20, side=LEFT)
-        
+        self.frame = dialog_frame
+
         email = Label(dialog_frame, text="Email*: ")
         email.grid(row=0, column=0, sticky='w')
         self.email = Entry(dialog_frame, background='white', width=24)
@@ -117,7 +135,6 @@ class visitorRegistration(Frame):
         self.confirmPassword = Entry(dialog_frame, background='white', width=24)
         self.confirmPassword.grid(row=3, column=1, sticky='w')
         self.confirmPassword.focus_set()
-
         
         button1 = Button(dialog_frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
         button1.grid(row=4, column=0, sticky='w')
@@ -126,18 +143,34 @@ class visitorRegistration(Frame):
         button2.grid(row=4, column=1, sticky='w')
 
     def registervisitor(self):
-        # Initialize hash function
-        hashfunc = hashlib.sha256()
-        # Add the password string inputted into hash function
-        hashfunc.update(str(self.password).encode())
-        # Get hashed password
-        hashPass = hashfunc.digest()
-        register = registerNewUser(self.email, self.username, hashPass, 'Visitor')
-
-        if register:
-            print("success")
+        msg = StringVar()
+        
+        if (len(self.password.get()) < 8):
+            messagebox.showerror("Error", "Password must be at least 8 character")
+        elif (self.password.get() != self.confirmPassword.get()):
+            messagebox.showerror("Error", "Confirm password does not match")
+        elif("@" not in self.email.get()):
+            messagebox.showerror("Error", "Invalid email")
         else:
-            print("register didn't work")
+            temp = self.email.get().split("@")
+            if ("." not in temp[1]):
+                messagebox.showerror("Error", "Invalid email")
+            else:
+                # Initialize hash function
+                hashfunc = hashlib.sha256()
+                # Add the password string inputted into hash function
+                hashfunc.update(str(self.password.get()).encode())
+                # Get hashed password
+                hashPass = hashfunc.digest()
+                print("hashed password: ", hashPass)
+                register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Visitor')
+
+                if register:
+                    print("success")
+                else:
+                    print("register didn't work")
+        
+    
 
 class visitorView(Frame):
     def __init__(self, parent, controller):
@@ -410,14 +443,7 @@ class ownerRegistration(Frame):
         button2.grid(row=11, column=1, sticky='w')
 
     def registerowner(self):
-        # Initialize hash function
-        hashfunc = hashlib.sha256()
-        # Add the password string inputted into hash function
-        hashfunc.update(self.password)
-        # Get hashed password
-        hashPass = hashfunc.digest()
-        DBManager.registerNewUser(email, username, hashPass, 'Owner')
-        #DBManager.addProperty(propName, propAddress, propCity, propZip, )
+        print("gwsegnoisegnoiseg")
 
 class adminFunctions(Frame):
     def __init__(self, parent, controller):
