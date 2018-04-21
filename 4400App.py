@@ -78,20 +78,22 @@ class loginPage(Frame):
         # Initialize hash function
         hashfunc = hashlib.sha256()
         # Add the password string inputted into hash function
-        hashfunc.update(str(self.passwordEntry).encode())
+        hashfunc.update(str(self.passwordEntry.get()).encode())
         # Get hashed password
         hashPass = hashfunc.digest()
 
         # Call verifyLogin function from web service
-        verify = DBManager.verifyLogin(self, self.emailEntry, hashPass)
+        verify = DBManager.verifyLogin(self, self.emailEntry.get(), hashPass)
 
         if verify:
             # log in was successful; fetch user type
-            userType = DBManager.getUserType(self.emailEntry)
+            userType = DBManager.getUserType(self, self.emailEntry.get())
 
-            if userType == "Owner":
+            print("user type:", userType)
+
+            if "OWNER" in userType:
                 self.controller.show_frame(ownerFunctionality)
-            elif userType == "Visitor":
+            elif "VISITOR" in userType:
                 self.controller.show_frame(visitorView)
             else:
                 self.controller.show_frame(adminFunctions)
@@ -139,7 +141,6 @@ class visitorRegistration(Frame):
         
         button1 = Button(dialog_frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
         button1.grid(row=4, column=0, sticky='w')
-        #TODO: REGISTER COMPLETE PAGE
         button2 = Button(dialog_frame, text="Register Visitor", command=self.registervisitor)
         button2.grid(row=4, column=1, sticky='w')
 
@@ -177,11 +178,11 @@ class visitorRegistration(Frame):
 
                         if register:
                             messagebox.showerror("Account Created", "Registration was a success! You can now login on the login page.")
-                            
+
 
                         else:
                             messagebox.showerror("Error", "Something went wrong")
-                            
+
 
                     else:
                         messagebox.showerror("Error", "Username is taken")
@@ -463,7 +464,7 @@ class ownerRegistration(Frame):
 
     def registerowner(self):
         msg = StringVar()
-        
+
         if (len(self.password.get()) < 8):
             messagebox.showerror("Error", "Password must be at least 8 character")
         elif (self.password.get() != self.confirmPassword.get()):
@@ -494,18 +495,18 @@ class ownerRegistration(Frame):
 
                         if register:
                             messagebox.showerror("Account Created", "Registration was a success! You can now login on the login page.")
-                            
+
 
                         else:
                             messagebox.showerror("Error", "Something went wrong")
-                            
+
 
                     else:
                         messagebox.showerror("Error", "Username is taken")
 
                 else:
                     messagebox.showerror("Error", "Email is already associated with an account")
-                    
+
 
 class adminFunctions(Frame):
     def __init__(self, parent, controller):

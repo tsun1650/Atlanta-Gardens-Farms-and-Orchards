@@ -128,7 +128,6 @@ class DBManager:
                 # Email doesn't exist
                 return False
 
-
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
@@ -276,6 +275,37 @@ class DBManager:
 
         # User input to check for in SQL statement
         userin = (propID, name)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Commit changes to db
+            conn.commit()
+
+            # Get result
+            result = cursor.fetchall()
+
+            if len(result) > 0:
+                # Insert was a success
+                return True
+            else:
+                # Insert failed
+                return False
+
+        except Exception as e:
+            print("ERROR: {}".format(e))
+        finally:
+            conn.close()
+
+    def getApprovedVegetables(self):
+        # SQL statement to execute
+        sql = "SELECT "
+
 
         # Create connection
         conn = DBManager.getConnection(self)
