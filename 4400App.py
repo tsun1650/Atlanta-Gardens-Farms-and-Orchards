@@ -41,12 +41,13 @@ class Atlanta(Tk):
 
 class loginPage(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self,parent)
         label = Label(self, text="Login Page", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
-
         f = Frame(self)
+        self.f = f
         f.pack(padx=5, pady=20, side=LEFT)
         
         email = Label(f, text="Email: ")
@@ -77,20 +78,26 @@ class loginPage(Frame):
         # Initialize hash function
         hashfunc = hashlib.sha256()
         # Add the password string inputted into hash function
-        hashfunc.update(self.passwordEntry)
+        hashfunc.update(str(self.passwordEntry).encode())
         # Get hashed password
         hashPass = hashfunc.digest()
 
         # Call verifyLogin function from web service
-        verify = DBManager.verifyLogin(self.emailEntry, hashPass)
+        verify = DBManager.verifyLogin(self, self.emailEntry, hashPass)
 
         if verify:
-            # log in was successful
-            controllor.show
+            # log in was successful; fetch user type
+            userType = DBManager.getUserType(self.emailEntry)
 
-
-
-
+            if userType == "Owner":
+                self.controller.show_frame(ownerFunctionality)
+            elif userType == "Visitor":
+                self.controller.show_frame(visitorView)
+            else:
+                self.controller.show_frame(adminFunctions)
+        else:
+            error = Label(self.f, text="Email or password was incorrect")
+            error.grid(row=4, column=0)
 
 
 class visitorRegistration(Frame):
@@ -136,7 +143,19 @@ class visitorRegistration(Frame):
         button2.grid(row=4, column=1, sticky='w')
 
     def registervisitor(self):
-        print("afegsgsgg")
+        # Initialize hash function
+        hashfunc = hashlib.sha256()
+        # Add the password string inputted into hash function
+        hashfunc.update(str(self.password.get()).encode())
+        # Get hashed password
+        hashPass = hashfunc.digest()
+        print("hashed password: ", hashPass)
+        register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Visitor')
+
+        if register:
+            print("success")
+        else:
+            print("register didn't work")
 
 class visitorView(Frame):
     def __init__(self, parent, controller):

@@ -1,7 +1,11 @@
 import pymysql.cursors
+import logging
 
 
 class DBManager:
+
+    def __init__(self):
+        self._db = "idk"
 
     """
     getConnection:
@@ -12,8 +16,9 @@ class DBManager:
         # create connection
         conn = pymysql.connect(
             host='academic-mysql.cc.gatech.edu',
-            user='cs4400_team_68',
-            password='JQasN9vs'
+            user='cs4400_team_68@localhost',
+            password='JQasN9vs',
+            db='cs4400_team_68'
         )
         return conn
 
@@ -34,7 +39,7 @@ class DBManager:
         userin = (email, hashPass)
 
         # Create connection
-        conn = self.getConnection()
+        conn = DBManager.getConnection(self)
 
         try:
             # Execute query
@@ -59,7 +64,12 @@ class DBManager:
 
     """
     getUserType:
-        
+        Gets the user type of the current user
+        Only call this after a user is verified through verifyLogin
+        Inputs:
+            The current users email
+        Returns:
+            The type of user the user is
     """
     def getUserType(self, email):
         # SQL statement to execute
@@ -69,7 +79,7 @@ class DBManager:
         userin = (email)
 
         # Create connection
-        conn = self.getConnection()
+        conn = DBManager.getConnection(self)
 
         try:
             # Execute query
@@ -79,14 +89,7 @@ class DBManager:
             # Get result
             result = cursor.fetchone()
 
-            if result is not None:
-                # Found match
-                conn.close()
-                return result
-            else:
-                # No match
-                conn.close()
-                return False
+            return result
         except Exception as e:
             print("ERROR: {}".format(e))
         finally:
@@ -112,7 +115,7 @@ class DBManager:
         userin = (email, username, hashPass, usertype, email, username)
 
         # Create connection
-        conn = self.getConnection()
+        conn = DBManager.getConnection(self)
 
         try:
             # Execute query
@@ -136,6 +139,7 @@ class DBManager:
 
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -161,7 +165,7 @@ class DBManager:
         userin = (name, address, city, addyZip, public, commercial, propType, owner, size, name)
 
         # Create connection
-        conn = self.getConnection()
+        conn = DBManager.getConnection(self)
 
         try:
             # Execute query
@@ -206,7 +210,7 @@ class DBManager:
         userin = (propID, name)
 
         # Create connection
-        conn = self.getConnection()
+        conn = DBManager.getConnection(self)
 
         try:
             # Execute query
