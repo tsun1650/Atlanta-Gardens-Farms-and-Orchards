@@ -38,7 +38,7 @@ class Atlanta(Tk):
         frame.tkraise()
 
 class loginPage(Frame):
-     def __init__(self, parent, controller):
+    def __init__(self, parent, controller):
         Frame.__init__(self,parent)
         label = Label(self, text="Login Page", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -62,7 +62,7 @@ class loginPage(Frame):
         self.passwordEntry = Entry(f, background='white', width=24)
         self.passwordEntry.grid(row=1, column=1, sticky='w')
 
-        button0 = Button(f, text="Login", command=lambda: controller.show_frame(adminFunctions))
+        button0 = Button(f, text="Login", command=self.login)
         button0.grid(row=2, column=1, sticky='w')
         button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerRegistration))
         button1.grid(row=3, column=0, sticky='w')
@@ -71,6 +71,10 @@ class loginPage(Frame):
 
         button2 = Button(f, text="New Visitor Registration", command=lambda: controller.show_frame(visitorRegistration))
         button2.grid(row=3, column=1, sticky='w')
+
+    #login onclick event
+    def login(self):
+        print("wgw4gw")
 
 class visitorRegistration(Frame):
     def __init__(self, parent, controller):
@@ -381,7 +385,7 @@ class ownerRegistration(Frame):
         button1 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
         button1.grid(row=11, column=0, sticky='w')
         #TODO: REGISTER COMPLETE PAGE
-        button2 = Button(frame, text="Register Owner", command=lambda: controller.show_frame(loginPage))
+        button2 = Button(frame, text="Register Owner", command=lambda: controller.show_frame(ownerFunctionality))
         button2.grid(row=11, column=1, sticky='w')
 
 
