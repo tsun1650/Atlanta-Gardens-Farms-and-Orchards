@@ -16,7 +16,7 @@ class DBManager:
         # create connection
         conn = pymysql.connect(
             host='academic-mysql.cc.gatech.edu',
-            user='cs4400_team_68@localhost',
+            user='cs4400_team_68',
             password='JQasN9vs',
             db='cs4400_team_68'
         )
@@ -51,11 +51,9 @@ class DBManager:
 
             if result is not None:
                 # Found match
-                conn.close()
                 return True
             else:
                 # No match
-                conn.close()
                 return False
         except Exception as e:
             print("ERROR: {}".format(e))
@@ -96,6 +94,85 @@ class DBManager:
             conn.close()
 
     """
+        checkEmail:
+            Checks if email is already taken in the User table
+            Inputs:
+                Email to check for
+            Returns:
+                True if the email already exists
+                False if not
+        """
+    def checkEmail(self, email):
+        # SQL statement to execute
+        sql = "SELECT * FROM User WHERE Email = %s"
+
+        # User input to check for in SQL statement
+        userin = (email)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchall()
+
+            if len(result) > 0:
+                # Email already exists in User table
+                return True
+            else:
+                # Email doesn't exist
+                return False
+
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    checkUsername:
+        Checks if username is already taken in the User table
+        Inputs:
+            Username to check for
+        Returns:
+            True if the username already exists
+            False if not
+    """
+    def checkUsername(self, username):
+        # SQL statement to execute
+        sql = "SELECT * FROM User WHERE Username = %s"
+
+        # User input to check for in SQL statement
+        userin = (username)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchall()
+
+            if len(result) > 0:
+                # Username already exists in User table
+                return True
+            else:
+                # Username doesn't exist
+                return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
     registerNewUser:
         Adds new user to the User table
         Inputs:
@@ -107,12 +184,10 @@ class DBManager:
     def registerNewUser(self, email, username, hashPass, usertype):
         # SQL statement to execute
         sql = "INSERT INTO User (Email, Username, Password, UserType) " \
-              "VALUES (%s, %s, %s, %s) " \
-              "WHERE NOT EXISTS " \
-              "(SELECT Email, Username FROM User WHERE Email = %s AND Username = %s);"
+              "VALUES (%s, %s, %s, %s); " \
 
         # User input to check for in SQL statement
-        userin = (email, username, hashPass, usertype, email, username)
+        userin = (email, username, hashPass, usertype)
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -127,16 +202,9 @@ class DBManager:
 
             # Get result
             result = cursor.fetchall()
+            print("Query result: ", result)
 
-            if len(result) > 0:
-                # Insert was a success
-                conn.close()
-                return True
-            else:
-                # Insert failed
-                conn.close()
-                return False
-
+            return True
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
@@ -180,11 +248,9 @@ class DBManager:
 
             if len(result) > 0:
                 # Insert was a success
-                conn.close()
                 return True
             else:
                 # Insert failed
-                conn.close()
                 return False
 
         except Exception as e:
@@ -225,11 +291,9 @@ class DBManager:
 
             if len(result) > 0:
                 # Insert was a success
-                conn.close()
                 return True
             else:
                 # Insert failed
-                conn.close()
                 return False
 
         except Exception as e:
