@@ -3,6 +3,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import messagebox
+import hashlib
 from WebService import *
 
 LARGE_FONT= ("Verdana", 12)
@@ -67,15 +68,20 @@ class loginPage(Frame):
         button0.grid(row=2, column=1, sticky='w')
         button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerRegistration))
         button1.grid(row=3, column=0, sticky='w')
-        # button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(adminFunctions))
-        # button1.grid(row=3, column=0, sticky='w')
 
         button2 = Button(f, text="New Visitor Registration", command=lambda: controller.show_frame(visitorRegistration))
         button2.grid(row=3, column=1, sticky='w')
 
     #login onclick event
     def login(self):
-        
+        # Initialize hash function
+        hashfunc = hashlib.sha256()
+        # Add the password string inputted into hash function
+        hashfunc.update(self.passwordEntry)
+        # Get hashed password
+        hashPass = hashfunc.digest()
+
+
 
 class visitorRegistration(Frame):
     def __init__(self, parent, controller):
