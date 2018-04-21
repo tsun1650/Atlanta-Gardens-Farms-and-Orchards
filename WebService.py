@@ -58,6 +58,41 @@ class DBManager:
             conn.close()
 
     """
+    getUserType:
+        
+    """
+    def getUserType(self, email):
+        # SQL statement to execute
+        sql = "SELECT UserType from User WHERE Email = %s;"
+
+        # User input to check for in SQL statement
+        userin = (email)
+
+        # Create connection
+        conn = self.getConnection()
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchone()
+
+            if result is not None:
+                # Found match
+                conn.close()
+                return result
+            else:
+                # No match
+                conn.close()
+                return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+        finally:
+            conn.close()
+
+    """
     registerNewUser:
         Adds new user to the User table
         Inputs:
@@ -114,7 +149,7 @@ class DBManager:
             True if the insert was successful
             False if the name of the property already exists in the Property table
     """
-    def addProperty(self, name, address, city, zip, public, commercial, type, owner, size):
+    def addProperty(self, name, address, city, addyZip, public, commercial, propType, owner, size):
         # SQL statement to execute
         sql = "INSERT INTO Property (Name, Address, City, ZIP, " \
               "isPublic, isCommercial, PropertyType, OwnedBy, NumVisits, AvgRating, Size) " \
@@ -123,7 +158,7 @@ class DBManager:
               "(SELECT Name FROM Property WHERE Name = %s);"
 
         # User input to check for in SQL statement
-        userin = (name, address, city, zip, public, commercial, type, owner, size, name)
+        userin = (name, address, city, addyZip, public, commercial, propType, owner, size, name)
 
         # Create connection
         conn = self.getConnection()

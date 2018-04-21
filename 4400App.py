@@ -81,6 +81,16 @@ class loginPage(Frame):
         # Get hashed password
         hashPass = hashfunc.digest()
 
+        # Call verifyLogin function from web service
+        verify = DBManager.verifyLogin(self.emailEntry, hashPass)
+
+        if verify:
+            # log in was successful
+            controllor.show
+
+
+
+
 
 
 class visitorRegistration(Frame):
