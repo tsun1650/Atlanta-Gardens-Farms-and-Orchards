@@ -3,6 +3,7 @@
 from tkinter import *
 from tkinter.ttk import *
 from tkinter import messagebox
+import hashlib
 from WebService import *
 
 LARGE_FONT= ("Verdana", 12)
@@ -75,7 +76,12 @@ class loginPage(Frame):
 
     #login onclick event
     def login(self):
-        
+        # Initialize hash function
+        hashfunc = hashlib.sha256()
+        # Add the password string inputted into hash function
+        hashfunc.update(self.passwordEntry)
+        # Get hashed password
+        hashPass = hashfunc.digest()
 
 class visitorRegistration(Frame):
     def __init__(self, parent, controller):
@@ -120,7 +126,18 @@ class visitorRegistration(Frame):
         button2.grid(row=4, column=1, sticky='w')
 
     def registervisitor(self):
-        print("afegsgsgg")
+        # Initialize hash function
+        hashfunc = hashlib.sha256()
+        # Add the password string inputted into hash function
+        hashfunc.update(str(self.password).encode())
+        # Get hashed password
+        hashPass = hashfunc.digest()
+        register = registerNewUser(self.email, self.username, hashPass, 'Visitor')
+
+        if register:
+            print("success")
+        else:
+            print("register didn't work")
 
 class visitorView(Frame):
     def __init__(self, parent, controller):
@@ -393,7 +410,14 @@ class ownerRegistration(Frame):
         button2.grid(row=11, column=1, sticky='w')
 
     def registerowner(self):
-        print("gwsegnoisegnoiseg")
+        # Initialize hash function
+        hashfunc = hashlib.sha256()
+        # Add the password string inputted into hash function
+        hashfunc.update(self.password)
+        # Get hashed password
+        hashPass = hashfunc.digest()
+        DBManager.registerNewUser(email, username, hashPass, 'Owner')
+        #DBManager.addProperty(propName, propAddress, propCity, propZip, )
 
 class adminFunctions(Frame):
     def __init__(self, parent, controller):
