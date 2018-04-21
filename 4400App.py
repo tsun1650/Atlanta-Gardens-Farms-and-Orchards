@@ -176,20 +176,18 @@ class visitorRegistration(Frame):
                         register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Visitor')
 
                         if register:
-                            message = Label(self.f, text="Registration was a success! You can now login on the login page.")
-                            message.grid(row=4, column=2)
+                            messagebox.showerror("Account Created", "Registration was a success! You can now login on the login page.")
+                            
 
                         else:
-                            error = Label(self.f, text="Something went wrong")
-                            error.grid(row=4, column=2)
+                            messagebox.showerror("Error", "Something went wrong")
+                            
 
                     else:
-                        error = Label(self.f, text="Username is taken")
-                        error.grid(row=4, column=2)
+                        messagebox.showerror("Error", "Username is taken")
 
                 else:
-                    error = Label(self.f, text="Email is already associated with an account")
-                    error.grid(row=4, column=2)
+                    messagebox.showerror("Error", "Email is already associated with an account")
         
 
 
@@ -353,7 +351,7 @@ class ownerRegistration(Frame):
 
         frame = Frame(self)
         frame.pack(padx=5, pady=20, side=LEFT)
-        
+        self.frame = frame
         email = Label(frame, text="Email:* ")
         email.grid(row=0, column=0, sticky='w')
         self.email = Entry(frame, background='white', width=24)
@@ -464,7 +462,50 @@ class ownerRegistration(Frame):
         button2.grid(row=11, column=1, sticky='w')
 
     def registerowner(self):
-        print("gwsegnoisegnoiseg")
+        msg = StringVar()
+        
+        if (len(self.password.get()) < 8):
+            messagebox.showerror("Error", "Password must be at least 8 character")
+        elif (self.password.get() != self.confirmPassword.get()):
+            messagebox.showerror("Error", "Confirm password does not match")
+        elif("@" not in self.email.get()):
+            messagebox.showerror("Error", "Invalid email")
+        else:
+            temp = self.email.get().split("@")
+            if ("." not in temp[1]):
+                messagebox.showerror("Error", "Invalid email")
+            else:
+                hashfunc = hashlib.sha256()
+                # Add the password string inputted into hash function
+                hashfunc.update(str(self.password.get()).encode())
+                # Get hashed password
+                hashPass = hashfunc.digest()
+
+                # First verify the email isn't being used
+                emailExists = DBManager.checkEmail(self, self.email.get())
+                if not emailExists:
+
+                    # Next verify the username isn't being used
+                    usernameExists = DBManager.checkUsername(self, self.username.get())
+
+                    if not usernameExists:
+                        # Username and email aren't taken already; register user
+                        register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Owner')
+
+                        if register:
+                            messagebox.showerror("Account Created", "Registration was a success! You can now login on the login page.")
+                            
+
+                        else:
+                            messagebox.showerror("Error", "Something went wrong")
+                            
+
+                    else:
+                        messagebox.showerror("Error", "Username is taken")
+
+                else:
+                    messagebox.showerror("Error", "Email is already associated with an account")
+                    
 
 class adminFunctions(Frame):
     def __init__(self, parent, controller):
