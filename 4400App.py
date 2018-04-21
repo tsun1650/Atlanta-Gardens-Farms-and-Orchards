@@ -109,6 +109,7 @@ class visitorRegistration(Frame):
         
         #email.grid(row = 1, column = 0, padx = 20, pady = 10)
         dialog_frame = Frame(self)
+        self.f = dialog_frame
         dialog_frame.pack(padx=5, pady=20, side=LEFT)
         self.frame = dialog_frame
 
@@ -143,6 +144,7 @@ class visitorRegistration(Frame):
         button2.grid(row=4, column=1, sticky='w')
 
     def registervisitor(self):
+
         msg = StringVar()
         
         if (len(self.password.get()) < 8):
@@ -156,21 +158,40 @@ class visitorRegistration(Frame):
             if ("." not in temp[1]):
                 messagebox.showerror("Error", "Invalid email")
             else:
-                # Initialize hash function
                 hashfunc = hashlib.sha256()
                 # Add the password string inputted into hash function
                 hashfunc.update(str(self.password.get()).encode())
                 # Get hashed password
                 hashPass = hashfunc.digest()
-                print("hashed password: ", hashPass)
-                register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Visitor')
 
-                if register:
-                    print("success")
+                # First verify the email isn't being used
+                emailExists = DBManager.checkEmail(self, self.email.get())
+                if not emailExists:
+
+                    # Next verify the username isn't being used
+                    usernameExists = DBManager.checkUsername(self, self.username.get())
+
+                    if not usernameExists:
+                        # Username and email aren't taken already; register user
+                        register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Visitor')
+
+                        if register:
+                            message = Label(self.f, text="Registration was a success! You can now login on the login page.")
+                            message.grid(row=4, column=2)
+
+                        else:
+                            error = Label(self.f, text="Something went wrong")
+                            error.grid(row=4, column=2)
+
+                    else:
+                        error = Label(self.f, text="Username is taken")
+                        error.grid(row=4, column=2)
+
                 else:
-                    print("register didn't work")
+                    error = Label(self.f, text="Email is already associated with an account")
+                    error.grid(row=4, column=2)
         
-    
+
 
 class visitorView(Frame):
     def __init__(self, parent, controller):
