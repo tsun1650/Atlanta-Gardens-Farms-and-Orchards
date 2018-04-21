@@ -88,8 +88,7 @@ class DBManager:
             result = cursor.fetchone()
 
             return result
-<<<<<<< HEAD
-=======
+
         except Exception as e:
             print("ERROR: {}".format(e))
         finally:
@@ -129,7 +128,7 @@ class DBManager:
                 # Email doesn't exist
                 return False
 
->>>>>>> 5d59c4661126b095ed93029c34f0b0f82a99d620
+
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
