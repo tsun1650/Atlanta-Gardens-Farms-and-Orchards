@@ -1155,6 +1155,135 @@ class ownerFunctionality(Frame):
         viewOthers = Button(self, text="View Other Properties", command=lambda: controller.show_frame(otherOwnerProperties))
         viewOthers.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
+class propertyManagement(Frame):
+    def __init__(self, parent, controller):
+        Frame.__init__(self, parent)
+        label = Label(self, text="Manage", font =LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        frame = Frame(self)
+        frame.pack(padx=5, pady=20, side=LEFT)
+        self.frame = frame
+
+        name = Label(frame, text="Name: ")
+        name.grid(row=0, column=0, sticky='w')
+        self.name = Entry(frame, background='white', width=24)
+        self.name.grid(row=0, column=1, sticky='w')
+        self.name.focus_set()
+
+        typ = Label(frame, text="Type: ")
+        typ.grid(row=0, column=2, sticky='w')
+        
+        street = Label(frame, text="Address: ")
+        street.grid(row=1, column=0, sticky='w')
+        self.street = Entry(frame, background='white', width=24)
+        self.street.grid(row=1, column=1, sticky='w')
+        self.street.focus_set()
+
+        pub = Label(frame, text="Public: ")
+        pub.grid(row=1, column=2, sticky='w')
+
+        # Rest of GUI depends on property type selected
+        pubtypes = {'True', 'False'}   # Dictionary holding different prop types
+        
+        pubTypeVar = StringVar()
+        pubTypeVar.set('False')   # Set garden as the default prop type
+        pubType_menu = OptionMenu(frame, pubTypeVar, *pubtypes)
+        pubType_menu.grid(row=1, column=3, padx=5, pady=10)
+
+        city = Label(frame, text="City: ")
+        city.grid(row=2, column=0, sticky='w')
+        self.city = Entry(frame, background='white', width=24)
+        self.city.grid(row=2, column=1, sticky='w')
+        self.city.focus_set()
+
+        com = Label(frame, text="Commercial: ")
+        com.grid(row=2, column=2, sticky='w')
+
+        comtypes = {'True', 'False'}   # Dictionary holding different prop types
+        
+        comTypeVar = StringVar()
+        comTypeVar.set('False')   # Set garden as the default prop type
+        comType_menu = OptionMenu(frame, comTypeVar, *comtypes)
+        comType_menu.grid(row=1, column=3, padx=5, pady=10)
+
+        zipcode = Label(frame, text="Zip: ")
+        zipcode.grid(row=3, column=0, sticky='w')
+        self.zipcode = Entry(frame, background='white', width=24)
+        self.zipcode.grid(row=3, column=1, sticky='w')
+        self.zipcode.focus_set()
+
+        ID = Label(frame, text="ID: ")
+        ID.grid(row=3, column=2, sticky='w')
+
+        acres = Label(frame, text="Size(Acres): ")
+        acres.grid(row=4, column=0, sticky='w')
+        self.acres = Entry(frame, background='white', width=24)
+        self.acres.grid(row=4, column=1, sticky='w')
+        self.acres.focus_set()
+
+        cropType = Label(frame, text="Add new crop: ")
+        cropType.grid(row=5, column=0, sticky='w')
+        # Rest of GUI depends on property type selected
+        croptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
+        
+        self.cropTypeVar = StringVar()
+        self.cropTypeVar.set('Fruit')   # Set garden as the default prop type
+
+        cropType_menu = OptionMenu(frame, self.cropTypeVar, *croptypes)
+        cropType_menu.grid(row=5, column=1, padx=5, pady=10)
+
+        crops = Label(frame, text="Crops: ")
+        crops.grid(row=5, column=3, sticky='w')
+        global buttonnum
+        buttonnum = 0
+    
+
+        button1 = Button(frame, text="Add crop to property", command=self.addCrop)
+        button1.grid(row=6, column=1, sticky='w')
+
+
+
+
+
+        crop = Label(frame, text="Request crop approval: ")
+        crop.grid(row=7, column=0, sticky='w')
+        self.crop = Entry(frame, background='white', width=24)
+        self.crop.grid(row=7, column=1, sticky='w')
+        self.crop.focus_set()
+
+        newcropType = Label(frame, text="New crop type: ")
+        newcropType.grid(row=7, column=2, sticky='w')
+        # Rest of GUI depends on property type selected
+        newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
+        
+        newcropTypeVar = StringVar()
+        newcropTypeVar.set('Fruit')   # Set garden as the default prop type
+        newcropType_menu = OptionMenu(frame, newcropTypeVar, *newcroptypes)
+        newcropType_menu.grid(row=7, column=3, padx=5, pady=10)
+
+        button2 = Button(frame, text="Submit Request", command=lambda: controller.show_frame(loginPage))
+        button2.grid(row=8, column=1, sticky='w')
+
+        button3 = Button(frame, text="Save Changes", command=lambda: controller.show_frame(loginPage))
+        button3.grid(row=9, column=1, sticky='w')
+
+        button4 = Button(frame, text="Delete Property", command=lambda: controller.show_frame(loginPage))
+        button4.grid(row=10, column=0, sticky='w')
+
+        button5 = Button(frame, text="Back (Don't Save)", command=lambda: controller.show_frame(loginPage))
+        button5.grid(row=10, column=1, sticky='w')
+
+    def addCrop(self):
+        global buttonnum
+        buttonnum += 1
+        butts = []
+        label = "Button " + str(buttonnum)
+        for i in range(buttonnum):
+            butts.append(Button(self.frame, text=str(self.cropTypeVar.get()) + ' [X]', command=lambda: butts[i].destroy()))
+            butts[i].grid(row = buttonnum + 4, column = 4)
+        self.butts = butts
+        print(butts)
 
 
 
