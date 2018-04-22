@@ -2340,15 +2340,17 @@ class propertyManagement(Frame):
         name = Label(frame, text="Name: ")
         name.grid(row=0, column=0, sticky='w')
         self.name = Entry(frame, background='white', width=24)
+        self.name.insert(0, prop[0][1])
         self.name.grid(row=0, column=1, sticky='w')
         self.name.focus_set()
 
-        typ = Label(frame, text="Type: ")
+        typ = Label(frame, text="Type: " + prop[0][8])
         typ.grid(row=0, column=2, sticky='w')
         
         street = Label(frame, text="Address: ")
         street.grid(row=1, column=0, sticky='w')
         self.street = Entry(frame, background='white', width=24)
+        self.street.insert(0, prop[0][5])
         self.street.grid(row=1, column=1, sticky='w')
         self.street.focus_set()
 
@@ -2360,12 +2362,16 @@ class propertyManagement(Frame):
         
         pubTypeVar = StringVar()
         pubTypeVar.set('False')   # Set garden as the default prop type
-        pubType_menu = OptionMenu(frame, pubTypeVar, *pubtypes)
+        temp5 = 'False'
+        if prop[0][4] == 1:
+            temp5 = 'True'
+        pubType_menu = OptionMenu(frame, pubTypeVar, temp5, *pubtypes)
         pubType_menu.grid(row=1, column=3, padx=5, pady=10)
 
         city = Label(frame, text="City: ")
         city.grid(row=2, column=0, sticky='w')
         self.city = Entry(frame, background='white', width=24)
+        self.city.insert(0, prop[0][6])
         self.city.grid(row=2, column=1, sticky='w')
         self.city.focus_set()
 
@@ -2373,24 +2379,28 @@ class propertyManagement(Frame):
         com.grid(row=2, column=2, sticky='w')
 
         comtypes = {'True', 'False'}   # Dictionary holding different prop types
-        
+        temp6 = 'False'
+        if prop[0][3] == 1:
+            temp6 = 'True'
         comTypeVar = StringVar()
         comTypeVar.set('False')   # Set garden as the default prop type
-        comType_menu = OptionMenu(frame, comTypeVar, *comtypes)
-        comType_menu.grid(row=1, column=3, padx=5, pady=10)
+        comType_menu = OptionMenu(frame, comTypeVar, temp6, *comtypes)
+        comType_menu.grid(row=2, column=3, padx=5, pady=10)
 
         zipcode = Label(frame, text="Zip: ")
         zipcode.grid(row=3, column=0, sticky='w')
         self.zipcode = Entry(frame, background='white', width=24)
+        self.zipcode.insert(0, prop[0][7])
         self.zipcode.grid(row=3, column=1, sticky='w')
         self.zipcode.focus_set()
 
-        ID = Label(frame, text="ID: ")
+        ID = Label(frame, text="ID: " + str(prop[0][0]))
         ID.grid(row=3, column=2, sticky='w')
 
         acres = Label(frame, text="Size(Acres): ")
         acres.grid(row=4, column=0, sticky='w')
         self.acres = Entry(frame, background='white', width=24)
+        self.acres.insert(0, prop[0][2])
         self.acres.grid(row=4, column=1, sticky='w')
         self.acres.focus_set()
 
@@ -2400,9 +2410,9 @@ class propertyManagement(Frame):
         croptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
         
         self.cropTypeVar = StringVar()
-        self.cropTypeVar.set('Fruit')   # Set garden as the default prop type
+        self.cropTypeVar.set(' ')   # Set garden as the default prop type
 
-        cropType_menu = OptionMenu(frame, self.cropTypeVar, *croptypes)
+        cropType_menu = OptionMenu(frame, self.cropTypeVar, 'Fruit', *croptypes)
         cropType_menu.grid(row=5, column=1, padx=5, pady=10)
 
         crops = Label(frame, text="Crops: ")
@@ -2420,16 +2430,20 @@ class propertyManagement(Frame):
         self.crop.grid(row=7, column=1, sticky='w')
         self.crop.focus_set()
 
+        newcrops = Label(self.frame, text="New crop type: ")
+        newcrops.grid(row=7, column=2, sticky='w')
+
         newcropType = Label(frame, text="New crop type: ")
         newcropType.grid(row=7, column=2, sticky='w')
         # Rest of GUI depends on property type selected
         newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
         
         newcropTypeVar = StringVar()
-        newcropTypeVar.set('Fruit')   # Set garden as the default prop type
-        newcropType_menu = OptionMenu(frame, newcropTypeVar, *newcroptypes)
+        newcropTypeVar.set(' ')   # Set garden as the default prop type
+        newcropType_menu = OptionMenu(frame, newcropTypeVar, 'Fruit', *newcroptypes)
         newcropType_menu.grid(row=7, column=3, padx=5, pady=10)
-
+        self.newcropTypeVar = newcropTypeVar
+        self.newcropstypes = set()
         button2 = Button(frame, text="Submit Request", command=lambda: self.controller.show_frame(loginPage))
         button2.grid(row=8, column=1, sticky='w')
 
@@ -2443,15 +2457,23 @@ class propertyManagement(Frame):
         button5.grid(row=10, column=1, sticky='w')
 
     def addCrop(self):
-        global buttonnum
-        buttonnum += 1
-        butts = []
-        label = "Button " + str(buttonnum)
-        for i in range(buttonnum):
-            butts.append(Button(self.frame, text=str(self.cropTypeVar.get()) + ' [X]', command=lambda: butts[i].destroy()))
-            butts[i].grid(row = buttonnum + 4, column = 4)
-        self.butts = butts
-        print(butts)
+        # global buttonnum
+        # buttonnum += 1
+        # butts = []
+        # label = "Button " + str(buttonnum)
+        # for i in range(buttonnum):
+        #     butts.append(Button(self.frame, text=str(self.cropTypeVar.get()) + ' [X]', command=lambda: butts[i].destroy()))
+        #     butts[i].grid(row = buttonnum + 4, column = 4)
+        # self.butts = butts
+        # print(butts)
+    
+        # Rest of GUI depends on property type selected
+       # Dictionary holding different prop types
+        self.newcropstypes.add(self.cropTypeVar.get())
+        newcropsTypeVar = StringVar()
+        newcropsTypeVar.set(' ')   # Set garden as the default prop type
+        newcropsType_menu = OptionMenu(self.frame, newcropsTypeVar, self.cropTypeVar.get(), *self.newcropstypes)
+        newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
 
 
 app = Atlanta()
