@@ -7,13 +7,14 @@ import hashlib
 from WebService import *
 
 LARGE_FONT= ("Verdana", 12)
-
+global prop
 
 class Atlanta(Tk):
 
     def __init__(self, *args, **kwargs):
         
         Tk.__init__(self, *args, **kwargs)
+        global prop
         self.container = Frame(self)
         self.container.pack(side="top", fill="both", expand = True)
         self.container.grid_rowconfigure(0, weight=1)
@@ -23,6 +24,9 @@ class Atlanta(Tk):
 
         # Will eventually hold the email of the current user
         self.username = StringVar()
+        prop = []
+        self.prop = prop
+
 
         #########################################
         #          Make sure you add            #
@@ -69,6 +73,7 @@ class loginPage(Frame):
         email.focus_set()
 
         self.emailEntry = Entry(f, background='white', width=24, textvariable=self.controller.username)
+        self.emailEntry.insert(0, "testGarden")
         self.emailEntry.grid(row=0, column=1, sticky='w')
         self.emailEntry.focus_set()
 
@@ -77,6 +82,7 @@ class loginPage(Frame):
         password.focus_set()
 
         self.passwordEntry = Entry(f, background='white', width=24)
+        self.passwordEntry.insert(0, "garden123")
         self.passwordEntry.grid(row=1, column=1, sticky='w')
 
         button0 = Button(f, text="Login", command=self.login)
@@ -2189,7 +2195,7 @@ class ownerFunctionality(Frame):
         searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        manage = Button(self, text="Manage Property", command=lambda: self.controller.show_frame(loginPage))
+        manage = Button(self, text="Manage Property", command=self.manageProp)
         manage.grid(row=3, column=0, padx=50, pady=10)
 
         addP = Button(self, text="Add Property", command=lambda: self.controller.show_frame(addNewProperty))
@@ -2254,6 +2260,8 @@ class ownerFunctionality(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
@@ -2305,10 +2313,23 @@ class ownerFunctionality(Frame):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
 
+    def manageProp(self):
+        global prop
+        
+        prop = DBManager.getPropertyDetails(self, propID = self.element)
+        #print("manageprop", self.prop)
+        self.controller.show_frame(propertyManagement)
+
 class propertyManagement(Frame):
     def __init__(self, parent, controller):
+        #self.prop = prop
+        #print(self.prop)
+        global prop
+        
+        print(prop)
         self.controller = controller
         Frame.__init__(self, parent)
+        
         label = Label(self, text="Manage", font =LARGE_FONT)
         label.pack(pady=10,padx=10)
 
