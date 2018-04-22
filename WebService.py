@@ -105,7 +105,7 @@ class DBManager:
         """
     def checkEmail(self, email):
         # SQL statement to execute
-        sql = "SELECT * FROM User WHERE Email = %s"
+        sql = "SELECT * FROM User WHERE Email = %s;"
 
         # User input to check for in SQL statement
         userin = (email)
@@ -145,7 +145,7 @@ class DBManager:
     """
     def checkUsername(self, username):
         # SQL statement to execute
-        sql = "SELECT * FROM User WHERE Username = %s"
+        sql = "SELECT * FROM User WHERE Username = %s;"
 
         # User input to check for in SQL statement
         userin = (username)
@@ -180,7 +180,7 @@ class DBManager:
             email, username, already hashed password, and the type of user
         Returns:
             true if the insert was successful
-            false otherwise (aka email and username not unique)
+            (should always be successful if checkEmail and checkUsername are called before this)
     """
     def registerNewUser(self, email, username, hashPass, usertype):
         # SQL statement to execute
@@ -213,6 +213,45 @@ class DBManager:
             conn.close()
 
     """
+        checkPropertyNmae:
+            Checks if property name is already taken in the Property table
+            Inputs:
+                Property name to check for
+            Returns:
+                True if the property name already exists
+                False if not
+    """
+    def checkPropertyName(self, name):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE Name = %s;"
+
+        # User input to check for in SQL statement
+        userin = (name)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchall()
+
+            if len(result) > 0:
+                # Property name already exists in User table
+                return True
+            else:
+                # Property name doesn't exist
+                return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
     addProperty:
         Adds a property to the Property table; only if the name is unique
         Property is not approved by admin yet
@@ -226,9 +265,7 @@ class DBManager:
         # SQL statement to execute
         sql = "INSERT INTO Property (Name, Address, City, ZIP, " \
               "isPublic, isCommercial, PropertyType, OwnedBy, NumVisits, AvgRating, Size) " \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0.0, %s) " \
-              "WHERE NOT EXISTS " \
-              "(SELECT Name FROM Property WHERE Name = %s);"
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0.0, %s);"
 
         # User input to check for in SQL statement
         userin = (name, address, city, addyZip, public, commercial, propType, owner, size, name)
@@ -254,6 +291,38 @@ class DBManager:
                 # Insert failed
                 return False
 
+        except Exception as e:
+            print("ERROR: {}".format(e))
+        finally:
+            conn.close()
+
+    """
+    getPropertyID:
+        Gets the property ID associated with the property name
+        Inputs:
+            The property name
+        Returns:
+            The property ID
+    """
+    def getPropertyID(self, propName):
+        # SQL statement to execute
+        sql = "SELECT PropertyID from Property WHERE Name = %s;"
+
+        # User input to check for in SQL statement
+        userin = (propName)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchone()
+
+            return result
         except Exception as e:
             print("ERROR: {}".format(e))
         finally:
