@@ -38,7 +38,7 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(confirmedProperties)
+        self.show_frame(unconfirmedProperties)
 
     def show_frame(self, frame):
         # frame = self.frames[cont]
@@ -1549,6 +1549,9 @@ class unconfirmedProperties(Frame):
         frame = Frame(self)
 
         table = Treeview(frame)
+        self.frame = frame
+        self.table = table
+        self.table.bind("<Button-1>", self.onClick)
         table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'owner')
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
@@ -1605,17 +1608,18 @@ class unconfirmedProperties(Frame):
         frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
         frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
 
-        types = {'Search by...', 'Name', 'Size', 'Owner'}
+        types = {'Name', 'Size', 'Owner'}
         
         search = StringVar()
-        search.set('Search by...')
-        search_menu = OptionMenu(frame, search, *types)
+        search.set(' ')
+        search_menu = OptionMenu(frame, search, 'Name', *types)
         search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
-
+        self.removed = []
         term = Entry(self, text="Search Term")
         term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
-
-        searchprop = Button(self, text="Search Properties", command=lambda: self.controller.show_frame(loginPage))
+        self.search = search
+        self.term = term
+        searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
         mprop = Button(self, text="Manage Selected Property", command=lambda: self.controller.show_frame(loginPage))
@@ -1624,6 +1628,93 @@ class unconfirmedProperties(Frame):
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
+    def searchfunc(self, item=''):
+        children = self.frame.treeview.get_children(item)
+        if(self.term.get() ==  ''):
+            for i in range(len(self.removed)):
+                self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1], self.removed[i][2], self.removed[i][3], self.removed[i][4], self.removed[i][5], self.removed[i][6], self.removed[i][7], self.removed[i][8], self.removed[i][9]))
+            self.removed = []
+        else:
+            index = 0
+            if (self.search.get() == "Name"):
+                index = 0
+            elif (self.search.get() == "Size"):
+                index = 4
+            elif (self.search.get() == "Owner"):
+                index = 9
+            
+
+            for child in children:
+                temp1 = []
+                text = self.frame.treeview.item(child, 'text')
+                temp1.append(text)
+                for x in self.table.item(child, "values"):
+                        temp1.append(x)
+                #print(self.table.item(child, "values"))
+                if (temp1[index] == self.term.get()):
+                    self.frame.treeview.selection_set(child)
+                else:
+                    if ('-' in self.term.get()):
+                        tempterm = self.term.get().split("-")
+                        # print(float(temp1[index]))
+                        # print(float(tempterm[0]))
+                        if (float(temp1[index]) >= float(tempterm[0]) and float(temp1[index]) <= float(tempterm[1])):
+                            self.frame.treeview.selection_set(child)
+                        else:
+                            res = self.searchfunc(child)
+
+                            self.removed.append(temp1)
+                            self.frame.treeview.delete(child)
+                            if res:
+                                break
+
+                    else:
+                        res = self.searchfunc(child)
+
+                        self.removed.append(temp1)
+                        self.frame.treeview.delete(child)
+                        if res:
+                            break
+
+    def onClick(self, event):
+        item = self.table.identify_column(event.x)
+
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#4', '#9']:
+
+            children = self.frame.treeview.get_children('')
+            temp = []
+            for child in children:
+                temp1 = []
+                text = self.frame.treeview.item(child, 'text')
+                temp1.append(text)
+                for x in self.table.item(child, "values"):
+                    temp1.append(x)
+                temp.append(temp1)
+                self.frame.treeview.delete(child)
+
+            if item == '#0':
+                #Name
+
+                temp.sort(key=lambda x: x[0])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9]))
+
+
+            if item == '#4':
+                #City
+
+                temp.sort(key=lambda x: x[4])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9]))
+
+            if item == '#9':
+                #Type
+
+                temp.sort(key=lambda x: x[9])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9]))
+
+            
 
 class addNewProperty(Frame):
     def __init__(self, parent, controller):
