@@ -1778,11 +1778,14 @@ class addNewProperty(Frame):
         comTypeVar_menu.grid(row=5, column=1, padx=5, pady=10)
 
         # Buttons
-        button1 = Button(frame, text="Add Property", command=lambda: self.controller.show_frame(loginPage))
+        button1 = Button(frame, text="Add Property", command=self.addPropertyOnClick)
         button1.grid(row=6, column=0, sticky='w')
         #TODO: REGISTER COMPLETE PAGE
-        button2 = Button(frame, text="Cancel", command=lambda: self.controller.show_frame(loginPage))
+        button2 = Button(frame, text="Cancel", command=lambda: self.controller.show_frame(ownerFunctionality))
         button2.grid(row=6, column=1, sticky='w')
+
+    def addPropertyOnClick(self):
+        print("button clicked")
 
 
 class visitorPropertyPage(Frame):
@@ -2071,7 +2074,7 @@ class ownerFunctionality(Frame):
 
         frame = Frame(self)
 
-        # Get owners email
+        # Get owners username
         self.controller = controller
         username = self.controller.username
         welcomemsg = "Welcome " + username
@@ -2187,7 +2190,7 @@ class ownerFunctionality(Frame):
         manage = Button(self, text="Manage Property", command=lambda: self.controller.show_frame(loginPage))
         manage.grid(row=3, column=0, padx=50, pady=10)
 
-        addP = Button(self, text="Add Property", command=lambda: self.controller.show_frame(loginPage))
+        addP = Button(self, text="Add Property", command=lambda: self.controller.show_frame(addNewProperty))
         addP.grid(row=4, column=0, padx=50, pady=10)
 
         logout = Button(self, text="Log Out", command=lambda: self.controller.show_frame(loginPage))

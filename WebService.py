@@ -540,6 +540,14 @@ class DBManager:
         finally:
             conn.close()
 
+    """
+    getOwnerProperties:
+        Gets all of the properties owned by an owner
+        Inputs:
+            The username of the owner
+        Return:
+            A list of the properties
+    """
     def getOwnerProperties(self, username):
         # SQL statement to execute
         sql = "SELECT * FROM Property WHERE Owner = %s;"
@@ -551,6 +559,31 @@ class DBManager:
             # Execute query
             cursor = conn.cursor()
             cursor.execute(sql, username)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    def getPropertyDetails(self, propID):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE ID = %s;"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, propID)
 
             # Get result
             result = cursor.fetchall()
