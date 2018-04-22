@@ -596,8 +596,61 @@ class DBManager:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
         finally:
+
             conn.close()
 
+
+    def getPublicProperties(self):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE IsPublic = %s AND ApprovedBy <> %s ;"
+
+        userin = (1, 'NULL')
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+
+            conn.close()
+    def getPropertyDetails(self, propID):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE ID = %s;"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+        # Execute query
+        cursor = conn.cursor()
+        cursor.execute(sql, propID)
+
+        # Get result
+        result = cursor.fetchall()
+
+        # Put it in a list
+        resultList = [item for item in result]
+
+        return resultList
+        except Exception as e:
+        print("ERROR: {}".format(e))
+        print(logging.exception("error happened"))
+        finally:
+        conn.close()
     def getVisitHistory(self, username):
         # SQL statement to execute
         sql = "SELECT Name, VisitDate, Rating FROM Visit JOIN Property ON ID = PropertyID AND Username = %s"
@@ -621,6 +674,7 @@ class DBManager:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
         finally:
+
             conn.close()
 
     def getOwners(self):
@@ -671,4 +725,5 @@ class DBManager:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
         finally:
+
             conn.close()

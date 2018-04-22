@@ -73,6 +73,7 @@ class loginPage(Frame):
         email.focus_set()
 
         self.emailEntry = Entry(f, background='white', width=24, textvariable=self.controller.username)
+
         self.emailEntry.grid(row=0, column=1, sticky='w')
         self.emailEntry.focus_set()
 
@@ -81,6 +82,8 @@ class loginPage(Frame):
         password.focus_set()
 
         self.passwordEntry = Entry(f, background='white', width=24)
+
+        
         self.passwordEntry.grid(row=1, column=1, sticky='w')
 
         button0 = Button(f, text="Login", command=self.login)
@@ -226,34 +229,50 @@ class visitorView(Frame):
         props.grid(row=1, column=0)
 
         frame = Frame(self)
-        self.table = Treeview(frame, selectmode='browse')
-        self.table.bind("<Button-1>", self.onClick)
+        table = Treeview(frame, selectmode='browse')
+        table.bind("<Button-1>", self.onClick)
         self.selectedVisitorprop = []
         self.frame = frame
-        self.table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'visits', 'rating')
-        self.table.heading('#0', text='Name', anchor='w')
-        self.table.column('#0', anchor='w')
-        self.table.heading('address', text='Address')
-        self.table.column('address', anchor='center', width = 100)
-        self.table.heading('city', text='City')
-        self.table.column('city', anchor='center', width = 100)
-        self.table.heading('zip', text='Zip')
-        self.table.column('zip', anchor='center', width = 100)
-        self.table.heading('size', text='Size')
-        self.table.column('size', anchor='center', width = 100)
-        self.table.heading('type', text='Type')
-        self.table.column('type', anchor='center', width = 100)
-        self.table.heading('public', text='Public')
-        self.table.column('public', anchor='center', width = 100)
-        self.table.heading('commercial', text='Commercial')
-        self.table.column('commercial', anchor='center', width = 100)
-        self.table.heading('id', text='ID')
-        self.table.column('id', anchor='center', width = 100)
-        self.table.heading('visits', text='Visits')
-        self.table.column('visits', anchor='center', width = 100)
-        self.table.heading('rating', text='Avg Rating')
-        self.table.column('rating', anchor='center', width = 100)
-        self.table.grid(sticky=(N,S,W,E))
+        self.table = table
+        table['columns'] = ('Name', 'Size', 'Commercial', 'Public', 'Street', 'City', 'ZIP', 'Type', 'Owner',
+                            'visits', 'rating')
+
+        table.column('#0', anchor='w', width=50)
+        table.heading('#0', text='ID', anchor='w')
+
+        table.column('Name', anchor='center', width=100)
+        table.heading('Name', text='Name')
+
+        table.column('Size', anchor='center', width=80)
+        table.heading('Size', text='Size')
+
+        table.column('Commercial', anchor='center', width=100)
+        table.heading('Commercial', text='Commercial')
+
+        table.column('Public', anchor='center', width=100)
+        table.heading('Public', text='Public')
+
+        table.column('Street', anchor='center', width=100)
+        table.heading('Street', text='Street')
+
+        table.column('City', anchor='center', width=100)
+        table.heading('City', text='City')
+
+        table.column('ZIP', anchor='center', width=80)
+        table.heading('ZIP', text='ZIP')
+
+        table.column('Type', anchor='center', width=100)
+        table.heading('Type', text='Type')
+
+        table.column('Owner', anchor='center', width=100)
+        table.heading('Owner', text='Owner')
+
+        table.heading('visits', text='Visits')
+        table.column('visits', anchor='center', width = 100)
+
+        table.heading('rating', text='Avg Rating')
+        table.column('rating', anchor='center', width = 100)
+        table.grid(sticky=(N,S,W,E))
         frame.treeview = self.table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
@@ -262,8 +281,45 @@ class visitorView(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        # Loads temp Data
+        
+        #WORKING HERE
 
+        #load data
+        publicProps = DBManager.getPublicProperties(self)
+        if publicProps is None:
+            publicProps = []
+
+
+        for prop in publicProps:
+            id = prop[0]
+            name = prop[1]
+            size = prop[2]
+            comm = prop[3]
+            pub = prop[4]
+            st = prop[5]
+            city = prop[6]
+            zip = prop[7]
+            type = prop[8]
+            owner = prop[9]
+            
+
+            # Change tinyint values into true/false for commercial and public
+            if comm == 1:
+                commercial = True
+            else:
+                commercial = False
+
+            if pub == 1:
+                public = True
+            else:
+                public = False
+
+
+            newProp = [name, size, commercial, public, st, city, zip, type, owner]
+
+            frame.treeview.insert('', 'end', text=id, values=newProp)
+
+     
         types = {'Name', 'City', 'Type', 'Visits','Avg Rating'}
     
         search = StringVar()
@@ -278,7 +334,7 @@ class visitorView(Frame):
         self.searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         self.searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        viewprop = Button(self, text="View Property", command=lambda: self.controller.show_frame(visitorPropertyPage))
+        viewprop = Button(self, text="View Property", command= self.viewProperty)
         viewprop.grid(row=3, column=0, padx=50, pady=10)
 
         viewhist = Button(self, text="View Visit History", command=lambda: self.controller.show_frame(visitHistory))
@@ -340,7 +396,8 @@ class visitorView(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
-
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
             children = self.frame.treeview.get_children('')
@@ -394,7 +451,12 @@ class visitorView(Frame):
         #     i.append(x)
         # self.selectedVisitorprop = i
         # print(self.selectedVisitorprop)
-
+    def viewProperty(self):
+        global prop
+       
+        prop = DBManager.getPropertyDetails(self, propID = self.element)
+       
+        self.controller.show_frame(visitorPropertyPage)
 
 class visitHistory(Frame):
     def __init__(self, parent, controller):
@@ -1832,35 +1894,55 @@ class addNewProperty(Frame):
 class visitorPropertyPage(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
+        global prop
+        print(prop)
         Frame.__init__(self, parent)
-        name = Label(self, text="Name: ")
+
+        #[(0, 'Atwood Street Garden', 1.0, 0, 1, 'Atwood Street SW', 'Atlanta', 30308, 'GARDEN', 'gardenowner', 'admin1')]
+        
+        label = Label(self, text=str(prop[0][1]), font =LARGE_FONT)
+        label.pack()
+        n= "Name: "+str(prop[0][1])
+        name = Label(self, text=n)
         name.pack()
-        owner = Label(self, text="Owner: ")
+        o= "Owner: "+prop[0][9]
+        owner = Label(self, text=o)
         owner.pack()
-        ownerEmail = Label(self, text="Owner Email: ")
+        o = "Owner Email: "
+        ownerEmail = Label(self, text=o)
         ownerEmail.pack()
-        visits = Label(self, text="Visits: ")
+        v = "Visits: "
+        visits = Label(self, text=v)
         visits.pack()
-        address = Label(self, text="Address: ")
+        a = "Address: "+prop[0][5]
+        address = Label(self, text=a)
         address.pack()
-        city = Label(self,text='City: ')
+        c = 'City: '+ prop[0][6]
+        city = Label(self,text=c)
         city.pack()
-        zipcode = Label(self, text="Zip : ")
+        z = "Zip : "+str(prop[0][7])
+        zipcode = Label(self, text=z)
         zipcode.pack()
-        size = Label(self, text="Size (acres): ")
+        s = "Size (acres): " + str(prop[0][2])
+        size = Label(self, text=s)
         size.pack()
-        rating = Label(self, text="Avg Rating: ")
+        r = "Avg Rating: "
+        rating = Label(self, text=r)
         rating.pack()
-        typeProp = Label(self, text="Type: ")
+        tp = "Type: "+prop[0][8]
+        typeProp = Label(self, text=tp)
         typeProp.pack()
-        public = Label(self, text="Public: ")
+        p = "Public: " + str(prop[0][4])
+        public = Label(self, text=p)
         public.pack()
-        commercial = Label(self, text="Commercial: ")
+        c = "Commercial: "+ str(prop[0][3])
+        commercial = Label(self, text=c)
         commercial.pack()
+        i = "ID: "+ str(prop[0][0])
         idnum = Label(self, text="ID: ")
         idnum.pack()
-
-        crops = Label(self, text="Crops: ")
+        c = "Crops: "
+        crops = Label(self, text=c)
         crops.pack()
 
         types = {'1', '2', '3', '4', '5'}
