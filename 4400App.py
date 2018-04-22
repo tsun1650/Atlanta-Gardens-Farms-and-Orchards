@@ -1,7 +1,7 @@
 
 #import tkinter as tk
 from tkinter import *
-from tkinter.ttk import * 
+from tkinter.ttk import *
 from tkinter import messagebox
 import hashlib
 from WebService import *
@@ -34,7 +34,7 @@ class Atlanta(Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
         self.show_frame(loginPage)
-        #self.show_frame(visitorView)
+        #self.show_frame(ownerFunctionality)
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -286,9 +286,9 @@ class visitorView(Frame):
 
         logout = Button(self, text="Log Out", command=lambda: controller.show_frame(loginPage))
         logout.grid(row=3, column=0, sticky='e', padx=50, pady=10)
-    
+
     def onClick(self, event):
-        item = self.table.identify('item',event.x,event.y) 
+        item = self.table.identify('item',event.x,event.y)
         i = [self.table.item(item, "text") ]
         for x in self.table.item(item, "values"):
             i.append(x)
@@ -419,6 +419,7 @@ class ownerRegistration(Frame):
 
         propType = Label(frame, text="Property Type:* ")
         propType.grid(row=9, column=0, sticky='w')
+
         # Rest of GUI depends on property type selected
         types = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
         
@@ -427,14 +428,60 @@ class ownerRegistration(Frame):
         propType_menu = OptionMenu(frame, propTypeVar, "Garden", *types, command=self.func)
         propType_menu.grid(row=9, column=1, padx=20, pady=10)
 
-    
-        crop = Label(frame, text="Crop:* ")
-        crop.grid(row=10, column=0, padx=20, pady=10)
+        if propTypeVar.get() == 'Garden':
+            # Garden GUI
+            crop = Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
 
-        # TODO: replace entry box with drop down populated by crop dictionary
-        cropTxt = StringVar()
-        entry10 = Entry(frame, textvariable=cropTxt)
-        entry10.grid(row=10, column=1, padx=20, pady=10)
+            # Get approved vegetables and flowers from DB
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = veggies + flowers
+
+            # Create option menu with the approved crops
+            cropVar = StringVar()
+            cropMenu = OptionMenu(frame, cropVar, *crops)
+            cropMenu.grid(row=10, column=1, padx=20, pady=10)
+
+        elif propTypeVar.get() == 'Farm':
+            # Farm GUI
+            crop = Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
+
+            # Get list of approved, fruits, nuts, veggies, and flowers
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = fruits + nuts + veggies + flowers
+
+            # Create drop down menu with approved crops
+            cropVar = StringVar()
+            cropMenu = OptionMenu(frame, cropVar, *crops)
+            cropMenu.grid(row=10, column=1, padx=20, pady=10)
+
+            # Get approved animals
+            animal = Label(frame, text="Animal:* ")
+            animal.grid(row=10, column=2, padx=20, pady=10)
+
+            animals = DBManager.getApprovedAnimals(self)
+            animalVar = StringVar()
+            animalMenu = OptionMenu(frame, animalVar, *animals)
+            animalMenu.grid(row=10, column=3, padx=20, pady=10)
+        else:
+            # Orchard GUI
+            crop = Label(frame, text="Crop:* ")
+            crop.grid(row=10, column=0, padx=20, pady=10)
+
+            # Get approved vegetables and flowers from DB
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            crops = fruits + nuts
+
+            # Create option menu with the approved crops
+            cropVar = StringVar()
+            cropMenu = OptionMenu(frame, cropVar, *crops)
+            cropMenu.grid(row=10, column=1, padx=20, pady=10)
 
         # Buttons
         button1 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
@@ -442,24 +489,52 @@ class ownerRegistration(Frame):
         #TODO: REGISTER COMPLETE PAGE
         button2 = Button(frame, text="Register Owner", command=self.registerowner)
         button2.grid(row=11, column=1, sticky='w')
+
     def func(self, value):
-        
-        if(value == 'Farm'):
+        if value == 'Farm':
             # Farm GUI
-            # TODO: create a dictionary with approved fruits, nuts, vegetables, and flowers (from DB)
-            
-            # TODO: Do same thing with animals as crops ^
+
+            # Get list of approved, fruits, nuts, veggies, and flowers
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = fruits + nuts + veggies + flowers
+
+            # Get approved animals
             self.animal = Label(self.frame, text="Animal:* ")
             self.animal.grid(row=10, column=2, padx=20, pady=10)
-            animalTxt = StringVar()
-            self.entry11 = Entry(self.frame, text=animalTxt)
-            self.entry11.grid(row=10, column=3, padx=20, pady=10)
-                    # Orchard GUI
-            # TODO: create a dictionary with approved fruits and nuts (from DB)
-        
-        else:
+
+            animals = DBManager.getApprovedAnimals(self)
+            animalVar = StringVar()
+            self.animalMenu = OptionMenu(self.frame, animalVar, *animals)
+            self.animalMenu.grid(row=10, column=3, padx=20, pady=10)
+
+        elif value == 'Garden':
+            # Garden
             self.animal.destroy()
-            self.entry11.destroy()
+            self.animalMenu.destroy()
+            self.cropMenu.destroy()
+            # Get approved vegetables and flowers from DB
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = veggies + flowers
+
+        else:
+            # Orchard
+            self.animal.destroy()
+            self.animalMenu.destroy()
+            self.cropMenu.destroy()
+            # Get approved vegetables and flowers from DB
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = veggies + flowers
+
+        # Create drop down menu with approved crops
+        cropVar = StringVar()
+        self.cropMenu = OptionMenu(self.frame, cropVar, *crops)
+        self.cropMenu.grid(row=10, column=1, padx=20, pady=10)
+
         return value
 
     def registerowner(self):
@@ -1052,8 +1127,8 @@ class visitorPropertyPage(Frame):
         logvisit.pack()
         back = Button(self, text="Back", command=lambda: controller.show_frame(visitorView))
         back.pack()
-       
-        
+
+
 
 class propertyDetails(Frame):
     def __init__(self, parent, controller):

@@ -302,10 +302,13 @@ class DBManager:
         finally:
             conn.close()
 
+    """
+    getApprovedVegetables:
+        Returns a list of approved vegetables
+    """
     def getApprovedVegetables(self):
         # SQL statement to execute
-        sql = "SELECT "
-
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 1 AND Type = %s"
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -313,21 +316,127 @@ class DBManager:
         try:
             # Execute query
             cursor = conn.cursor()
-            cursor.execute(sql, userin)
-
-            # Commit changes to db
-            conn.commit()
+            cursor.execute(sql, "VEGETABLE")
 
             # Get result
             result = cursor.fetchall()
 
-            if len(result) > 0:
-                # Insert was a success
-                return True
-            else:
-                # Insert failed
-                return False
+            # Put it in a list
+            resultList = [item[0] for item in result]
 
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+        finally:
+            conn.close()
+
+    """
+    getApprovedFruits:
+       Returns a list of approved friuts
+    """
+    def getApprovedFruits(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 1 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "FRUIT")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+        finally:
+            conn.close()
+
+    """
+    getApprovedFlowers:
+         Returns a list of approved flowers
+    """
+    def getApprovedFlowers(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 1 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "FLOWER")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+        finally:
+            conn.close()
+
+    """
+    getApprovedNuts:
+        Returns a list of approved nuts
+    """
+    def getApprovedNuts(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 1 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "NUT")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+        finally:
+            conn.close()
+
+    """
+    getApprovedAnimals:
+        Returns a list of approved animals
+    """
+    def getApprovedAnimals(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 1 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "ANIMAL")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
         finally:
