@@ -1691,7 +1691,7 @@ class addNewProperty(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
         Frame.__init__(self, parent)
-        label = Label(self, text="Add New Property:", font =LARGE_FONT)
+        label = Label(self, text="Add New Property:", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
         frame = Frame(self)
@@ -2081,6 +2081,8 @@ class ownerFunctionality(Frame):
 
         # Get a list with all of the owners properties
         propList = DBManager.getOwnerProperties(self, username)
+        if propList is None:
+            propList = []
 
         label = Label(self, text=welcomemsg, font=LARGE_FONT)
         label.grid(row=0, column=0)
