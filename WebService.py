@@ -636,21 +636,21 @@ class DBManager:
 
         try:
         # Execute query
-        cursor = conn.cursor()
-        cursor.execute(sql, propID)
+            cursor = conn.cursor()
+            cursor.execute(sql, propID)
 
-        # Get result
-        result = cursor.fetchall()
+            # Get result
+            result = cursor.fetchall()
 
-        # Put it in a list
-        resultList = [item for item in result]
+            # Put it in a list
+            resultList = [item for item in result]
 
-        return resultList
+            return resultList
         except Exception as e:
-        print("ERROR: {}".format(e))
-        print(logging.exception("error happened"))
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
-        conn.close()
+            conn.close()
     def getVisitHistory(self, username):
         # SQL statement to execute
         sql = "SELECT Name, VisitDate, Rating FROM Visit JOIN Property ON ID = PropertyID AND Username = %s"
