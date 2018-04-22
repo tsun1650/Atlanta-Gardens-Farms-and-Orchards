@@ -42,7 +42,7 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(loginPage)
+        self.show_frame(adminFunctions)
 
     def show_frame(self, frame):
         # frame = self.frames[cont]
@@ -894,8 +894,8 @@ class viewVisitorList(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         for prop in propList:
-            username = prop[0]
-            email = prop[1]
+            username = prop[1]
+            email = prop[0]
             visits = prop[2]
             
 
@@ -1034,8 +1034,8 @@ class viewOwnerList(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         for prop in propList:
-            username = prop[0]
-            email = prop[1]
+            username = prop[1]
+            email = prop[0]
             numprops = prop[2]
             
 
