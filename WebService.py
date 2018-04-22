@@ -57,13 +57,14 @@ class DBManager:
                 return False
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
     """
     getUserType:
         Gets the user type of the current user
-        Only call this after a user is verified through verifyLogin
+        Only call this after an email is verified
         Inputs:
             The current users email
         Returns:
@@ -91,6 +92,43 @@ class DBManager:
 
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    getUsername:
+        Gets the username associated with this email
+        Only call this after an email is verified
+        Inputs:
+            The verified email
+        Returns:
+            The username associated with this email
+    """
+    def getUsername(self, email):
+        # SQL statement to execute
+        sql = "SELECT Username from User WHERE Email = %s;"
+
+        # User input to check for in SQL statement
+        userin = (email)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchone()
+
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -418,6 +456,7 @@ class DBManager:
             return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -446,6 +485,7 @@ class DBManager:
             return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -474,6 +514,7 @@ class DBManager:
             return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -502,6 +543,7 @@ class DBManager:
             return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -530,5 +572,8 @@ class DBManager:
             return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
+
+    #def getOwnerProperties(self, username):

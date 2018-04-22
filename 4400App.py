@@ -14,13 +14,15 @@ class Atlanta(Tk):
     def __init__(self, *args, **kwargs):
         
         Tk.__init__(self, *args, **kwargs)
-        container = Frame(self)
-        container.pack(side="top", fill="both", expand = True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        self.container = Frame(self)
+        self.container.pack(side="top", fill="both", expand = True)
+        self.container.grid_rowconfigure(0, weight=1)
+        self.container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
 
+        # Will eventually hold the email of the current user
+        self.email = StringVar()
 
         #########################################
         #          Make sure you add            #
@@ -29,15 +31,26 @@ class Atlanta(Tk):
         allPages = (loginPage, visitorRegistration, ownerRegistration, adminFunctions, visitorView, visitHistory, viewVisitorList, 
             viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties, visitorPropertyPage, propertyDetails, otherOwnerProperties, ownerFunctionality, addNewProperty)
 
-        for F in allPages:
-            frame = F(container, self)
-            self.frames[F] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
+        #for F in allPages:
+            #frame = F(container, self)
+            #self.frames[F] = frame
+            #frame.grid(row=0, column=0, sticky="nsew")
+        #self.show_frame(login_page)
+        #mainFrame = loginPage(self.container, self)
+        self._frame = None
         self.show_frame(loginPage)
 
-    def show_frame(self, cont):
-        frame = self.frames[cont]
-        frame.tkraise()
+    def show_frame(self, frame):
+        # frame = self.frames[cont]
+        # frame.tkraise()
+
+        newFrame = frame(self.container, self)
+        newFrame.grid(row=0, column=0, sticky="nsew")
+        if self._frame is not None:
+            self._frame.destroy()
+        self._frame = newFrame
+        self._frame.pack()
+
 
 class loginPage(Frame):
     def __init__(self, parent, controller):
@@ -54,7 +67,7 @@ class loginPage(Frame):
         email.grid(row=0, column=0, sticky='w')
         email.focus_set()
 
-        self.emailEntry = Entry(f, background='white', width=24)
+        self.emailEntry = Entry(f, background='white', width=24, textvariable=self.controller.email)
         self.emailEntry.grid(row=0, column=1, sticky='w')
         self.emailEntry.focus_set()
 
@@ -67,10 +80,10 @@ class loginPage(Frame):
 
         button0 = Button(f, text="Login", command=self.login)
         button0.grid(row=2, column=1, sticky='w')
-        button1 = Button(f, text="New Owner Registration", command=lambda: controller.show_frame(ownerRegistration))
+        button1 = Button(f, text="New Owner Registration", command=lambda: self.controller.show_frame(ownerRegistration))
         button1.grid(row=3, column=0, sticky='w')
 
-        button2 = Button(f, text="New Visitor Registration", command=lambda: controller.show_frame(visitorRegistration))
+        button2 = Button(f, text="New Visitor Registration", command=lambda: self.controller.show_frame(visitorRegistration))
         button2.grid(row=3, column=1, sticky='w')
 
     #login onclick event
@@ -86,13 +99,14 @@ class loginPage(Frame):
         verify = DBManager.verifyLogin(self, self.emailEntry.get(), hashPass)
 
         if verify:
-            # log in was successful; fetch user type
-            userType = DBManager.getUserType(self, self.emailEntry.get())
+            self.controller.email = self.emailEntry.get()
 
-            print("user type:", userType)
+            # log in was successful; fetch user type
+            userType = DBManager.getUserType(self, self.controller.email)
 
             if "OWNER" in userType:
                 self.controller.show_frame(ownerFunctionality)
+
             elif "VISITOR" in userType:
                 self.controller.show_frame(visitorView)
             else:
@@ -104,6 +118,7 @@ class loginPage(Frame):
 
 class visitorRegistration(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="New Visitor Registration", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -139,7 +154,7 @@ class visitorRegistration(Frame):
         self.confirmPassword.grid(row=3, column=1, sticky='w')
         self.confirmPassword.focus_set()
         
-        button1 = Button(dialog_frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button1 = Button(dialog_frame, text="Cancel", command=lambda: self.controller.show_frame(loginPage))
         button1.grid(row=4, column=0, sticky='w')
         button2 = Button(dialog_frame, text="Register Visitor", command=self.registervisitor)
         button2.grid(row=4, column=1, sticky='w')
@@ -148,17 +163,17 @@ class visitorRegistration(Frame):
 
         msg = StringVar()
         
-        if (len(self.password.get()) < 8):
+        if len(self.password.get()) < 8:
             messagebox.showerror("Error", "Password must be at least 8 character")
-        elif (self.password.get() != self.confirmPassword.get()):
+        elif self.password.get() != self.confirmPassword.get():
             messagebox.showerror("Error", "Confirm password does not match")
-        elif (len(self.username.get()) == 0):
+        elif len(self.username.get()) == 0:
             messagebox.showerror("Error", "Must input Username")
-        elif("@" not in self.email.get()):
+        elif "@" not in self.email.get():
             messagebox.showerror("Error", "Invalid email")
         else:
             temp = self.email.get().split("@")
-            if ("." not in temp[1]):
+            if "." not in temp[1]:
                 messagebox.showerror("Error", "Invalid email")
             else:
                 hashfunc = hashlib.sha256()
@@ -179,7 +194,8 @@ class visitorRegistration(Frame):
                         register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Visitor')
 
                         if register:
-                            messagebox.showerror("Account Created", "Registration was a success! You can now login on the login page.")
+                            messagebox.showerror("Account Created", "Registration was a success!"
+                                                                    "You can now login on the login page.")
 
 
                         else:
@@ -192,8 +208,11 @@ class visitorRegistration(Frame):
                 else:
                     messagebox.showerror("Error", "Email is already associated with an account")
         
+
+
 class visitorView(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Welcome Visitor", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -279,13 +298,13 @@ class visitorView(Frame):
         self.searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         self.searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        viewprop = Button(self, text="View Property", command=lambda: controller.show_frame(visitorPropertyPage))
+        viewprop = Button(self, text="View Property", command=lambda: self.controller.show_frame(visitorPropertyPage))
         viewprop.grid(row=3, column=0, padx=50, pady=10)
 
-        viewhist = Button(self, text="View Visit History", command=lambda: controller.show_frame(visitHistory))
+        viewhist = Button(self, text="View Visit History", command=lambda: self.controller.show_frame(visitHistory))
         viewhist.grid(row=4, column=0, padx=50, pady=10)
 
-        logout = Button(self, text="Log Out", command=lambda: controller.show_frame(loginPage))
+        logout = Button(self, text="Log Out", command=lambda: self.controller.show_frame(loginPage))
         logout.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
     def searchfunc(self, item=''):
@@ -318,7 +337,7 @@ class visitorView(Frame):
                     self.frame.treeview.selection_set(child)
                 else:
                     if ('-' in self.term.get()):
-                        tempterm = self.term.get().split("-")  
+                        tempterm = self.term.get().split("-")
                         # print(float(temp1[index]))
                         # print(float(tempterm[0]))
                         if (float(temp1[index]) >= float(tempterm[0]) and float(temp1[index]) <= float(tempterm[1])):
@@ -341,7 +360,7 @@ class visitorView(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
-        
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
             children = self.frame.treeview.get_children('')
@@ -357,7 +376,7 @@ class visitorView(Frame):
 
             if item == '#0':
                 #Name
-                
+
                 temp.sort(key=lambda x: x[0])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
@@ -365,28 +384,28 @@ class visitorView(Frame):
 
             if item == '#2':
                 #City
-                
+
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#5':
                 #Type
-            
+
                 temp.sort(key=lambda x: x[5])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#9':
                 #Visits
-                
+
                 temp.sort(key=lambda x: x[9])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#10':
                 #Avg Rating
-                
+
                 temp.sort(key=lambda x: x[10])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
@@ -399,6 +418,7 @@ class visitorView(Frame):
 
 class visitHistory(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Your Visit History", font=LARGE_FONT)
         label.grid(row=0, column=0, padx=50, pady=20)
@@ -453,15 +473,15 @@ class visitHistory(Frame):
         self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
         self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
 
-        propdetails = Button(self, text="View Property Details", command=lambda: controller.show_frame(loginPage))
+        propdetails = Button(self, text="View Property Details", command=lambda: self.controller.show_frame(loginPage))
         propdetails.grid(row=2, column=0, pady=10)
 
-        back = Button(self, text="Back", command=lambda: controller.show_frame(visitorView))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(visitorView))
         back.grid(row=3, column=0, pady=10)
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
-        
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
 
             children = self.frame.treeview.get_children('')
@@ -477,7 +497,7 @@ class visitHistory(Frame):
 
             if item == '#0':
                 #Name
-                
+
                 temp.sort(key=lambda x: x[0])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
@@ -485,20 +505,21 @@ class visitHistory(Frame):
 
             if item == '#1':
                 #Date
-                
+
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
 
             if item == '#2':
                 #Rating
-            
+
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
 
 class ownerRegistration(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="New Owner Registration", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -612,7 +633,7 @@ class ownerRegistration(Frame):
         commMenu.grid(row=12, column=1, padx=20, pady=10)
 
         # Buttons
-        button1 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button1 = Button(frame, text="Cancel", command=lambda: self.controller.show_frame(loginPage))
         button1.grid(row=13, column=0, sticky='w')
         button2 = Button(frame, text="Register Owner", command=self.registerowner)
         button2.grid(row=13, column=1, sticky='w')
@@ -643,7 +664,7 @@ class ownerRegistration(Frame):
             self.cropMenu.destroy()
             self.animal.destroy()
             self.animalMenu.destroy()
-        
+
             # Get approved vegetables and flowers from DB
             veggies = DBManager.getApprovedVegetables(self)
             flowers = DBManager.getApprovedFlowers(self)
@@ -654,7 +675,7 @@ class ownerRegistration(Frame):
             self.cropMenu.destroy()
             self.animal.destroy()
             self.animalMenu.destroy()
-           
+
             # Get approved vegetables and flowers from DB
             fruits = DBManager.getApprovedFruits(self)
             nuts = DBManager.getApprovedNuts(self)
@@ -770,40 +791,42 @@ class ownerRegistration(Frame):
 
 class adminFunctions(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Admin Functionality", font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 
-        visListB = Button(self, text="View Visitor List", command=lambda: controller.show_frame(viewVisitorList))
+        visListB = Button(self, text="View Visitor List", command=lambda: self.controller.show_frame(viewVisitorList))
         visListB.pack(fill = X)
 
-        ownListB = Button(self, text="View Owner List", command=lambda: controller.show_frame(viewOwnerList))
+        ownListB = Button(self, text="View Owner List", command=lambda: self.controller.show_frame(viewOwnerList))
         ownListB.pack(fill = X)
 
-        conPropB = Button(self, text="View Confirmed Properties", command=lambda: controller.show_frame(confirmedProperties))       
+        conPropB = Button(self, text="View Confirmed Properties", command=lambda: self.controller.show_frame(confirmedProperties))
         conPropB.pack(fill = X)
 
-        unconPropB = Button(self, text="View Unconfirmed Properties", command=lambda: controller.show_frame(unconfirmedProperties))
+        unconPropB = Button(self, text="View Unconfirmed Properties", command=lambda: self.controller.show_frame(unconfirmedProperties))
         unconPropB.pack(fill =X)
 
-        approvedB = Button(self, text="View Approved Animals and Crops", command=lambda: controller.show_frame(approvedOrganisms))
+        approvedB = Button(self, text="View Approved Animals and Crops", command=lambda: self.controller.show_frame(approvedOrganisms))
         approvedB.pack(fill = X)
 
-        pendingB = Button(self, text="View Pending Animals and Crops", command=lambda: controller.show_frame(pendingOrganisms))
+        pendingB = Button(self, text="View Pending Animals and Crops", command=lambda: self.controller.show_frame(pendingOrganisms))
         pendingB.pack(fill =X)
 
-        logoutB = Button(self, text="Logout", command=lambda: controller.show_frame(loginPage))
+        logoutB = Button(self, text="Logout", command=lambda: self.controller.show_frame(loginPage))
         logoutB.pack(fill =X)
 
 class viewVisitorList(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="All Visitors in System", font =LARGE_FONT)
         label.grid(row=0, column=0)
 
         frame = Frame(self)
-        
-        
+
+
         #self.selectedVisitorprop = []
         self.frame = frame
 
@@ -847,13 +870,13 @@ class viewVisitorList(Frame):
         self.searchprop = Button(self, text="Search Visitors", command=self.searchfunc)
         self.searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        deletevisitor = Button(self, text="Delete Visitor Account", command=lambda: controller.show_frame(adminFunctions))
+        deletevisitor = Button(self, text="Delete Visitor Account", command=lambda: self.controller.show_frame(adminFunctions))
         deletevisitor.grid(row=3, column=0, padx=50, pady=10)
 
-        deletelog = Button(self, text="Delete Log History", command=lambda: controller.show_frame(adminFunctions))
+        deletelog = Button(self, text="Delete Log History", command=lambda: self.controller.show_frame(adminFunctions))
         deletelog.grid(row=4, column=0, padx=50, pady=10)
 
-        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
 
@@ -871,7 +894,7 @@ class viewVisitorList(Frame):
                 index = 1
             elif (self.search.get() == "Logged Visits"):
                 index = 2
-            
+
 
             for child in children:
                 temp1 = []
@@ -879,19 +902,19 @@ class viewVisitorList(Frame):
                 temp1.append(text)
                 for x in self.table.item(child, "values"):
                         temp1.append(x)
-                
+
                 if (temp1[index] == self.term.get()):
                     self.frame.treeview.selection_set(child)
                 else:
                     res = self.searchfunc(child)
-                
+
                     self.removed.append(temp1)
                     self.frame.treeview.delete(child)
                     if res:
                         break
     def onClick(self, event):
         item = self.table.identify_column(event.x)
-        
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
 
             children = self.frame.treeview.get_children('')
@@ -925,9 +948,10 @@ class viewVisitorList(Frame):
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
-          
+
 class viewOwnerList(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="All Owners in System", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -981,7 +1005,7 @@ class viewOwnerList(Frame):
         deletelog = Button(self, text="Delete Owner Account", command=lambda: controller.show_frame(adminFunctions))
         deletelog.grid(row=4, column=0, padx=50, pady=10)
 
-        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
 
@@ -1011,7 +1035,7 @@ class viewOwnerList(Frame):
                     self.frame.treeview.selection_set(child)
                 else:
                     res = self.searchfunc(child)
-                
+
                     self.removed.append(temp1)
                     self.frame.treeview.delete(child)
                     if res:
@@ -1019,7 +1043,7 @@ class viewOwnerList(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
-        
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
 
             children = self.frame.treeview.get_children('')
@@ -1035,7 +1059,7 @@ class viewOwnerList(Frame):
 
             if item == '#0':
                 #Name
-                
+
                 temp.sort(key=lambda x: x[0])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
@@ -1043,21 +1067,22 @@ class viewOwnerList(Frame):
 
             if item == '#1':
                 #City
-                
+
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
 
             if item == '#2':
                 #Type
-            
+
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
 
-            
+
 class approvedOrganisms(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Approved Owners/Crops", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -1071,8 +1096,8 @@ class approvedOrganisms(Frame):
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
 
-        
-        
+
+
 
         table.heading('Type', text='Type')
         table.column('Type', anchor='center', width = 100)
@@ -1081,7 +1106,7 @@ class approvedOrganisms(Frame):
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
 
-        
+
 
         table.grid(sticky=(N,S,W,E))
         table.bind("<Button-1>", self.onClick)
@@ -1117,7 +1142,7 @@ class approvedOrganisms(Frame):
         self.add = add
 
         search.set('Enter name')
-       
+
         search_menu = OptionMenu(frame, search, *types)
         search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
 
@@ -1149,14 +1174,14 @@ class approvedOrganisms(Frame):
         #TO DO#
         addB = Button(self, text="Add to Approval List", command=lambda: controller.show_frame(adminFunctions))
         addB.grid(row=5, column=0, sticky='w', padx=00, pady=10)
-        
+
         #TO DO- ADD TO DELETE SELECTION#
         #TO DO#
-        deleteselection = Button(self, text="Delete Selection", command=lambda: controller.show_frame(adminFunctions))
+        deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
         deleteselection.grid(row=6, column=0, padx=50, pady=10)
 
 
-        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e', padx=0, pady=10)
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1170,19 +1195,19 @@ class approvedOrganisms(Frame):
                 index = 0
             elif (self.search.get() == "Type"):
                 index = 1
-          
+
             for child in children:
                 temp1 = []
                 text = self.frame.treeview.item(child, 'text')
                 temp1.append(text)
                 for x in self.table.item(child, "values"):
                         temp1.append(x)
-                
+
                 if (temp1[index] == self.searchterm.get()):
                     self.frame.treeview.selection_set(child)
                 else:
                     res = self.searchfunc(child)
-                
+
                     self.removed.append(temp1)
                     self.frame.treeview.delete(child)
                     if res:
@@ -1216,10 +1241,11 @@ class approvedOrganisms(Frame):
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1]))
-            
+
 
 class pendingOrganisms(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Pending Owners/Crops", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -1250,13 +1276,13 @@ class pendingOrganisms(Frame):
         frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
         frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
 
-        approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
+        approveB = Button(self, text="Approve Selection", command=lambda: self.controller.show_frame(adminFunctions))
         approveB.grid(row=4, column=0, sticky='w')
 
-        deleteselection = Button(self, text="Delete Selection", command=lambda: controller.show_frame(adminFunctions))
+        deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
         deleteselection.grid(row=5, column=0)
 
-        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e')
 
     def searchfunc(self, item=''):
@@ -1271,19 +1297,19 @@ class pendingOrganisms(Frame):
                 index = 0
             elif (self.search.get() == "Type"):
                 index = 1
-          
+
             for child in children:
                 temp1 = []
                 text = self.frame.treeview.item(child, 'text')
                 temp1.append(text)
                 for x in self.table.item(child, "values"):
                         temp1.append(x)
-                
+
                 if (temp1[index] == self.searchterm.get()):
                     self.frame.treeview.selection_set(child)
                 else:
                     res = self.searchfunc(child)
-                
+
                     self.removed.append(temp1)
                     self.frame.treeview.delete(child)
                     if res:
@@ -1320,6 +1346,7 @@ class pendingOrganisms(Frame):
 
 class confirmedProperties(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Confirmed Properties:", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -1394,17 +1421,20 @@ class confirmedProperties(Frame):
         term = Entry(self, text="Search Term")
         term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
 
-        searchprop = Button(self, text="Search Properties", command=lambda: controller.show_frame(loginPage))
+        searchprop = Button(self, text="Search Properties", command=lambda: self.controller.show_frame(loginPage))
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        mprop = Button(self, text="Manage Selected Property", command=lambda: controller.show_frame(loginPage))
+        mprop = Button(self, text="Manage Selected Property", command=lambda: self.controller.show_frame(loginPage))
         mprop.grid(row=3, column=0, padx=50, pady=10)
 
-        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
+
 #### TO DO
 class unconfirmedProperties(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Unconfirmed Properties:", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -1478,17 +1508,19 @@ class unconfirmedProperties(Frame):
         term = Entry(self, text="Search Term")
         term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
 
-        searchprop = Button(self, text="Search Properties", command=lambda: controller.show_frame(loginPage))
+        searchprop = Button(self, text="Search Properties", command=lambda: self.controller.show_frame(loginPage))
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        mprop = Button(self, text="Manage Selected Property", command=lambda: controller.show_frame(loginPage))
+        mprop = Button(self, text="Manage Selected Property", command=lambda: self.controller.show_frame(loginPage))
         mprop.grid(row=3, column=0, padx=50, pady=10)
 
-        back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
 
 class addNewProperty(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Add New Property:", font =LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -1577,15 +1609,16 @@ class addNewProperty(Frame):
         comTypeVar_menu.grid(row=5, column=1, padx=5, pady=10)
 
         # Buttons
-        button1 = Button(frame, text="Add Property", command=lambda: controller.show_frame(loginPage))
+        button1 = Button(frame, text="Add Property", command=lambda: self.controller.show_frame(loginPage))
         button1.grid(row=6, column=0, sticky='w')
         #TODO: REGISTER COMPLETE PAGE
-        button2 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
+        button2 = Button(frame, text="Cancel", command=lambda: self.controller.show_frame(loginPage))
         button2.grid(row=6, column=1, sticky='w')
+
 
 class visitorPropertyPage(Frame):
     def __init__(self, parent, controller):
-
+        self.controller = controller
         Frame.__init__(self, parent)
         name = Label(self, text="Name: ")
         name.pack()
@@ -1625,13 +1658,13 @@ class visitorPropertyPage(Frame):
         logvisit = Button(self, text="Log Visit", command=lambda: messagebox.showinfo("Title", "Visit Logged!"))
         
         logvisit.pack()
-        back = Button(self, text="Back", command=lambda: controller.show_frame(visitorView))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(visitorView))
         back.pack()
-
 
 
 class propertyDetails(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         name = Label(self, text="Name: ")
         name.pack()
@@ -1662,11 +1695,12 @@ class propertyDetails(Frame):
 
         crops = Label(self, text="Crops: ")
         crops.pack()
-        back = Button(self, text="Back", command=lambda: controller.show_frame(visitorView))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(visitorView))
         back.pack()
 
 class otherOwnerProperties(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="All Other Valid Properties", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -1753,10 +1787,10 @@ class otherOwnerProperties(Frame):
         searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        viewprop = Button(self, text="View Property Details", command=lambda: controller.show_frame(propertyDetails))
+        viewprop = Button(self, text="View Property Details", command=lambda: self.controller.show_frame(propertyDetails))
         viewprop.grid(row=3, column=0, padx=50, pady=10)
         ## TO DO: BACK MUST GO TO THE RIGHT PAGE
-        back = Button(self, text="Back", command=lambda: controller.show_frame(loginPage))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(loginPage))
         back.grid(row=4, column=0, sticky='e', padx=50, pady=10)
 
     def searchfunc(self, item=''):
@@ -1789,14 +1823,14 @@ class otherOwnerProperties(Frame):
                     self.frame.treeview.selection_set(child)
                 else:
                     if ('-' in self.term.get()):
-                        tempterm = self.term.get().split("-")  
+                        tempterm = self.term.get().split("-")
                         # print(float(temp1[index]))
                         # print(float(tempterm[0]))
                         if (float(temp1[index]) >= float(tempterm[0]) and float(temp1[index]) <= float(tempterm[1])):
                             self.frame.treeview.selection_set(child)
                         else:
                             res = self.searchfunc(child)
-                    
+
                             self.removed.append(temp1)
                             self.frame.treeview.delete(child)
                             if res:
@@ -1804,7 +1838,7 @@ class otherOwnerProperties(Frame):
 
                     else:
                         res = self.searchfunc(child)
-                    
+
                         self.removed.append(temp1)
                         self.frame.treeview.delete(child)
                         if res:
@@ -1812,7 +1846,7 @@ class otherOwnerProperties(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
-        
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
             children = self.frame.treeview.get_children('')
@@ -1828,7 +1862,7 @@ class otherOwnerProperties(Frame):
 
             if item == '#0':
                 #Name
-                
+
                 temp.sort(key=lambda x: x[0])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
@@ -1836,28 +1870,28 @@ class otherOwnerProperties(Frame):
 
             if item == '#2':
                 #City
-                
+
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#5':
                 #Type
-            
+
                 temp.sort(key=lambda x: x[5])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#9':
                 #Visits
-                
+
                 temp.sort(key=lambda x: x[9])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#10':
                 #Avg Rating
-                
+
                 temp.sort(key=lambda x: x[10])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
@@ -1865,13 +1899,19 @@ class otherOwnerProperties(Frame):
 class ownerFunctionality(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
-        label = Label(self, text="Welcome Owner", font =LARGE_FONT)
+
+        frame = Frame(self)
+
+        # Get owners email
+        self.controller = controller
+        email = self.controller.email
+        welcomemsg = "Welcome " + email
+
+        label = Label(self, text=welcomemsg, font=LARGE_FONT)
         label.grid(row=0, column=0)
 
         props = Label(self, text="Your properties:")
         props.grid(row=1, column=0)
-
-        frame = Frame(self)
 
         table = Treeview(frame)
         self.frame = frame
@@ -1954,16 +1994,16 @@ class ownerFunctionality(Frame):
         searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        manage = Button(self, text="Manage Property", command=lambda: controller.show_frame(loginPage))
+        manage = Button(self, text="Manage Property", command=lambda: self.controller.show_frame(loginPage))
         manage.grid(row=3, column=0, padx=50, pady=10)
 
-        addP = Button(self, text="Add Property", command=lambda: controller.show_frame(loginPage))
+        addP = Button(self, text="Add Property", command=lambda: self.controller.show_frame(loginPage))
         addP.grid(row=4, column=0, padx=50, pady=10)
 
-        logout = Button(self, text="Log Out", command=lambda: controller.show_frame(loginPage))
+        logout = Button(self, text="Log Out", command=lambda: self.controller.show_frame(loginPage))
         logout.grid(row=4, column=0, sticky='e', padx=50, pady=10)
 
-        viewOthers = Button(self, text="View Other Properties", command=lambda: controller.show_frame(otherOwnerProperties))
+        viewOthers = Button(self, text="View Other Properties", command=lambda: self.controller.show_frame(otherOwnerProperties))
         viewOthers.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
     def searchfunc(self, item=''):
@@ -1996,14 +2036,14 @@ class ownerFunctionality(Frame):
                     self.frame.treeview.selection_set(child)
                 else:
                     if ('-' in self.term.get()):
-                        tempterm = self.term.get().split("-")  
+                        tempterm = self.term.get().split("-")
                         # print(float(temp1[index]))
                         # print(float(tempterm[0]))
                         if (float(temp1[index]) >= float(tempterm[0]) and float(temp1[index]) <= float(tempterm[1])):
                             self.frame.treeview.selection_set(child)
                         else:
                             res = self.searchfunc(child)
-                    
+
                             self.removed.append(temp1)
                             self.frame.treeview.delete(child)
                             if res:
@@ -2011,7 +2051,7 @@ class ownerFunctionality(Frame):
 
                     else:
                         res = self.searchfunc(child)
-                    
+
                         self.removed.append(temp1)
                         self.frame.treeview.delete(child)
                         if res:
@@ -2019,7 +2059,7 @@ class ownerFunctionality(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
-        
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
             children = self.frame.treeview.get_children('')
@@ -2035,7 +2075,7 @@ class ownerFunctionality(Frame):
 
             if item == '#0':
                 #Name
-                
+
                 temp.sort(key=lambda x: x[0])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
@@ -2043,28 +2083,28 @@ class ownerFunctionality(Frame):
 
             if item == '#2':
                 #City
-                
+
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#5':
                 #Type
-            
+
                 temp.sort(key=lambda x: x[5])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#9':
                 #Visits
-                
+
                 temp.sort(key=lambda x: x[9])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#10':
                 #Avg Rating
-                
+
                 temp.sort(key=lambda x: x[10])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
@@ -2072,6 +2112,7 @@ class ownerFunctionality(Frame):
 
 class propertyManagement(Frame):
     def __init__(self, parent, controller):
+        self.controller = controller
         Frame.__init__(self, parent)
         label = Label(self, text="Manage", font =LARGE_FONT)
         label.pack(pady=10,padx=10)
@@ -2173,16 +2214,16 @@ class propertyManagement(Frame):
         newcropType_menu = OptionMenu(frame, newcropTypeVar, *newcroptypes)
         newcropType_menu.grid(row=7, column=3, padx=5, pady=10)
 
-        button2 = Button(frame, text="Submit Request", command=lambda: controller.show_frame(loginPage))
+        button2 = Button(frame, text="Submit Request", command=lambda: self.controller.show_frame(loginPage))
         button2.grid(row=8, column=1, sticky='w')
 
-        button3 = Button(frame, text="Save Changes", command=lambda: controller.show_frame(loginPage))
+        button3 = Button(frame, text="Save Changes", command=lambda: self.controller.show_frame(loginPage))
         button3.grid(row=9, column=1, sticky='w')
 
-        button4 = Button(frame, text="Delete Property", command=lambda: controller.show_frame(loginPage))
+        button4 = Button(frame, text="Delete Property", command=lambda: self.controller.show_frame(loginPage))
         button4.grid(row=10, column=0, sticky='w')
 
-        button5 = Button(frame, text="Back (Don't Save)", command=lambda: controller.show_frame(loginPage))
+        button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(loginPage))
         button5.grid(row=10, column=1, sticky='w')
 
     def addCrop(self):
@@ -2195,7 +2236,6 @@ class propertyManagement(Frame):
             butts[i].grid(row = buttonnum + 4, column = 4)
         self.butts = butts
         print(butts)
-
 
 
 app = Atlanta()
