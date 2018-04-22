@@ -1,7 +1,7 @@
 
 #import tkinter as tk
 from tkinter import *
-from tkinter.ttk import *
+from tkinter.ttk import * 
 from tkinter import messagebox
 import hashlib
 from WebService import *
@@ -413,47 +413,18 @@ class ownerRegistration(Frame):
         types = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
         
         propTypeVar = StringVar()
-        propTypeVar.set('Garden')   # Set garden as the default prop type
-        propType_menu = OptionMenu(frame, propTypeVar, *types)
+        propTypeVar.set(' ')   # Set garden as the default prop type
+        propType_menu = OptionMenu(frame, propTypeVar, "Garden", *types, command=self.func)
         propType_menu.grid(row=9, column=1, padx=20, pady=10)
 
-        if propTypeVar.get() == 'Garden':
-            # Garden GUI
-            # TODO: create a dictionary with approved vegetables and flowers (from DB)
-            crop = Label(frame, text="Crop:* ")
-            crop.grid(row=10, column=0, padx=20, pady=10)
+    
+        crop = Label(frame, text="Crop:* ")
+        crop.grid(row=10, column=0, padx=20, pady=10)
 
-            # TODO: replace entry box with drop down populated by crop dictionary
-            cropTxt = StringVar()
-            entry10 = Entry(frame, textvariable=cropTxt)
-            entry10.grid(row=10, column=1, padx=20, pady=10)
-        elif propTypeVar.get() == 'Farm':
-            # Farm GUI
-            # TODO: create a dictionary with approved fruits, nuts, vegetables, and flowers (from DB)
-            crop = Label(frame, text="Crop:* ")
-            crop.grid(row=10, column=0, padx=20, pady=10)
-
-            # TODO: replace entry box with drop down populated by crop dictionary
-            cropTxt = StringVar()
-            entry10 = Entry(frame, textvariable=cropTxt)
-            entry10.grid(row=10, column=1, padx=20, pady=10)
-
-            # TODO: Do same thing with animals as crops ^
-            animal = Label(frame, text="Animal:* ")
-            animal.grid(row=11, column=0, padx=20, pady=10)
-            animalTxt = StringVar()
-            entry11 = Entry(frame, textvariable=animalTxt)
-            entry11.grid(row=11, column=1, padx=20, pady=10)
-        else:
-            # Orchard GUI
-            # TODO: create a dictionary with approved fruits and nuts (from DB)
-            crop = Label(frame, text="Crop:* ")
-            crop.grid(row=10, column=0, padx=20, pady=10)
-
-            # TODO: replace entry box with drop down populated by crop dictionary
-            cropTxt = StringVar()
-            entry10 = Entry(frame, textvariable=cropTxt)
-            entry10.grid(row=10, column=1, padx=20, pady=10)
+        # TODO: replace entry box with drop down populated by crop dictionary
+        cropTxt = StringVar()
+        entry10 = Entry(frame, textvariable=cropTxt)
+        entry10.grid(row=10, column=1, padx=20, pady=10)
 
         # Buttons
         button1 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
@@ -461,6 +432,25 @@ class ownerRegistration(Frame):
         #TODO: REGISTER COMPLETE PAGE
         button2 = Button(frame, text="Register Owner", command=self.registerowner)
         button2.grid(row=11, column=1, sticky='w')
+    def func(self, value):
+        
+        if(value == 'Farm'):
+            # Farm GUI
+            # TODO: create a dictionary with approved fruits, nuts, vegetables, and flowers (from DB)
+            
+            # TODO: Do same thing with animals as crops ^
+            self.animal = Label(self.frame, text="Animal:* ")
+            self.animal.grid(row=10, column=2, padx=20, pady=10)
+            animalTxt = StringVar()
+            self.entry11 = Entry(self.frame, text=animalTxt)
+            self.entry11.grid(row=10, column=3, padx=20, pady=10)
+                    # Orchard GUI
+            # TODO: create a dictionary with approved fruits and nuts (from DB)
+        
+        else:
+            self.animal.destroy()
+            self.entry11.destroy()
+        return value
 
     def registerowner(self):
         msg = StringVar()
