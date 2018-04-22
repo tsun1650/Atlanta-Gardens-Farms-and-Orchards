@@ -361,7 +361,7 @@ class visitorView(Frame):
 
             if item == '#0':
                 #Name
-                print("Name")
+                
                 temp.sort(key=lambda x: x[0])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
@@ -369,28 +369,28 @@ class visitorView(Frame):
 
             if item == '#2':
                 #City
-                print("City")
+                
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#5':
                 #Type
-                print("Type")
+            
                 temp.sort(key=lambda x: x[5])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#9':
                 #Visits
-                print("Visits")
+                
                 temp.sort(key=lambda x: x[9])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
             if item == '#10':
                 #Avg Rating
-                print("Avg Rating")
+                
                 temp.sort(key=lambda x: x[10])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
