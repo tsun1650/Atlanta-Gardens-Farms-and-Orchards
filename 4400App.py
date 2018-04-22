@@ -42,7 +42,7 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(loginPage)
+        self.show_frame(viewVisitorList)
 
     def show_frame(self, frame):
         # frame = self.frames[cont]
@@ -446,9 +446,9 @@ class visitHistory(Frame):
             date = prop[1]
             rating = prop[2]
 
-            newProp = [name, date, rating]
+            newProp = [date, rating]
 
-            frame.treeview.insert('', 'end', text=id, values=newProp)
+            frame.treeview.insert('', 'end', text=name, values=newProp)
 
         # loads temp data
         
@@ -802,7 +802,9 @@ class viewVisitorList(Frame):
         Frame.__init__(self, parent)
         label = Label(self, text="All Visitors in System", font =LARGE_FONT)
         label.grid(row=0, column=0)
-
+        propList = DBManager.getVisitors(self)
+        if propList is None:
+            propList = []
         frame = Frame(self)
 
 
@@ -829,6 +831,15 @@ class viewVisitorList(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
+        for prop in propList:
+            username = prop[0]
+            email = prop[1]
+            visits = prop[2]
+            
+
+            newProp = [email, visits]
+
+            frame.treeview.insert('', 'end', text=username, values=newProp)
 
         types = { 'Username', 'Email', 'Logged Visits'}
         
@@ -933,6 +944,10 @@ class viewOwnerList(Frame):
 
         frame = Frame(self)
 
+        # Get a list with all of the owners properties
+        propList = DBManager.getOwners(self)
+        if propList is None:
+            propList = []
 
         table = Treeview(frame)
         self.table = table
@@ -955,6 +970,16 @@ class viewOwnerList(Frame):
         self.frame.grid(sticky=(N,S,W,E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
+
+        for prop in propList:
+            username = prop[0]
+            email = prop[1]
+            numprops = prop[2]
+            
+
+            newProp = [email, numprops]
+
+            frame.treeview.insert('', 'end', text=username, values=newProp)
 
         types = { 'Username', 'Email', 'Number of Properties'}
         

@@ -622,3 +622,53 @@ class DBManager:
             print(logging.exception("error happened"))
         finally:
             conn.close()
+
+    def getOwners(self):
+        # SQL statement to execute
+        sql = "CREATE VIEW own_over AS SELECT Email, Username, COUNT(Owner) AS NumProp FROM User JOIN Property ON Username = Owner GROUP BY Owner"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    def getVisitors(self):
+        # SQL statement to execute
+        sql = "CREATE VIEW vis_over AS SELECT User.Email, User.Username, COUNT(Visit.Username) as LoggedVisits FROM User JOIN Visit ON Visit.Username = User.Username GROUP BY Visit.Username"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
