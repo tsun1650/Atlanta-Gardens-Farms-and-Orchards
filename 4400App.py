@@ -609,8 +609,18 @@ class ownerRegistration(Frame):
             messagebox.showerror("Error", "Password must be at least 8 character")
         elif self.password.get() != self.confirmPassword.get():
             messagebox.showerror("Error", "Confirm password does not match")
-        elif(len(self.username.get()) == 0):
+        elif len(self.username.get()) == 0:
             messagebox.showerror("Error", "Must input Username")
+        elif len(self.propName.get()) == 0:
+            messagebox.showerror("Error", "Must input Property Name")
+        elif len(self.street.get()) == 0:
+            messagebox.showerror("Error", "Must input Street Address")
+        elif len(self.propCity.get()) == 0:
+            messagebox.showerror("Error", "Must input City")
+        elif len(self.propZip.get()) == 0:
+            messagebox.showerror("Error", "Must input Zip")
+        elif len(self.propAcres.get()) == 0:
+            messagebox.showerror("Error", "Must input Acres")
         elif "@" not in self.email.get():
             messagebox.showerror("Error", "Invalid email")
         else:
