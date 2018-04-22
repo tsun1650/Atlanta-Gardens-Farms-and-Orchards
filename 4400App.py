@@ -1370,6 +1370,11 @@ class confirmedProperties(Frame):
         frame = Frame(self)
 
         table = Treeview(frame)
+
+        propList = DBManager.getConfirmedProps(self)
+        if propList is None:
+            propList = []
+
         self.frame = frame
         self.table = table
         self.table.bind("<Button-1>", self.onClick)
@@ -1404,6 +1409,37 @@ class confirmedProperties(Frame):
         frame.grid(sticky=(N,S,W,E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
+
+        for prop in propList:
+            name = prop[0]
+            address = prop[1]
+            city = prop[2]
+            zip = prop[3]
+            size = prop[4]
+            type = prop[5]
+            public = prop[6]
+            commercial = prop[7]
+            id = prop[8]
+            verified = prop[9]
+            rating = prop[10]
+            
+            if commercial == 1:
+                commercial = True
+            else:
+                commercial = False
+
+            if public == 1:
+                public = True
+            else:
+                public = False
+
+            # Change approved value from null or 1 to true/false
+            
+
+            newProp = [address, city, zip, size, type, public, commercial, id, verified, rating]
+
+            frame.treeview.insert('', 'end', text=name, values=newProp)
+
 
         types = {'Name', 'Zip', 'Type', 'Verified By','Avg Rating'}
         
@@ -1540,6 +1576,11 @@ class unconfirmedProperties(Frame):
         frame = Frame(self)
 
         table = Treeview(frame)
+        propList = DBManager.getUnconfirmedProps(self)
+
+        if propList is None:
+            propList = []
+
         self.frame = frame
         self.table = table
         self.table.bind("<Button-1>", self.onClick)
@@ -1574,6 +1615,34 @@ class unconfirmedProperties(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
+        for prop in propList:
+            name = prop[0]
+            address = prop[1]
+            city = prop[2]
+            zip = prop[3]
+            size = prop[4]
+            type = prop[5]
+            public = prop[6]
+            commercial = prop[7]
+            id = prop[8]
+            owner = prop[9]
+            
+            
+            if commercial == 1:
+                commercial = True
+            else:
+                commercial = False
+
+            if public == 1:
+                public = True
+            else:
+                public = False
+
+            # Change approved value from null or 1 to true/false
+            
+            newProp = [address, city, zip, size, type, public, commercial, id, owner]
+
+            frame.treeview.insert('', 'end', text=name, values=newProp)
    
         types = {'Name', 'Size', 'Owner'}
         
