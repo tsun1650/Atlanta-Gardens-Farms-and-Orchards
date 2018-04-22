@@ -34,7 +34,7 @@ class Atlanta(Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame(loginPage)
+        self.show_frame(visitHistory)
         #self.show_frame(viewVisitorList)
 
     def show_frame(self, cont):
@@ -412,54 +412,96 @@ class visitHistory(Frame):
         frame = Frame(self)
 
         table = Treeview(frame)
+        self.table = table
+        self.frame = frame
+        self.table.bind("<Button-1>", self.onClick)
         table['columns'] = ('date', 'rating')
-        table.heading('#0', text='Name', anchor='w')
-        table.column('#0', anchor='w')
-        table.heading('date', text='Date Logged')
-        table.column('date', anchor='center', width = 100)
-        table.heading('rating', text='Rating')
-        table.column('rating', anchor='center', width = 100)
 
-        table.grid(sticky=(N,S,W,E))
-        frame.treeview = table
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_columnconfigure(0, weight=1)
+        self.table.heading('#0', text='Name', anchor='w')
+        self.table.column('#0', anchor='w')
+        self.table.heading('date', text='Date Logged')
+        self.table.column('date', anchor='center', width = 100)
+        self.table.heading('rating', text='Rating')
+        self.table.column('rating', anchor='center', width = 100)
 
-        frame.grid(sticky=(N,S,W,E))
+        self.table.grid(sticky=(N,S,W,E))
+        self.frame.treeview = table
+        self.frame.grid_rowconfigure(0, weight=1)
+        self.frame.grid_columnconfigure(0, weight=1)
+
+        self.frame.grid(sticky=(N,S,W,E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
         # loads temp data
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
+        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
 
         propdetails = Button(self, text="View Property Details", command=lambda: controller.show_frame(loginPage))
         propdetails.grid(row=2, column=0, pady=10)
 
         back = Button(self, text="Back", command=lambda: controller.show_frame(visitorView))
         back.grid(row=3, column=0, pady=10)
+
+    def onClick(self, event):
+        item = self.table.identify_column(event.x)
+        
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
+
+            children = self.frame.treeview.get_children('')
+            temp = []
+            for child in children:
+                temp1 = []
+                text = self.frame.treeview.item(child, 'text')
+                temp1.append(text)
+                for x in self.table.item(child, "values"):
+                    temp1.append(x)
+                temp.append(temp1)
+                self.frame.treeview.delete(child)
+
+            if item == '#0':
+                #Name
+                
+                temp.sort(key=lambda x: x[0])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
+
+
+            if item == '#1':
+                #Date
+                
+                temp.sort(key=lambda x: x[1])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
+
+            if item == '#2':
+                #Rating
+            
+                temp.sort(key=lambda x: x[2])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
 
 class ownerRegistration(Frame):
     def __init__(self, parent, controller):
