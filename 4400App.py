@@ -33,8 +33,8 @@ class Atlanta(Tk):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
-        #self.show_frame(loginPage)
-        self.show_frame(viewVisitorList)
+        self.show_frame(loginPage)
+        #self.show_frame(viewVisitorList)
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -766,7 +766,7 @@ class viewVisitorList(Frame):
 
         frame = Frame(self)
         
-        #self.table.bind("<Button-1>", self.onClick)
+        
         #self.selectedVisitorprop = []
         self.frame = frame
 
@@ -781,6 +781,7 @@ class viewVisitorList(Frame):
         self.table.column('Logged Visits', anchor='center', width = 100)
        
         self.table.grid(sticky=(N,S,W,E))
+        self.table.bind("<Button-1>", self.onClick)
         frame.treeview = self.table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
@@ -851,7 +852,43 @@ class viewVisitorList(Frame):
                     self.frame.treeview.delete(child)
                     if res:
                         break
+    def onClick(self, event):
+        item = self.table.identify_column(event.x)
+        
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
 
+            children = self.frame.treeview.get_children('')
+            temp = []
+            for child in children:
+                temp1 = []
+                text = self.frame.treeview.item(child, 'text')
+                temp1.append(text)
+                for x in self.table.item(child, "values"):
+                    temp1.append(x)
+                temp.append(temp1)
+                self.frame.treeview.delete(child)
+
+            if item == '#0':
+                #Username
+                print("Username")
+                temp.sort(key=lambda x: x[0])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
+
+
+            if item == '#1':
+                #Email
+                print("Email")
+                temp.sort(key=lambda x: x[1])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
+            if item == '#2':
+                #Logged Visitss
+                print("Logged Visits")
+                temp.sort(key=lambda x: x[2])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
+          
 class viewOwnerList(Frame):
     def __init__(self, parent, controller):
         Frame.__init__(self, parent)
