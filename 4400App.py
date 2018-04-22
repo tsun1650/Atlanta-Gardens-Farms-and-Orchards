@@ -450,12 +450,12 @@ class ownerRegistration(Frame):
         # Rest of GUI depends on property type selected
         types = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
         
-        propTypeVar = StringVar()
-        propTypeVar.set(' ')   # Set garden as the default prop type
-        propType_menu = OptionMenu(frame, propTypeVar, "Garden", *types, command=self.func)
+        self.propTypeVar = StringVar()
+        self.propTypeVar.set(' ')
+        propType_menu = OptionMenu(frame, self.propTypeVar, "Garden", *types, command=self.func)
         propType_menu.grid(row=9, column=1, padx=20, pady=10)
 
-        if propTypeVar.get() == 'Garden':
+        if self.propTypeVar.get() == 'Garden':
             # Garden GUI
             crop = Label(frame, text="Crop:* ")
             crop.grid(row=10, column=0, padx=20, pady=10)
@@ -470,7 +470,7 @@ class ownerRegistration(Frame):
             cropMenu = OptionMenu(frame, cropVar, *crops)
             cropMenu.grid(row=10, column=1, padx=20, pady=10)
 
-        elif propTypeVar.get() == 'Farm':
+        elif self.propTypeVar.get() == 'Farm':
             # Farm GUI
             crop = Label(frame, text="Crop:* ")
             crop.grid(row=10, column=0, padx=20, pady=10)
@@ -510,12 +510,26 @@ class ownerRegistration(Frame):
             cropMenu = OptionMenu(frame, cropVar, *crops)
             cropMenu.grid(row=10, column=1, padx=20, pady=10)
 
+        # Add yes/no drop down for isPublic
+        yesno = ["Yes", "No"]
+        public = Label(frame, text="Public:* ")
+        public.grid(row=11, column=0, sticky='w')
+        self.publicVar = StringVar()
+        publicMenu = OptionMenu(frame, self.publicVar, "Yes", *yesno)
+        publicMenu.grid(row=11, column=1, padx=20, pady=10)
+
+        # Add yes/no drop down for isCommercial
+        commercial = Label(frame, text="Commercial:* ")
+        commercial.grid(row=12, column=0, sticky='w')
+        self.commVar = StringVar()
+        commMenu = OptionMenu(frame, self.commVar, "Yes", *yesno)
+        commMenu.grid(row=12, column=1, padx=20, pady=10)
+
         # Buttons
         button1 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
-        button1.grid(row=11, column=0, sticky='w')
-        #TODO: REGISTER COMPLETE PAGE
+        button1.grid(row=13, column=0, sticky='w')
         button2 = Button(frame, text="Register Owner", command=self.registerowner)
-        button2.grid(row=11, column=1, sticky='w')
+        button2.grid(row=13, column=1, sticky='w')
 
     def func(self, value):
         if value == 'Farm':
@@ -590,21 +604,41 @@ class ownerRegistration(Frame):
 
                     # Next verify the username isn't being used
                     usernameExists = DBManager.checkUsername(self, self.username.get())
-
                     if not usernameExists:
-                        # Username and email aren't taken already; register user
-                        register = DBManager.registerNewUser(self, self.email.get(), self.username.get(), hashPass, 'Owner')
 
-                        if register:
-                            messagebox.showerror("Account Created", "Registration was a success! You can now login on the login page.")
+                        # Verify property name isn't already taken
+                        propNameExists = DBManager.checkPropertyName(self, self.propName.get())
+                        if not propNameExists:
+                            # Tests all passed, add user and property
+
+                            # register user
+                            register = DBManager.registerNewUser(self, self.email.get(),
+                                                                 self.username.get(), hashPass, 'Owner')
+
+                            # Add the property
+                            addProp = DBManager.addProperty(self, self.propName.get(), self.propAddress.get(),
+                                                            self.propCity, self.propZip, self.publicVar.get(),
+                                                            self.commVar.get(), self.propTypeVar.get(),
+                                                            self.username.get(), self.propAcres.get())
+
+                            # Get property ID for the new property
+                            propID = DBManager.getPropertyID(self, self.propName.get())
+
+                            # TODO: Add crop to Has
+                            # TODO: If proptype is farm --> add animal to Has also
 
 
+                            if register and addProp:
+                                messagebox.showerror("Account Created", "Registration was a success!"
+                                                    "You can now login on the login page.")
+
+                            else:
+                                messagebox.showerror("Error", "Something went wrong")
                         else:
-                            messagebox.showerror("Error", "Something went wrong")
-
+                            messagebox.showerror("Error", "Property name is taken. Please choose a new name.")
 
                     else:
-                        messagebox.showerror("Error", "Username is taken")
+                        messagebox.showerror("Error", "Username is taken. Please choose a new username.")
 
                 else:
                     messagebox.showerror("Error", "Email is already associated with an account")
