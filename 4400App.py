@@ -38,7 +38,7 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(unconfirmedProperties)
+        self.show_frame(approvedOrganisms)
 
     def show_frame(self, frame):
         # frame = self.frames[cont]
@@ -1088,37 +1088,19 @@ class approvedOrganisms(Frame):
         label.grid(row=0, column=0)
 
         frame = Frame(self)
-        table = Treeview(frame)
         self.frame = frame
-        self.table = table
         table = Treeview(frame,selectmode='browse')
+        self.table = table
         table['columns'] = ('Type')
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
-
-
-
-
         table.heading('Type', text='Type')
         table.column('Type', anchor='center', width = 100)
-
-        table['columns'] = ('Type')
-        table.heading('#0', text='Name', anchor='w')
-        table.column('#0', anchor='w')
-
 
 
         table.grid(sticky=(N,S,W,E))
         table.bind("<Button-1>", self.onClick)
-        frame.treeview = table
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_columnconfigure(0, weight=1)
-
-        table.heading('Type', text='Type')
-        table.column('Type', anchor='center', width = 100)
-        
-        table.grid(sticky=(N,S,W,E))
-        frame.treeview = table
+        frame.treeview = self.table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
 
@@ -1128,24 +1110,19 @@ class approvedOrganisms(Frame):
 
         # Loads temp Data
         frame.treeview.insert('', 'end', text='Apple', values=('Fruit'))
-        frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
+        frame.treeview.insert('', 'end', text='zntelope', values=('Animal'))
         frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
 
         types = {'Fruit', 'Vegetable', 'Nut', 'Flower', 'Animal'}
         
         search = StringVar()
-
         search.set(' ')
         self.search = search
         add = StringVar()
         add.set(' ')
         self.add = add
 
-        search.set('Enter name')
-
-        search_menu = OptionMenu(frame, search, *types)
-        search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
-
+       
         searches = {'Type', 'Name'}
         search_menu = OptionMenu(frame, search, 'Name', *searches)
         search_menu.grid(row=3, column=1, sticky='w', padx=00, pady=10)
@@ -1153,20 +1130,14 @@ class approvedOrganisms(Frame):
         type_menu = OptionMenu(frame, add, 'Fruit', *types)
         type_menu.grid(row=3, column=0, sticky='w', padx=00, pady=10)
 
-
         self.removed = []
-        self.nameterm = Entry(self, text="Enter Name")
-        self.nameterm.grid(row=4, column = 0, sticky='w', padx=00, pady=10)
-        self.searchterm = Entry(self, text="Search Term")
-        self.searchterm.grid(row=4, column = 1, sticky='w', padx=0, pady=10)
+        nameterm = Entry(self, text="Enter Name")
+        nameterm.grid(row=4, column = 0, sticky='w', padx=00, pady=10)
+        searchterm = Entry(self, text="Search Term")
+        searchterm.grid(row=4, column = 1, sticky='w', padx=0, pady=10)
 
-        self.searchterm = Entry(self, text="Search Term")
-        self.searchterm.grid(row=3, column = 1, sticky='w', padx=50, pady=10)
-
-        searchB = Button(self, text="Search")
-        searchB.grid(row=4, column=1, sticky='w', padx=50, pady=10)
-
-
+        self.nameterm = nameterm
+        self.searchterm = searchterm
         searchB = Button(self, text="Search", command=self.searchfunc)
         searchB.grid(row=5, column=1, sticky='w', padx=0, pady=10)
 
@@ -1217,7 +1188,6 @@ class approvedOrganisms(Frame):
         item = self.table.identify_column(event.x)
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
-
             children = self.frame.treeview.get_children('')
             temp = []
             for child in children:
@@ -1263,6 +1233,7 @@ class pendingOrganisms(Frame):
         table.column('Type', anchor='center', width = 100)
         
         table.grid(sticky=(N,S,W,E))
+        table.bind("<Button-1>", self.onClick)
         frame.treeview = table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
@@ -1276,8 +1247,9 @@ class pendingOrganisms(Frame):
         frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
         frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
 
-        approveB = Button(self, text="Approve Selection", command=lambda: self.controller.show_frame(adminFunctions))
-        approveB.grid(row=4, column=0, sticky='w')
+
+        approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
+        approveB.grid(row=4, column=0)
 
         deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
         deleteselection.grid(row=5, column=0)
@@ -1319,7 +1291,6 @@ class pendingOrganisms(Frame):
         item = self.table.identify_column(event.x)
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
-
             children = self.frame.treeview.get_children('')
             temp = []
             for child in children:
@@ -1343,7 +1314,6 @@ class pendingOrganisms(Frame):
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1]))
-
 class confirmedProperties(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
