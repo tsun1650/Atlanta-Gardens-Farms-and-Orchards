@@ -1701,6 +1701,7 @@ class addNewProperty(Frame):
         label.pack(pady=10,padx=10)
 
         frame = Frame(self)
+        self.frame = frame
         frame.pack(padx=5, pady=20, side=LEFT)
         
         name = Label(frame, text="Property Name:* ")
@@ -1722,76 +1723,182 @@ class addNewProperty(Frame):
         self.city.focus_set()
 
         zipcode = Label(frame, text="Zip:* ")
-        zipcode.grid(row=2, column=2, sticky='w')
+        zipcode.grid(row=3, column=0, sticky='w')
         self.zipcode = Entry(frame, background='white', width=24)
-        self.zipcode.grid(row=2, column=3, sticky='w')
+        self.zipcode.grid(row=3, column=1, sticky='w')
         self.zipcode.focus_set()
 
         acres = Label(frame, text="Acres:* ")
-        acres.grid(row=2, column=4, sticky='w')
+        acres.grid(row=4, column=0, sticky='w')
         self.acres = Entry(frame, background='white', width=24)
-        self.acres.grid(row=2, column=5, sticky='w')
+        self.acres.grid(row=4, column=1, sticky='w')
         self.acres.focus_set()
 
         propType = Label(frame, text="Property Type:* ")
-        propType.grid(row=3, column=0, sticky='w')
-        # Rest of GUI depends on property type selected
-        proptypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-        
-        propTypeVar = StringVar()
-        propTypeVar.set('Garden')   # Set garden as the default prop type
-        propType_menu = OptionMenu(frame, propTypeVar, *proptypes)
-        propType_menu.grid(row=3, column=1, padx=5, pady=10)
+        propType.grid(row=5, column=0, sticky='w')
 
-        animalType = Label(frame, text="Animal Type:* ")
-        animalType.grid(row=3, column=2, sticky='w')
         # Rest of GUI depends on property type selected
-        animaltypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-        
-        animalTypeVar = StringVar()
-        animalTypeVar.set('Garden')   # Set garden as the default prop type
-        animalType_menu = OptionMenu(frame, animalTypeVar, *animaltypes)
-        animalType_menu.grid(row=3, column=4, padx=5, pady=10)
+        types = {'Garden', 'Farm', 'Orchard'}  # Dictionary holding different prop types
 
-        cropType = Label(frame, text="Crop Type:* ")
-        cropType.grid(row=3, column=5, sticky='w')
-        # Rest of GUI depends on property type selected
-        croptypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-        
-        cropTypeVar = StringVar()
-        cropTypeVar.set('Garden')   # Set garden as the default prop type
-        cropTypeVar_menu = OptionMenu(frame, cropTypeVar, *croptypes)
-        cropTypeVar_menu.grid(row=3, column=6, padx=5, pady=10)
+        self.propTypeVar = StringVar()
+        self.propTypeVar.set(' ')
+        propType_menu = OptionMenu(frame, self.propTypeVar, "Farm", *types, command=self.propertyTypeChange)
+        propType_menu.grid(row=5, column=1, padx=20, pady=10)
 
-        pubType = Label(frame, text="Public?:* ")
-        pubType.grid(row=4, column=0, sticky='w')
-        # Rest of GUI depends on property type selected
-        pubtypes = {'Yes', 'No'}   # Dictionary holding different prop types
-        
-        pubTypeVar = StringVar()
-        pubTypeVar.set('No')   # Set garden as the default prop type
-        pubTypeVar_menu = OptionMenu(frame, pubTypeVar, *pubtypes)
-        pubTypeVar_menu.grid(row=4, column=1, padx=5, pady=10)
+        # Create crop label
+        crop = Label(frame, text="Crop:* ")
+        crop.grid(row=6, column=0, padx=20, pady=10)
 
-        comType = Label(frame, text="Commercial?:* ")
-        comType.grid(row=5, column=0, sticky='w')
-        # Rest of GUI depends on property type selected
-        comtypes = {'Yes', 'No'}   # Dictionary holding different prop types
-        
-        comTypeVar = StringVar()
-        comTypeVar.set('No')   # Set garden as the default prop type
-        comTypeVar_menu = OptionMenu(frame, comTypeVar, *comtypes)
-        comTypeVar_menu.grid(row=5, column=1, padx=5, pady=10)
+        # Get list of approved, fruits, nuts, veggies, and flowers (since farm is default)
+        fruits = DBManager.getApprovedFruits(self)
+        nuts = DBManager.getApprovedNuts(self)
+        veggies = DBManager.getApprovedVegetables(self)
+        flowers = DBManager.getApprovedFlowers(self)
+        crops = fruits + nuts + veggies + flowers
+
+        # Create option menu with the approved crops
+        self.cropVar = StringVar()
+        self.cropMenu = OptionMenu(frame, self.cropVar, *crops)
+        self.cropMenu.grid(row=6, column=1, padx=20, pady=10)
+
+        # Get approved animals
+        self.animal = Label(frame, text="Animal:* ")
+        self.animal.grid(row=6, column=2, padx=20, pady=10)
+
+        animals = DBManager.getApprovedAnimals(self)
+        self.animalVar = StringVar()
+        self.animalMenu = OptionMenu(frame, self.animalVar, *animals)
+        self.animalMenu.grid(row=6, column=3, padx=20, pady=10)
+
+        # Add yes/no drop down for isPublic
+        yesno = ["Yes", "No"]
+        public = Label(frame, text="Public:* ")
+        public.grid(row=7, column=0, sticky='w')
+        self.publicVar = StringVar()
+        publicMenu = OptionMenu(frame, self.publicVar, "Yes", *yesno)
+        publicMenu.grid(row=7, column=1, padx=20, pady=10)
+
+        # Add yes/no drop down for isCommercial
+        commercial = Label(frame, text="Commercial:* ")
+        commercial.grid(row=8, column=0, sticky='w')
+        self.commVar = StringVar()
+        commMenu = OptionMenu(frame, self.commVar, "Yes", *yesno)
+        commMenu.grid(row=8, column=1, padx=20, pady=10)
 
         # Buttons
         button1 = Button(frame, text="Add Property", command=self.addPropertyOnClick)
-        button1.grid(row=6, column=0, sticky='w')
+        button1.grid(row=9, column=0, sticky='w')
         #TODO: REGISTER COMPLETE PAGE
         button2 = Button(frame, text="Cancel", command=lambda: self.controller.show_frame(ownerFunctionality))
-        button2.grid(row=6, column=1, sticky='w')
+        button2.grid(row=9, column=1, sticky='w')
 
     def addPropertyOnClick(self):
-        print("button clicked")
+        msg = StringVar()
+
+        # Make sure every field is filled in
+        if len(self.name.get()) == 0 or len(self.street.get()) == 0 or len(self.city.get()) == 0 or len(self.zipcode.get()) == 0 or len(self.acres.get()) == 0:
+            messagebox.showerror("Error", "All fields are required")
+        else:
+            # Make sure property name is unique
+            propNameExists = DBManager.checkPropertyName(self, self.name.get())
+            if not propNameExists:
+                # Add property
+
+                # Change public and commercial to 1 or 0
+                if self.publicVar.get() == 'Yes':
+                    public = 1
+                else:
+                    public = 0
+
+                if self.commVar.get() == 'Yes':
+                    comm = 1
+                else:
+                    comm = 0
+
+                addProp = DBManager.addProperty(self, self.name.get(), self.street.get(), self.city.get(),
+                                                self.zipcode.get(), public, comm, self.propTypeVar.get(),
+                                                self.controller.username, self.acres.get())
+
+                # Get property ID for the new property
+                propID = DBManager.getPropertyID(self, self.name.get())
+
+                # Add crop to Has table
+                crop = self.cropVar.get()
+                cropAdded = DBManager.addItem(self, propID, crop)
+
+                # If property is a farm then add animal also
+                if self.propTypeVar.get() == 'Farm':
+                    animal = self.animalVar.get()
+                    animalAdded = DBManager.addItem(self, propID, animal)
+
+                    # Make sure everything was successful (including animal)
+                    if addProp and cropAdded and animalAdded:
+                        # Now add user to User table
+                        messagebox.showerror("Property added", "Property was successfully added!")
+                        self.controller.show_frame(ownerFunctionality)
+                    else:
+                        messagebox.showerror("Error", "Something went wrong")
+                else:
+                    # Make sure everything was successful
+                    if addProp and cropAdded:
+                        # Now add user to User table
+                        messagebox.showerror("Property added", "Property was successfully added!")
+                        self.controller.show_frame(ownerFunctionality)
+                    else:
+                        messagebox.showerror("Error", "Something went wrong")
+            else:
+                messagebox.showerror("Error", "All fields are required")
+
+
+    def propertyTypeChange(self, value):
+        if value == 'Farm':
+            # Farm GUI
+            self.cropMenu.destroy()
+
+            # Get list of approved, fruits, nuts, veggies, and flowers
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = fruits + nuts + veggies + flowers
+
+            # Get approved animals
+            self.animal = Label(self.frame, text="Animal:* ")
+            self.animal.grid(row=6, column=2, padx=20, pady=10)
+
+            animals = DBManager.getApprovedAnimals(self)
+            self.animalVar = StringVar()
+            self.animalMenu = OptionMenu(self.frame, self.animalVar, *animals)
+            self.animalMenu.grid(row=6, column=3, padx=20, pady=10)
+
+        elif value == 'Garden':
+            # Garden
+            self.cropMenu.destroy()
+            self.animal.destroy()
+            self.animalMenu.destroy()
+
+            # Get approved vegetables and flowers from DB
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = veggies + flowers
+
+        else:
+            # Orchard
+            self.cropMenu.destroy()
+            self.animal.destroy()
+            self.animalMenu.destroy()
+
+            # Get approved vegetables and flowers from DB
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            crops = fruits + nuts
+
+        # Recreate drop down menu with new approved crops
+        self.cropVar = StringVar()
+        self.cropMenu = OptionMenu(self.frame, self.cropVar, *crops)
+        self.cropMenu.grid(row=6, column=1, padx=20, pady=10)
+
+        return value
 
 
 class visitorPropertyPage(Frame):
