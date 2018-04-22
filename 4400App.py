@@ -42,8 +42,8 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(loginPage)
-
+        #self.show_frame(loginPage)
+        self.show_frame(approvedOrganisms)
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
@@ -282,7 +282,7 @@ class visitorView(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         
-        #WORKING HERE
+        
 
         #load data
         publicProps = DBManager.getPublicProperties(self)
@@ -1144,9 +1144,13 @@ class approvedOrganisms(Frame):
 
         frame = Frame(self)
         self.frame = frame
+
+
         table = Treeview(frame,selectmode='browse')
         self.table = table
         table['columns'] = ('Type')
+        table.bind("<Button-1>", self.onClick)
+
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
         table.heading('Type', text='Type')
@@ -1163,6 +1167,39 @@ class approvedOrganisms(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
+        crops = []
+       
+        v = DBManager.getApprovedVegetables(self)
+        for x in v:    
+            crops.append((x, "Vegetable"))
+
+        f = DBManager.getApprovedFlowers(self)
+        for x in f:
+            crops.append((x, "Flower"))
+
+        n = DBManager.getApprovedNuts(self)
+        for x in n:
+            crops.append((x, "Nut"))
+        
+        a = DBManager.getApprovedAnimals(self)
+        for x in a:
+            crops.append((x, "Animal"))
+
+        fr= DBManager.getApprovedFruits(self)
+        for x in fr:
+            crops.append((x, "Fruit"))
+       
+        if crops is None:
+            crops = []
+
+        for c in crops:
+
+            Name = c[0]
+            Type = c[1]
+
+            newProp = [Type,Name]
+            
+            frame.treeview.insert('', 'end', text=Name, values=newProp)
 
         types = {'Fruit', 'Vegetable', 'Nut', 'Flower', 'Animal'}
         
@@ -1237,6 +1274,9 @@ class approvedOrganisms(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
