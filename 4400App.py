@@ -318,56 +318,53 @@ class visitorView(Frame):
                 #print(self.table.item(child, "values"))
                 if (temp1[index] == self.term.get()):
                     self.frame.treeview.selection_set(child)
-                    
                 else:
-                    res = self.searchfunc(child)
+                    if ('-' in self.term.get()):
+                        tempterm = self.term.get().split("-")  
+                        # print(float(temp1[index]))
+                        # print(float(tempterm[0]))
+                        if (float(temp1[index]) > float(tempterm[0]) and float(temp1[index]) < float(tempterm[1])):
+                            self.frame.treeview.selection_set(child)
+                        else:
+                            res = self.searchfunc(child)
                     
-                    self.removed.append(temp1)
-                    self.frame.treeview.delete(child)
-                    if res:
-                        break
-        # children = self.frame.treeview.get_children(item)
-        # if(self.term.get() ==  ''):
-        #     for i in range(len(self.removed)):
-        #         self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1], self.removed[i][2], self.removed[i][3], self.removed[i][4], self.removed[i][5], self.removed[i][6], self.removed[i][7], self.removed[i][8], self.removed[i][9], self.removed[i][10]))
-        #     self.removed = []
-        # else:
-        #     index = 0
-        #     if (self.search.get() == "Name"):
-        #         index = 0
-        #     elif (self.search.get() == "City"):
-        #         index = 2
-        #     elif (self.search.get() == "Type"):
-        #         index = 5
-        #     elif (self.search.get() == "Visits"):
-        #         index = 9
-        #     elif (self.search.get() == "Avg Rating"):
-        #         index = 10
+                            self.removed.append(temp1)
+                            self.frame.treeview.delete(child)
+                            if res:
+                                break
 
-        #     for child in children:
-        #         text = []
-                
-        #         text = self.table.item(child, "values")
-        #         print(text[index], self.term.get())
-        #         if (text[index] == self.term.get()):
-        #             self.frame.treeview.selection_set(child)
+                    else:
+                        res = self.searchfunc(child)
                     
-        #         else:
-        #             res = self.searchfunc(child)
-        #             temp = []
-        #             temp.append(text)
-        #             for x in self.table.item(child, "values"):
-        #                 temp.append(x)
-        #             self.removed.append(temp)
-        #             self.frame.treeview.delete(child)
-        #             if res:
-        #                 break
-        
-            
+                        self.removed.append(temp1)
+                        self.frame.treeview.delete(child)
+                        if res:
+                            break
+
+    
+
     def onClick(self, event):
-        print(self.search.get())
-        # item = self.table.identify('item',event.x,event.y)
-        # i = [self.table.item(item, "text") ]
+        
+        item = self.table.identify_column(event.x)
+
+        if self.table.identify_region(event.x, event.y) == "heading":
+
+            if item == '#0':
+                #Name
+                print("Name")
+
+            if item == '#2':
+                #City
+                print("City")
+            if item == '#5':
+                #Type
+                print("Type")
+            if item == '#9':
+                #Visits
+                print("Visits")
+            if item == '#10':
+                #Avg Rating
+                print("Avg Rating")
         # for x in self.table.item(item, "values"):
         #     i.append(x)
         # self.selectedVisitorprop = i
