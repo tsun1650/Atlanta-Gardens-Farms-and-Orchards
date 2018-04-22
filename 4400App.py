@@ -344,27 +344,57 @@ class visitorView(Frame):
     
 
     def onClick(self, event):
-        
         item = self.table.identify_column(event.x)
+        
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
-        if self.table.identify_region(event.x, event.y) == "heading":
+            children = self.frame.treeview.get_children('')
+            temp = []
+            for child in children:
+                temp1 = []
+                text = self.frame.treeview.item(child, 'text')
+                temp1.append(text)
+                for x in self.table.item(child, "values"):
+                    temp1.append(x)
+                temp.append(temp1)
+                self.frame.treeview.delete(child)
 
             if item == '#0':
                 #Name
                 print("Name")
+                temp.sort(key=lambda x: x[0])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
 
             if item == '#2':
                 #City
                 print("City")
+                temp.sort(key=lambda x: x[2])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
             if item == '#5':
                 #Type
                 print("Type")
+                temp.sort(key=lambda x: x[5])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
             if item == '#9':
                 #Visits
                 print("Visits")
+                temp.sort(key=lambda x: x[9])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
             if item == '#10':
                 #Avg Rating
                 print("Avg Rating")
+                temp.sort(key=lambda x: x[10])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
         # for x in self.table.item(item, "values"):
         #     i.append(x)
         # self.selectedVisitorprop = i
