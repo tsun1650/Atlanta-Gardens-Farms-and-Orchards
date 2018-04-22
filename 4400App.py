@@ -33,15 +33,9 @@ class Atlanta(Tk):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
-<<<<<<< HEAD
-        self.show_frame(approvedOrganisms)
-||||||| merged common ancestors
-        self.show_frame(loginPage)
-=======
 
-        self.show_frame(loginPage)
->>>>>>> c1824790c55894c90f92edb53460692e3cfd66f0
-        #self.show_frame(viewVisitorList)
+        self.show_frame(approvedOrganisms)
+
 
     def show_frame(self, cont):
         frame = self.frames[cont]
@@ -1071,48 +1065,48 @@ class approvedOrganisms(Frame):
         label.grid(row=0, column=0)
 
         frame = Frame(self)
-
-        self.frame = frame
-        self.table = Treeview(frame,selectmode='browse')
-        self.table['columns'] = ('Type')
-        self.table.heading('#0', text='Name', anchor='w')
-        self.table.column('#0', anchor='w')
-
-        self.frame = frame
         table = Treeview(frame)
+        self.frame = frame
         self.table = table
+        table = Treeview(frame,selectmode='browse')
+        table['columns'] = ('Type')
+        table.heading('#0', text='Name', anchor='w')
+        table.column('#0', anchor='w')
 
-        self.table.heading('Type', text='Type')
-        self.table.column('Type', anchor='center', width = 100)
+        
+        
 
-        self.table['columns'] = ('Type')
-        self.table.heading('#0', text='Name', anchor='w')
-        self.table.column('#0', anchor='w')
+        table.heading('Type', text='Type')
+        table.column('Type', anchor='center', width = 100)
+
+        table['columns'] = ('Type')
+        table.heading('#0', text='Name', anchor='w')
+        table.column('#0', anchor='w')
 
         
 
-        self.table.grid(sticky=(N,S,W,E))
-        self.table.bind("<Button-1>", self.onClick)
-        frame.treeview = self.table
+        table.grid(sticky=(N,S,W,E))
+        table.bind("<Button-1>", self.onClick)
+        frame.treeview = table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
 
-        self.table.heading('Type', text='Type')
-        self.table.column('Type', anchor='center', width = 100)
+        table.heading('Type', text='Type')
+        table.column('Type', anchor='center', width = 100)
         
-        self.table.grid(sticky=(N,S,W,E))
-        self.frame.treeview = table
-        self.frame.grid_rowconfigure(0, weight=1)
-        self.frame.grid_columnconfigure(0, weight=1)
+        table.grid(sticky=(N,S,W,E))
+        frame.treeview = table
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
 
-        self.frame.grid(sticky=(N,S,W,E))
+        frame.grid(sticky=(N,S,W,E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
         # Loads temp Data
-        self.frame.treeview.insert('', 'end', text='Apple', values=('Fruit'))
-        self.frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
-        self.frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
+        frame.treeview.insert('', 'end', text='Apple', values=('Fruit'))
+        frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
+        frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
 
         types = {'Fruit', 'Vegetable', 'Nut', 'Flower', 'Animal'}
         
@@ -1125,7 +1119,7 @@ class approvedOrganisms(Frame):
         self.add = add
 
         search.set('Enter name')
-        self.search = search
+       
         search_menu = OptionMenu(frame, search, *types)
         search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
 
@@ -1234,6 +1228,9 @@ class pendingOrganisms(Frame):
 
         frame = Frame(self)
         table = Treeview(frame)
+        self.table = table
+        self.removed = []
+        self.frame = frame
         table['columns'] = ('Type')
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
@@ -1255,8 +1252,6 @@ class pendingOrganisms(Frame):
         frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
         frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
 
-        types = {'Fruit', 'Animal', 'Vegetable'}
-        
         approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
         approveB.grid(row=4, column=0, sticky='w')
 
@@ -1266,9 +1261,40 @@ class pendingOrganisms(Frame):
         back = Button(self, text="Back", command=lambda: controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e')
 
+    def searchfunc(self, item=''):
+        children = self.frame.treeview.get_children(item)
+        if(self.searchterm.get() ==  ''):
+            for i in range(len(self.removed)):
+                self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1]))
+            self.removed = []
+        else:
+            index = 0
+            if (self.search.get() == "Name"):
+                index = 0
+            elif (self.search.get() == "Type"):
+                index = 1
+          
+            for child in children:
+                temp1 = []
+                text = self.frame.treeview.item(child, 'text')
+                temp1.append(text)
+                for x in self.table.item(child, "values"):
+                        temp1.append(x)
+                
+                if (temp1[index] == self.searchterm.get()):
+                    self.frame.treeview.selection_set(child)
+                else:
+                    res = self.searchfunc(child)
+                
+                    self.removed.append(temp1)
+                    self.frame.treeview.delete(child)
+                    if res:
+                        break
+
     def onClick(self, event):
         item = self.table.identify_column(event.x)
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
+
 
             children = self.frame.treeview.get_children('')
             temp = []
@@ -1286,14 +1312,13 @@ class pendingOrganisms(Frame):
                 print("Name")
                 temp.sort(key=lambda x: x[0])
                 for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1]))
             if item == '#1':
                 #Type
                 print("Type")
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
-            
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1]))
 
 class confirmedProperties(Frame):
     def __init__(self, parent, controller):
