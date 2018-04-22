@@ -700,7 +700,7 @@ class ownerRegistration(Frame):
             messagebox.showerror("Error", "Must input Username")
         elif len(self.propName.get()) == 0:
             messagebox.showerror("Error", "Must input Property Name")
-        elif len(self.street.get()) == 0:
+        elif len(self.propAddress.get()) == 0:
             messagebox.showerror("Error", "Must input Street Address")
         elif len(self.propCity.get()) == 0:
             messagebox.showerror("Error", "Must input City")
@@ -1941,7 +1941,7 @@ class otherOwnerProperties(Frame):
         frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
 
 
-        types = {'Name', 'City', 'Type', 'Visits','Avg Rating'}
+        types = {'Name', 'City', 'Public', 'Visits','Avg Rating'}
         
         search = StringVar()
         search.set(' ')
@@ -1974,7 +1974,7 @@ class otherOwnerProperties(Frame):
                 index = 0
             elif (self.search.get() == "City"):
                 index = 2
-            elif (self.search.get() == "Type"):
+            elif (self.search.get() == "Public"):
                 index = 5
             elif (self.search.get() == "Visits"):
                 index = 9
@@ -2016,7 +2016,7 @@ class otherOwnerProperties(Frame):
     def onClick(self, event):
         item = self.table.identify_column(event.x)
 
-        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#6', '#9', '#10']:
 
             children = self.frame.treeview.get_children('')
             temp = []
@@ -2044,10 +2044,10 @@ class otherOwnerProperties(Frame):
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#5':
+            if item == '#6':
                 #Type
 
-                temp.sort(key=lambda x: x[5])
+                temp.sort(key=lambda x: x[6])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
