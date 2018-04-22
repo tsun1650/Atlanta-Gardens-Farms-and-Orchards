@@ -27,7 +27,7 @@ class Atlanta(Tk):
         prop = []
         self.prop = prop
 
-
+        self.propID = StringVar()
         #########################################
         #          Make sure you add            #
         #          your new page here           #
@@ -1134,7 +1134,6 @@ class viewOwnerList(Frame):
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
 
-
 class approvedOrganisms(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
@@ -1360,6 +1359,7 @@ class pendingOrganisms(Frame):
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1]))
+
 class confirmedProperties(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
@@ -1681,7 +1681,6 @@ class unconfirmedProperties(Frame):
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9]))
 
-            
 
 class addNewProperty(Frame):
     def __init__(self, parent, controller):
