@@ -27,7 +27,7 @@ class Atlanta(Tk):
         prop = []
         self.prop = prop
 
-
+        self.propID = StringVar()
         #########################################
         #          Make sure you add            #
         #          your new page here           #
@@ -42,8 +42,8 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(adminFunctions)
 
+        self.show_frame(loginPage)
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
@@ -282,7 +282,7 @@ class visitorView(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         
-        #WORKING HERE
+        
 
         #load data
         publicProps = DBManager.getPublicProperties(self)
@@ -1134,7 +1134,6 @@ class viewOwnerList(Frame):
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
 
-
 class approvedOrganisms(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
@@ -1144,9 +1143,13 @@ class approvedOrganisms(Frame):
 
         frame = Frame(self)
         self.frame = frame
+
+
         table = Treeview(frame,selectmode='browse')
         self.table = table
         table['columns'] = ('Type')
+        table.bind("<Button-1>", self.onClick)
+
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
         table.heading('Type', text='Type')
@@ -1163,6 +1166,39 @@ class approvedOrganisms(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
+        crops = []
+       
+        v = DBManager.getApprovedVegetables(self)
+        for x in v:    
+            crops.append((x, "Vegetable"))
+
+        f = DBManager.getApprovedFlowers(self)
+        for x in f:
+            crops.append((x, "Flower"))
+
+        n = DBManager.getApprovedNuts(self)
+        for x in n:
+            crops.append((x, "Nut"))
+        
+        a = DBManager.getApprovedAnimals(self)
+        for x in a:
+            crops.append((x, "Animal"))
+
+        fr= DBManager.getApprovedFruits(self)
+        for x in fr:
+            crops.append((x, "Fruit"))
+       
+        if crops is None:
+            crops = []
+
+        for c in crops:
+
+            Name = c[0]
+            Type = c[1]
+
+            newProp = [Type,Name]
+            
+            frame.treeview.insert('', 'end', text=Name, values=newProp)
 
         types = {'Fruit', 'Vegetable', 'Nut', 'Flower', 'Animal'}
         
@@ -1237,6 +1273,9 @@ class approvedOrganisms(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
@@ -1360,6 +1399,7 @@ class pendingOrganisms(Frame):
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1]))
+
 class confirmedProperties(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
@@ -1750,7 +1790,6 @@ class unconfirmedProperties(Frame):
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9]))
 
-            
 
 class addNewProperty(Frame):
     def __init__(self, parent, controller):
@@ -2030,36 +2069,66 @@ class propertyDetails(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
         Frame.__init__(self, parent)
-        name = Label(self, text="Name: ")
+
+        # Get property details
+        propDeets = DBManager.getPropertyDetails(self, self.controller.propID)[0]
+        name = propDeets[1]
+        size = propDeets[2]
+        comm = propDeets[3]
+        pub = propDeets[4]
+        street = propDeets[5]
+        city = propDeets[6]
+        zipcode = propDeets[7]
+        proptype = propDeets[8]
+        owner = propDeets[9]
+
+        # Change tinyint values into true/false for commercial and public
+        if comm == 1:
+            commercial = "True"
+        else:
+            commercial = "False"
+
+        if pub == 1:
+            public = "True"
+        else:
+            public = "False"
+
+        # Get owner email
+        email = DBManager.getEmail(self, owner)[0]
+
+        # Get crops
+        crops = DBManager.getPropertyCrops(self, self.controller.propID)
+
+        name = Label(self, text="Name: " + name)
         name.pack()
-        owner = Label(self, text="Owner: ")
+        owner = Label(self, text="Owner: " + owner)
         owner.pack()
-        ownerEmail = Label(self, text="Owner Email: ")
+        ownerEmail = Label(self, text="Owner Email: " + email)
         ownerEmail.pack()
         visits = Label(self, text="Visits: ")
         visits.pack()
-        address = Label(self, text="Address: ")
+        address = Label(self, text="Address: " + street)
         address.pack()
-        city = Label(self, text="City: ")
+        city = Label(self, text="City: " + city)
         city.pack()
-        zipcode = Label(self, text="Zip : ")
+        zipcode = Label(self, text="Zip : " + str(zipcode))
         zipcode.pack()
-        size = Label(self, text="Size (acres): ")
+        size = Label(self, text="Size (acres): " + str(size))
         size.pack()
         rating = Label(self, text="Avg Rating: ")
         rating.pack()
-        typeProp = Label(self, text="Type: ")
+        typeProp = Label(self, text="Type: " + proptype)
         typeProp.pack()
-        public = Label(self, text="Public: ")
+        public = Label(self, text="Public: " + public)
         public.pack()
-        commercial = Label(self, text="Commercial: ")
+        commercial = Label(self, text="Commercial: " + commercial)
         commercial.pack()
-        idnum = Label(self, text="ID: ")
+        idnum = Label(self, text="ID: " + str(self.controller.propID))
         idnum.pack()
 
-        crops = Label(self, text="Crops: ")
+        crops = Label(self, text="Crops: " + str(crops))
         crops.pack()
-        back = Button(self, text="Back", command=lambda: self.controller.show_frame(visitorView))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(otherOwnerProperties))
         back.pack()
 
 class otherOwnerProperties(Frame):
@@ -2069,45 +2138,94 @@ class otherOwnerProperties(Frame):
         label = Label(self, text="All Other Valid Properties", font =LARGE_FONT)
         label.grid(row=0, column=0)
 
-
         frame = Frame(self)
 
+        # Get other owner properties
+        propList = DBManager.getOtherOwnerProperties(self, self.controller.username)
+
+        # Create owner property tables
         table = Treeview(frame)
         self.frame = frame
         self.table = table
         self.table.bind("<Button-1>", self.onClick)
+        table['columns'] = ('Name', 'Size', 'Commercial', 'Public', 'Street', 'City', 'ZIP', 'Type', 'Owner',
+                            'Approved')
 
-        table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'visits', 'rating')
-        table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
-        table.heading('address', text='Address')
-        table.column('address', anchor='center', width = 100)
-        table.heading('city', text='City')
-        table.column('city', anchor='center', width = 100)
-        table.heading('zip', text='Zip')
-        table.column('zip', anchor='center', width = 100)
-        table.heading('size', text='Size')
-        table.column('size', anchor='center', width = 100)
-        table.heading('type', text='Type')
-        table.column('type', anchor='center', width = 100)
-        table.heading('public', text='Public')
-        table.column('public', anchor='center', width = 100)
-        table.heading('commercial', text='Commercial')
-        table.column('commercial', anchor='center', width = 100)
-        table.heading('id', text='ID')
-        table.column('id', anchor='center', width = 100)
-        table.heading('visits', text='Visits')
-        table.column('visits', anchor='center', width = 100)
-        table.heading('rating', text='Avg Rating')
-        table.column('rating', anchor='center', width = 100)
-        table.grid(sticky=(N,S,W,E))
+        table.heading('#0', text='ID', anchor='w')
+
+        table.column('Name', anchor='center', width=100)
+        table.heading('Name', text='Name')
+
+        table.column('Size', anchor='center', width=100)
+        table.heading('Size', text='Size')
+
+        table.column('Commercial', anchor='center', width=100)
+        table.heading('Commercial', text='Commercial')
+
+        table.column('Public', anchor='center', width=100)
+        table.heading('Public', text='Public')
+
+        table.column('Street', anchor='center', width=100)
+        table.heading('Street', text='Street')
+
+        table.column('City', anchor='center', width=100)
+        table.heading('City', text='City')
+
+        table.column('ZIP', anchor='center', width=100)
+        table.heading('ZIP', text='ZIP')
+
+        table.column('Type', anchor='center', width=100)
+        table.heading('Type', text='Type')
+
+        table.column('Owner', anchor='center', width=100)
+        table.heading('Owner', text='Owner')
+
+        table.column('Approved', anchor='center', width=100)
+        table.heading('Approved', text='Approved')
+
+        table.grid(sticky=(N, S, W, E))
         frame.treeview = table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
 
-        frame.grid(sticky=(N,S,W,E))
+        frame.grid(sticky=(N, S, W, E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
+
+        for prop in propList:
+            id = prop[0]
+            name = prop[1]
+            size = prop[2]
+            comm = prop[3]
+            pub = prop[4]
+            st = prop[5]
+            city = prop[6]
+            zip = prop[7]
+            type = prop[8]
+            owner = prop[9]
+            appr = prop[10]
+
+            # Change tinyint values into true/false for commercial and public
+            if comm == 1:
+                commercial = True
+            else:
+                commercial = False
+
+            if pub == 1:
+                public = True
+            else:
+                public = False
+
+            # Change approved value from null or 1 to true/false
+            if appr is None:
+                approved = False
+            else:
+                approved = True
+
+            newProp = [name, size, commercial, public, st, city, zip, type, owner, approved]
+
+            frame.treeview.insert('', 'end', text=id, values=newProp)
 
         # Loads temp Data
         
@@ -2126,7 +2244,7 @@ class otherOwnerProperties(Frame):
         searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        viewprop = Button(self, text="View Property Details", command=lambda: self.controller.show_frame(propertyDetails))
+        viewprop = Button(self, text="View Property Details", command=self.viewPropertyOnClick)
         viewprop.grid(row=3, column=0, padx=50, pady=10)
         ## TO DO: BACK MUST GO TO THE RIGHT PAGE
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(loginPage))
@@ -2185,6 +2303,8 @@ class otherOwnerProperties(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#6', '#9', '#10']:
 
@@ -2234,6 +2354,10 @@ class otherOwnerProperties(Frame):
                 temp.sort(key=lambda x: x[10])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
+    def viewPropertyOnClick(self):
+        self.controller.propID = self.element
+        self.controller.show_frame(propertyDetails)
 
 class ownerFunctionality(Frame):
     def __init__(self, parent, controller):
