@@ -596,8 +596,10 @@ class DBManager:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
         finally:
-<<<<<<< HEAD
+
             conn.close()
+
+
     def getPublicProperties(self):
         # SQL statement to execute
         sql = "SELECT * FROM Property WHERE IsPublic = %s AND ApprovedBy <> %s ;"
@@ -623,10 +625,32 @@ class DBManager:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
         finally:
-||||||| merged common ancestors
-=======
-            conn.close()
 
+            conn.close()
+    def getPropertyDetails(self, propID):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE ID = %s;"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+        # Execute query
+        cursor = conn.cursor()
+        cursor.execute(sql, propID)
+
+        # Get result
+        result = cursor.fetchall()
+
+        # Put it in a list
+        resultList = [item for item in result]
+
+        return resultList
+        except Exception as e:
+        print("ERROR: {}".format(e))
+        print(logging.exception("error happened"))
+        finally:
+        conn.close()
     def getVisitHistory(self, username):
         # SQL statement to execute
         sql = "SELECT Name, VisitDate, Rating FROM Visit JOIN Property ON ID = PropertyID AND Username = %s"
@@ -650,5 +674,5 @@ class DBManager:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
         finally:
->>>>>>> 5f4bc902ab1ff8b873c0e9dcc7d4a228d1d90277
+
             conn.close()
