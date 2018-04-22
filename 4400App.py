@@ -38,14 +38,15 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(approvedOrganisms)
+        self.show_frame(loginPage)
 
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
 
         newFrame = frame(self.container, self)
-        newFrame.grid(row=0, column=0, sticky="nsew")
+        #newFrame.grid(row=0, column=0, sticky="nsew")
+        newFrame.pack()
         if self._frame is not None:
             self._frame.destroy()
         self._frame = newFrame
