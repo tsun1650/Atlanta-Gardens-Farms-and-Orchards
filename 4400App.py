@@ -152,6 +152,8 @@ class visitorRegistration(Frame):
             messagebox.showerror("Error", "Password must be at least 8 character")
         elif (self.password.get() != self.confirmPassword.get()):
             messagebox.showerror("Error", "Confirm password does not match")
+        elif (len(self.username.get()) == 0):
+            messagebox.showerror("Error", "Must input Username")
         elif("@" not in self.email.get()):
             messagebox.showerror("Error", "Invalid email")
         else:
@@ -576,7 +578,7 @@ class ownerRegistration(Frame):
             self.cropMenu.destroy()
             self.animal.destroy()
             self.animalMenu.destroy()
-            self.cropMenu.destroy()
+        
             # Get approved vegetables and flowers from DB
             veggies = DBManager.getApprovedVegetables(self)
             flowers = DBManager.getApprovedFlowers(self)
@@ -587,7 +589,7 @@ class ownerRegistration(Frame):
             self.cropMenu.destroy()
             self.animal.destroy()
             self.animalMenu.destroy()
-            self.cropMenu.destroy()
+           
             # Get approved vegetables and flowers from DB
             fruits = DBManager.getApprovedFruits(self)
             nuts = DBManager.getApprovedNuts(self)
@@ -607,6 +609,8 @@ class ownerRegistration(Frame):
             messagebox.showerror("Error", "Password must be at least 8 character")
         elif self.password.get() != self.confirmPassword.get():
             messagebox.showerror("Error", "Confirm password does not match")
+        elif(len(self.username.get()) == 0):
+            messagebox.showerror("Error", "Must input Username")
         elif "@" not in self.email.get():
             messagebox.showerror("Error", "Invalid email")
         else:
