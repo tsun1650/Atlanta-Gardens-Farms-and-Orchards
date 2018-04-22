@@ -34,7 +34,7 @@ class Atlanta(Tk):
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
-        self.show_frame(visitHistory)
+        self.show_frame(loginPage)
         #self.show_frame(viewVisitorList)
 
     def show_frame(self, cont):
