@@ -205,7 +205,7 @@ class visitorView(Frame):
         self.table = Treeview(frame, selectmode='browse')
         self.table.bind("<Button-1>", self.onClick)
         self.selectedVisitorprop = []
-
+        self.frame = frame
         self.table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'visits', 'rating')
         self.table.heading('#0', text='Name', anchor='w')
         self.table.column('#0', anchor='w')
@@ -265,18 +265,19 @@ class visitorView(Frame):
         frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
 
 
-        types = {'Search by...', 'Name', 'City', 'Type', 'Visits','Avg Rating'}
-        
+        types = {'Name', 'City', 'Type', 'Visits','Avg Rating'}
+    
         search = StringVar()
-        search.set('Search by...')
-        search_menu = OptionMenu(frame, search, *types)
+        search.set(' ')
+        self.search = search
+        search_menu = OptionMenu(frame, search, 'Name', *types)
         search_menu.grid(row=3, column=0, sticky='w', padx=50, pady=10)
+        self.term = Entry(self, text="Search Term")
+        self.term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
 
-        term = Entry(self, text="Search Term")
-        term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
-
-        searchprop = Button(self, text="Search Properties", command=lambda: controller.show_frame(loginPage))
-        searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
+        self.removed = []
+        self.searchprop = Button(self, text="Search Properties", command=self.searchfunc)
+        self.searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
         viewprop = Button(self, text="View Property", command=lambda: controller.show_frame(visitorPropertyPage))
         viewprop.grid(row=3, column=0, padx=50, pady=10)
@@ -287,13 +288,39 @@ class visitorView(Frame):
         logout = Button(self, text="Log Out", command=lambda: controller.show_frame(loginPage))
         logout.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
+    def searchfunc(self, item=''):
+        children = self.frame.treeview.get_children(item)
+        if(self.term.get() ==  ''):
+            for i in range(len(self.removed)):
+                self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1], self.removed[i][2], self.removed[i][3], self.removed[i][4], self.removed[i][5], self.removed[i][6], self.removed[i][7], self.removed[i][8], self.removed[i][9], self.removed[i][10]))
+            self.removed = []
+        else:
+            for child in children:
+                text = self.frame.treeview.item(child, 'text')
+                #print(self.table.item(child, "values"))
+                if text.startswith(self.term.get()):
+                    self.frame.treeview.selection_set(child)
+                    
+                else:
+                    res = self.searchfunc(child)
+                    temp = []
+                    temp.append(text)
+                    for x in self.table.item(child, "values"):
+                        temp.append(x)
+                    self.removed.append(temp)
+                    self.frame.treeview.delete(child)
+                    if res:
+                        break
+        
+            
     def onClick(self, event):
-        item = self.table.identify('item',event.x,event.y)
-        i = [self.table.item(item, "text") ]
-        for x in self.table.item(item, "values"):
-            i.append(x)
-        self.selectedVisitorprop = i
-        print(self.selectedVisitorprop)
+        print(self.search.get())
+        # item = self.table.identify('item',event.x,event.y)
+        # i = [self.table.item(item, "text") ]
+        # for x in self.table.item(item, "values"):
+        #     i.append(x)
+        # self.selectedVisitorprop = i
+        # print(self.selectedVisitorprop)
 
 
 class visitHistory(Frame):
