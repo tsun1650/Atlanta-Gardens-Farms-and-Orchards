@@ -22,7 +22,7 @@ class Atlanta(Tk):
         self.frames = {}
 
         # Will eventually hold the email of the current user
-        self.email = StringVar()
+        self.username = StringVar()
 
         #########################################
         #          Make sure you add            #
@@ -64,11 +64,11 @@ class loginPage(Frame):
         self.f = f
         f.pack(padx=5, pady=20, side=LEFT)
         
-        email = Label(f, text="Email: ")
+        email = Label(f, text="Username: ")
         email.grid(row=0, column=0, sticky='w')
         email.focus_set()
 
-        self.emailEntry = Entry(f, background='white', width=24, textvariable=self.controller.email)
+        self.emailEntry = Entry(f, background='white', width=24, textvariable=self.controller.username)
         self.emailEntry.grid(row=0, column=1, sticky='w')
         self.emailEntry.focus_set()
 
@@ -100,10 +100,10 @@ class loginPage(Frame):
         verify = DBManager.verifyLogin(self, self.emailEntry.get(), hashPass)
 
         if verify:
-            self.controller.email = self.emailEntry.get()
+            self.controller.username = self.emailEntry.get()
 
             # log in was successful; fetch user type
-            userType = DBManager.getUserType(self, self.controller.email)
+            userType = DBManager.getUserType(self, self.controller.username)
 
             if "OWNER" in userType:
                 self.controller.show_frame(ownerFunctionality)
@@ -2073,8 +2073,11 @@ class ownerFunctionality(Frame):
 
         # Get owners email
         self.controller = controller
-        email = self.controller.email
-        welcomemsg = "Welcome " + email
+        username = self.controller.username
+        welcomemsg = "Welcome " + username
+
+        # Get a list with all of the owners properties
+        propList = DBManager.getOwnerProperties(self, username)
 
         label = Label(self, text=welcomemsg, font=LARGE_FONT)
         label.grid(row=0, column=0)
@@ -2082,35 +2085,46 @@ class ownerFunctionality(Frame):
         props = Label(self, text="Your properties:")
         props.grid(row=1, column=0)
 
+        # Create owner property tables
         table = Treeview(frame)
         self.frame = frame
         self.table = table
         self.table.bind("<Button-1>", self.onClick)
-        table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'visits', 'rating', 'isValid')
-        table.heading('#0', text='Name', anchor='w')
+        table['columns'] = ('Name', 'Size', 'Commercial', 'Public', 'Street', 'City', 'ZIP', 'Type', 'Owner',
+                            'Approved')
+
         table.column('#0', anchor='w')
-        table.heading('address', text='Address')
-        table.column('address', anchor='center', width = 100)
-        table.heading('city', text='City')
-        table.column('city', anchor='center', width = 100)
-        table.heading('zip', text='Zip')
-        table.column('zip', anchor='center', width = 100)
-        table.heading('size', text='Size')
-        table.column('size', anchor='center', width = 100)
-        table.heading('type', text='Type')
-        table.column('type', anchor='center', width = 100)
-        table.heading('public', text='Public')
-        table.column('public', anchor='center', width = 100)
-        table.heading('commercial', text='Commercial')
-        table.column('commercial', anchor='center', width = 100)
-        table.heading('id', text='ID')
-        table.column('id', anchor='center', width = 100)
-        table.heading('isValid', text='isValid')
-        table.column('isValid', anchor='center', width = 100)
-        table.heading('visits', text='Visits')
-        table.column('visits', anchor='center', width = 100)
-        table.heading('rating', text='Avg Rating')
-        table.column('rating', anchor='center', width = 100)
+        table.heading('#0', text='ID', anchor='w')
+
+        table.column('Name', anchor='center', width=100)
+        table.heading('Name', text='Name')
+
+        table.column('Size', anchor='center', width=100)
+        table.heading('Size', text='Size')
+
+        table.column('Commercial', anchor='center', width=100)
+        table.heading('Commercial', text='Commercial')
+
+        table.column('Public', anchor='center', width=100)
+        table.heading('Public', text='Public')
+
+        table.column('Street', anchor='center', width=100)
+        table.heading('Street', text='Street')
+
+        table.column('City', anchor='center', width=100)
+        table.heading('City', text='City')
+
+        table.column('ZIP', anchor='center', width=100)
+        table.heading('ZIP', text='ZIP')
+
+        table.column('Type', anchor='center', width=100)
+        table.heading('Type', text='Type')
+
+        table.column('Owner', anchor='center', width=100)
+        table.heading('Owner', text='Owner')
+
+        table.column('Approved', anchor='center', width=100)
+        table.heading('Approved', text='Approved')
 
         table.grid(sticky=(N,S,W,E))
         frame.treeview = table
@@ -2121,34 +2135,41 @@ class ownerFunctionality(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        # Loads temp Data
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
+        for prop in propList:
+            id = prop[0]
+            name = prop[1]
+            size = prop[2]
+            comm = prop[3]
+            pub = prop[4]
+            st = prop[5]
+            city = prop[6]
+            zip = prop[7]
+            type = prop[8]
+            owner = prop[9]
+            appr = prop[10]
 
+            # Change tinyint values into true/false for commercial and public
+            if comm == 1:
+                commercial = True
+            else:
+                commercial = False
 
-        types = {'Name', 'City', 'Type', 'Visits','Avg Rating'}
+            if pub == 1:
+                public = True
+            else:
+                public = False
+
+            # Change approved value from null or 1 to true/false
+            if appr is None:
+                approved = False
+            else:
+                approved = True
+
+            newProp = [name, size, commercial, public, st, city, zip, type, owner, approved]
+
+            frame.treeview.insert('', 'end', text=id, values=newProp)
+
+        types = {'Name', 'City', 'Type', 'Visits', 'Avg Rating'}
         
         search = StringVar()
         search.set(' ')

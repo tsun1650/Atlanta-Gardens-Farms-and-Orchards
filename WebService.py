@@ -24,19 +24,19 @@ class DBManager:
 
     """
     verifyLogin:
-        Makes sure that there exists this email and password combination in the User table
+        Makes sure that there exists this username and password combination in the User table
         Inputs:
-            Email the user entered and the hashed string of the password the user inputted
+            Username the user entered and the hashed string of the password the user inputted
         Returns:
             True if there is a match in the db
             False otherwise
     """
-    def verifyLogin(self, email, hashPass):
+    def verifyLogin(self, username, hashPass):
         # SQL statement to execute
-        sql = "SELECT Email, Password from User WHERE Email = %s AND Password = %s;"
+        sql = "SELECT Username, Password from User WHERE Username = %s AND Password = %s;"
 
         # User input to check for in SQL statement
-        userin = (email, hashPass)
+        userin = (username, hashPass)
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -64,18 +64,18 @@ class DBManager:
     """
     getUserType:
         Gets the user type of the current user
-        Only call this after an email is verified
+        Only call this after a username is verified
         Inputs:
-            The current users email
+            The current users username
         Returns:
             The type of user the user is
     """
-    def getUserType(self, email):
+    def getUserType(self, username):
         # SQL statement to execute
-        sql = "SELECT UserType from User WHERE Email = %s;"
+        sql = "SELECT UserType from User WHERE Username = %s;"
 
         # User input to check for in SQL statement
-        userin = (email)
+        userin = (username)
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -90,42 +90,6 @@ class DBManager:
 
             return result
 
-        except Exception as e:
-            print("ERROR: {}".format(e))
-            print(logging.exception("error happened"))
-        finally:
-            conn.close()
-
-    """
-    getUsername:
-        Gets the username associated with this email
-        Only call this after an email is verified
-        Inputs:
-            The verified email
-        Returns:
-            The username associated with this email
-    """
-    def getUsername(self, email):
-        # SQL statement to execute
-        sql = "SELECT Username from User WHERE Email = %s;"
-
-        # User input to check for in SQL statement
-        userin = (email)
-
-        # Create connection
-        conn = DBManager.getConnection(self)
-
-        try:
-            # Execute query
-            cursor = conn.cursor()
-            cursor.execute(sql, userin)
-
-            # Get result
-            result = cursor.fetchone()
-
-            resultList = [item for item in result]
-
-            return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
@@ -576,4 +540,27 @@ class DBManager:
         finally:
             conn.close()
 
-    #def getOwnerProperties(self, username):
+    def getOwnerProperties(self, username):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE Owner = %s;"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, username)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
