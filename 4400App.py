@@ -73,7 +73,7 @@ class loginPage(Frame):
         email.focus_set()
 
         self.emailEntry = Entry(f, background='white', width=24, textvariable=self.controller.username)
-        self.emailEntry.insert(0, "kmurdock8")
+
         self.emailEntry.grid(row=0, column=1, sticky='w')
         self.emailEntry.focus_set()
 
@@ -82,7 +82,8 @@ class loginPage(Frame):
         password.focus_set()
 
         self.passwordEntry = Entry(f, background='white', width=24)
-        self.passwordEntry.insert(0, "kelsey")
+
+        
         self.passwordEntry.grid(row=1, column=1, sticky='w')
 
         button0 = Button(f, text="Login", command=self.login)
@@ -469,6 +470,18 @@ class visitHistory(Frame):
         table = Treeview(frame)
         self.table = table
         self.frame = frame
+
+        # Get owners username
+        self.controller = controller
+        username = self.controller.username
+        welcomemsg = 'Your Visit History'
+
+        # Get a list with all of the owners properties
+        propList = DBManager.getVisitHistory(self, username)
+        if propList is None:
+            propList = []
+
+
         self.table.bind("<Button-1>", self.onClick)
         table['columns'] = ('date', 'rating')
 
@@ -488,32 +501,19 @@ class visitHistory(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        # loads temp data
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Kenari Company Farm', values=('2018-01-15', '3'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
-        self.frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('2018-01-21', '5'))
 
+        for prop in propList:
+            
+            name = prop[0]
+            date = prop[1]
+            rating = prop[2]
+
+            newProp = [name, date, rating]
+
+            frame.treeview.insert('', 'end', text=id, values=newProp)
+
+        # loads temp data
+        
         propdetails = Button(self, text="View Property Details", command=lambda: self.controller.show_frame(loginPage))
         propdetails.grid(row=2, column=0, pady=10)
 
@@ -891,10 +891,6 @@ class viewVisitorList(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        # Loads temp Data
-        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','1'))
-        frame.treeview.insert('', 'end', text='tsun', values=('e@email.com','2'))
-        frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
 
         types = { 'Username', 'Email', 'Logged Visits'}
         
@@ -1022,13 +1018,6 @@ class viewOwnerList(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        # Loads temp Data
-        self.frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
-        self.frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
-        self.frame.treeview.insert('', 'end', text='tsun1', values=('ee@email.com','2'))
-        self.frame.treeview.insert('', 'end', text='dtrem', values=('bb@email.com','3'))
-        self.frame.treeview.insert('', 'end', text='dtrem', values=('bb@email.com','3'))
-
         types = { 'Username', 'Email', 'Number of Properties'}
         
         search = StringVar()
@@ -1149,10 +1138,6 @@ class approvedOrganisms(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        # Loads temp Data
-        frame.treeview.insert('', 'end', text='Apple', values=('Fruit'))
-        frame.treeview.insert('', 'end', text='zntelope', values=('Animal'))
-        frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
 
         types = {'Fruit', 'Vegetable', 'Nut', 'Flower', 'Animal'}
         
@@ -1283,12 +1268,7 @@ class pendingOrganisms(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        # Loads temp Data
-        frame.treeview.insert('', 'end', text='Apple', values=('Fruit'))
-        frame.treeview.insert('', 'end', text='Antelope', values=('Animal'))
-        frame.treeview.insert('', 'end', text='Broccoli', values=('Vegetable'))
-
-
+   
         approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
         approveB.grid(row=4, column=0)
 
@@ -1399,31 +1379,6 @@ class confirmedProperties(Frame):
         frame.grid(sticky=(N,S,W,E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
-
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'admin2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'admin2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'admin2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin1', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'admin2', '3.6'))
 
         types = {'Name', 'Zip', 'Type', 'Verified By','Avg Rating'}
         
@@ -1594,31 +1549,7 @@ class unconfirmedProperties(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner2'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', 'owner2'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', 'owner1'))
-
+   
         types = {'Name', 'Size', 'Owner'}
         
         search = StringVar()
@@ -1735,6 +1666,7 @@ class addNewProperty(Frame):
         label.pack(pady=10,padx=10)
 
         frame = Frame(self)
+        self.frame = frame
         frame.pack(padx=5, pady=20, side=LEFT)
         
         name = Label(frame, text="Property Name:* ")
@@ -1756,76 +1688,182 @@ class addNewProperty(Frame):
         self.city.focus_set()
 
         zipcode = Label(frame, text="Zip:* ")
-        zipcode.grid(row=2, column=2, sticky='w')
+        zipcode.grid(row=3, column=0, sticky='w')
         self.zipcode = Entry(frame, background='white', width=24)
-        self.zipcode.grid(row=2, column=3, sticky='w')
+        self.zipcode.grid(row=3, column=1, sticky='w')
         self.zipcode.focus_set()
 
         acres = Label(frame, text="Acres:* ")
-        acres.grid(row=2, column=4, sticky='w')
+        acres.grid(row=4, column=0, sticky='w')
         self.acres = Entry(frame, background='white', width=24)
-        self.acres.grid(row=2, column=5, sticky='w')
+        self.acres.grid(row=4, column=1, sticky='w')
         self.acres.focus_set()
 
         propType = Label(frame, text="Property Type:* ")
-        propType.grid(row=3, column=0, sticky='w')
-        # Rest of GUI depends on property type selected
-        proptypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-        
-        propTypeVar = StringVar()
-        propTypeVar.set('Garden')   # Set garden as the default prop type
-        propType_menu = OptionMenu(frame, propTypeVar, *proptypes)
-        propType_menu.grid(row=3, column=1, padx=5, pady=10)
+        propType.grid(row=5, column=0, sticky='w')
 
-        animalType = Label(frame, text="Animal Type:* ")
-        animalType.grid(row=3, column=2, sticky='w')
         # Rest of GUI depends on property type selected
-        animaltypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-        
-        animalTypeVar = StringVar()
-        animalTypeVar.set('Garden')   # Set garden as the default prop type
-        animalType_menu = OptionMenu(frame, animalTypeVar, *animaltypes)
-        animalType_menu.grid(row=3, column=4, padx=5, pady=10)
+        types = {'Garden', 'Farm', 'Orchard'}  # Dictionary holding different prop types
 
-        cropType = Label(frame, text="Crop Type:* ")
-        cropType.grid(row=3, column=5, sticky='w')
-        # Rest of GUI depends on property type selected
-        croptypes = {'Garden', 'Farm', 'Orchard'}   # Dictionary holding different prop types
-        
-        cropTypeVar = StringVar()
-        cropTypeVar.set('Garden')   # Set garden as the default prop type
-        cropTypeVar_menu = OptionMenu(frame, cropTypeVar, *croptypes)
-        cropTypeVar_menu.grid(row=3, column=6, padx=5, pady=10)
+        self.propTypeVar = StringVar()
+        self.propTypeVar.set(' ')
+        propType_menu = OptionMenu(frame, self.propTypeVar, "Farm", *types, command=self.propertyTypeChange)
+        propType_menu.grid(row=5, column=1, padx=20, pady=10)
 
-        pubType = Label(frame, text="Public?:* ")
-        pubType.grid(row=4, column=0, sticky='w')
-        # Rest of GUI depends on property type selected
-        pubtypes = {'Yes', 'No'}   # Dictionary holding different prop types
-        
-        pubTypeVar = StringVar()
-        pubTypeVar.set('No')   # Set garden as the default prop type
-        pubTypeVar_menu = OptionMenu(frame, pubTypeVar, *pubtypes)
-        pubTypeVar_menu.grid(row=4, column=1, padx=5, pady=10)
+        # Create crop label
+        crop = Label(frame, text="Crop:* ")
+        crop.grid(row=6, column=0, padx=20, pady=10)
 
-        comType = Label(frame, text="Commercial?:* ")
-        comType.grid(row=5, column=0, sticky='w')
-        # Rest of GUI depends on property type selected
-        comtypes = {'Yes', 'No'}   # Dictionary holding different prop types
-        
-        comTypeVar = StringVar()
-        comTypeVar.set('No')   # Set garden as the default prop type
-        comTypeVar_menu = OptionMenu(frame, comTypeVar, *comtypes)
-        comTypeVar_menu.grid(row=5, column=1, padx=5, pady=10)
+        # Get list of approved, fruits, nuts, veggies, and flowers (since farm is default)
+        fruits = DBManager.getApprovedFruits(self)
+        nuts = DBManager.getApprovedNuts(self)
+        veggies = DBManager.getApprovedVegetables(self)
+        flowers = DBManager.getApprovedFlowers(self)
+        crops = fruits + nuts + veggies + flowers
+
+        # Create option menu with the approved crops
+        self.cropVar = StringVar()
+        self.cropMenu = OptionMenu(frame, self.cropVar, *crops)
+        self.cropMenu.grid(row=6, column=1, padx=20, pady=10)
+
+        # Get approved animals
+        self.animal = Label(frame, text="Animal:* ")
+        self.animal.grid(row=6, column=2, padx=20, pady=10)
+
+        animals = DBManager.getApprovedAnimals(self)
+        self.animalVar = StringVar()
+        self.animalMenu = OptionMenu(frame, self.animalVar, *animals)
+        self.animalMenu.grid(row=6, column=3, padx=20, pady=10)
+
+        # Add yes/no drop down for isPublic
+        yesno = ["Yes", "No"]
+        public = Label(frame, text="Public:* ")
+        public.grid(row=7, column=0, sticky='w')
+        self.publicVar = StringVar()
+        publicMenu = OptionMenu(frame, self.publicVar, "Yes", *yesno)
+        publicMenu.grid(row=7, column=1, padx=20, pady=10)
+
+        # Add yes/no drop down for isCommercial
+        commercial = Label(frame, text="Commercial:* ")
+        commercial.grid(row=8, column=0, sticky='w')
+        self.commVar = StringVar()
+        commMenu = OptionMenu(frame, self.commVar, "Yes", *yesno)
+        commMenu.grid(row=8, column=1, padx=20, pady=10)
 
         # Buttons
         button1 = Button(frame, text="Add Property", command=self.addPropertyOnClick)
-        button1.grid(row=6, column=0, sticky='w')
+        button1.grid(row=9, column=0, sticky='w')
         #TODO: REGISTER COMPLETE PAGE
         button2 = Button(frame, text="Cancel", command=lambda: self.controller.show_frame(ownerFunctionality))
-        button2.grid(row=6, column=1, sticky='w')
+        button2.grid(row=9, column=1, sticky='w')
 
     def addPropertyOnClick(self):
-        print("button clicked")
+        msg = StringVar()
+
+        # Make sure every field is filled in
+        if len(self.name.get()) == 0 or len(self.street.get()) == 0 or len(self.city.get()) == 0 or len(self.zipcode.get()) == 0 or len(self.acres.get()) == 0:
+            messagebox.showerror("Error", "All fields are required")
+        else:
+            # Make sure property name is unique
+            propNameExists = DBManager.checkPropertyName(self, self.name.get())
+            if not propNameExists:
+                # Add property
+
+                # Change public and commercial to 1 or 0
+                if self.publicVar.get() == 'Yes':
+                    public = 1
+                else:
+                    public = 0
+
+                if self.commVar.get() == 'Yes':
+                    comm = 1
+                else:
+                    comm = 0
+
+                addProp = DBManager.addProperty(self, self.name.get(), self.street.get(), self.city.get(),
+                                                self.zipcode.get(), public, comm, self.propTypeVar.get(),
+                                                self.controller.username, self.acres.get())
+
+                # Get property ID for the new property
+                propID = DBManager.getPropertyID(self, self.name.get())
+
+                # Add crop to Has table
+                crop = self.cropVar.get()
+                cropAdded = DBManager.addItem(self, propID, crop)
+
+                # If property is a farm then add animal also
+                if self.propTypeVar.get() == 'Farm':
+                    animal = self.animalVar.get()
+                    animalAdded = DBManager.addItem(self, propID, animal)
+
+                    # Make sure everything was successful (including animal)
+                    if addProp and cropAdded and animalAdded:
+                        # Now add user to User table
+                        messagebox.showerror("Property added", "Property was successfully added!")
+                        self.controller.show_frame(ownerFunctionality)
+                    else:
+                        messagebox.showerror("Error", "Something went wrong")
+                else:
+                    # Make sure everything was successful
+                    if addProp and cropAdded:
+                        # Now add user to User table
+                        messagebox.showerror("Property added", "Property was successfully added!")
+                        self.controller.show_frame(ownerFunctionality)
+                    else:
+                        messagebox.showerror("Error", "Something went wrong")
+            else:
+                messagebox.showerror("Error", "All fields are required")
+
+
+    def propertyTypeChange(self, value):
+        if value == 'Farm':
+            # Farm GUI
+            self.cropMenu.destroy()
+
+            # Get list of approved, fruits, nuts, veggies, and flowers
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = fruits + nuts + veggies + flowers
+
+            # Get approved animals
+            self.animal = Label(self.frame, text="Animal:* ")
+            self.animal.grid(row=6, column=2, padx=20, pady=10)
+
+            animals = DBManager.getApprovedAnimals(self)
+            self.animalVar = StringVar()
+            self.animalMenu = OptionMenu(self.frame, self.animalVar, *animals)
+            self.animalMenu.grid(row=6, column=3, padx=20, pady=10)
+
+        elif value == 'Garden':
+            # Garden
+            self.cropMenu.destroy()
+            self.animal.destroy()
+            self.animalMenu.destroy()
+
+            # Get approved vegetables and flowers from DB
+            veggies = DBManager.getApprovedVegetables(self)
+            flowers = DBManager.getApprovedFlowers(self)
+            crops = veggies + flowers
+
+        else:
+            # Orchard
+            self.cropMenu.destroy()
+            self.animal.destroy()
+            self.animalMenu.destroy()
+
+            # Get approved vegetables and flowers from DB
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            crops = fruits + nuts
+
+        # Recreate drop down menu with new approved crops
+        self.cropVar = StringVar()
+        self.cropMenu = OptionMenu(self.frame, self.cropVar, *crops)
+        self.cropMenu.grid(row=6, column=1, padx=20, pady=10)
+
+        return value
 
 
 class visitorPropertyPage(Frame):
@@ -1978,32 +2016,7 @@ class otherOwnerProperties(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         # Loads temp Data
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Cooper Middle School', values=('4605 Ewing Rd', 'Austell', '30106', '1', 'Garden', 'True', 'False', '12000', '2', '5.0'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-        frame.treeview.insert('', 'end', text='Georgia Tech Garden', values=('Spring Street SW', 'Atlanta', '30308', '0.5', 'Garden', 'True', 'False', '00320', '20', '3.6'))
-
-
+        
         types = {'Name', 'City', 'Public', 'Visits','Avg Rating'}
         
         search = StringVar()
@@ -2394,15 +2407,17 @@ class propertyManagement(Frame):
         name = Label(frame, text="Name: ")
         name.grid(row=0, column=0, sticky='w')
         self.name = Entry(frame, background='white', width=24)
+        self.name.insert(0, prop[0][1])
         self.name.grid(row=0, column=1, sticky='w')
         self.name.focus_set()
 
-        typ = Label(frame, text="Type: ")
+        typ = Label(frame, text="Type: " + prop[0][8])
         typ.grid(row=0, column=2, sticky='w')
         
         street = Label(frame, text="Address: ")
         street.grid(row=1, column=0, sticky='w')
         self.street = Entry(frame, background='white', width=24)
+        self.street.insert(0, prop[0][5])
         self.street.grid(row=1, column=1, sticky='w')
         self.street.focus_set()
 
@@ -2414,12 +2429,16 @@ class propertyManagement(Frame):
         
         pubTypeVar = StringVar()
         pubTypeVar.set('False')   # Set garden as the default prop type
-        pubType_menu = OptionMenu(frame, pubTypeVar, *pubtypes)
+        temp5 = 'False'
+        if prop[0][4] == 1:
+            temp5 = 'True'
+        pubType_menu = OptionMenu(frame, pubTypeVar, temp5, *pubtypes)
         pubType_menu.grid(row=1, column=3, padx=5, pady=10)
 
         city = Label(frame, text="City: ")
         city.grid(row=2, column=0, sticky='w')
         self.city = Entry(frame, background='white', width=24)
+        self.city.insert(0, prop[0][6])
         self.city.grid(row=2, column=1, sticky='w')
         self.city.focus_set()
 
@@ -2427,24 +2446,28 @@ class propertyManagement(Frame):
         com.grid(row=2, column=2, sticky='w')
 
         comtypes = {'True', 'False'}   # Dictionary holding different prop types
-        
+        temp6 = 'False'
+        if prop[0][3] == 1:
+            temp6 = 'True'
         comTypeVar = StringVar()
         comTypeVar.set('False')   # Set garden as the default prop type
-        comType_menu = OptionMenu(frame, comTypeVar, *comtypes)
-        comType_menu.grid(row=1, column=3, padx=5, pady=10)
+        comType_menu = OptionMenu(frame, comTypeVar, temp6, *comtypes)
+        comType_menu.grid(row=2, column=3, padx=5, pady=10)
 
         zipcode = Label(frame, text="Zip: ")
         zipcode.grid(row=3, column=0, sticky='w')
         self.zipcode = Entry(frame, background='white', width=24)
+        self.zipcode.insert(0, prop[0][7])
         self.zipcode.grid(row=3, column=1, sticky='w')
         self.zipcode.focus_set()
 
-        ID = Label(frame, text="ID: ")
+        ID = Label(frame, text="ID: " + str(prop[0][0]))
         ID.grid(row=3, column=2, sticky='w')
 
         acres = Label(frame, text="Size(Acres): ")
         acres.grid(row=4, column=0, sticky='w')
         self.acres = Entry(frame, background='white', width=24)
+        self.acres.insert(0, prop[0][2])
         self.acres.grid(row=4, column=1, sticky='w')
         self.acres.focus_set()
 
@@ -2454,9 +2477,9 @@ class propertyManagement(Frame):
         croptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
         
         self.cropTypeVar = StringVar()
-        self.cropTypeVar.set('Fruit')   # Set garden as the default prop type
+        self.cropTypeVar.set(' ')   # Set garden as the default prop type
 
-        cropType_menu = OptionMenu(frame, self.cropTypeVar, *croptypes)
+        cropType_menu = OptionMenu(frame, self.cropTypeVar, 'Fruit', *croptypes)
         cropType_menu.grid(row=5, column=1, padx=5, pady=10)
 
         crops = Label(frame, text="Crops: ")
@@ -2474,16 +2497,20 @@ class propertyManagement(Frame):
         self.crop.grid(row=7, column=1, sticky='w')
         self.crop.focus_set()
 
+        newcrops = Label(self.frame, text="New crop type: ")
+        newcrops.grid(row=7, column=2, sticky='w')
+
         newcropType = Label(frame, text="New crop type: ")
         newcropType.grid(row=7, column=2, sticky='w')
         # Rest of GUI depends on property type selected
         newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
         
         newcropTypeVar = StringVar()
-        newcropTypeVar.set('Fruit')   # Set garden as the default prop type
-        newcropType_menu = OptionMenu(frame, newcropTypeVar, *newcroptypes)
+        newcropTypeVar.set(' ')   # Set garden as the default prop type
+        newcropType_menu = OptionMenu(frame, newcropTypeVar, 'Fruit', *newcroptypes)
         newcropType_menu.grid(row=7, column=3, padx=5, pady=10)
-
+        self.newcropTypeVar = newcropTypeVar
+        self.newcropstypes = set()
         button2 = Button(frame, text="Submit Request", command=lambda: self.controller.show_frame(loginPage))
         button2.grid(row=8, column=1, sticky='w')
 
@@ -2497,15 +2524,23 @@ class propertyManagement(Frame):
         button5.grid(row=10, column=1, sticky='w')
 
     def addCrop(self):
-        global buttonnum
-        buttonnum += 1
-        butts = []
-        label = "Button " + str(buttonnum)
-        for i in range(buttonnum):
-            butts.append(Button(self.frame, text=str(self.cropTypeVar.get()) + ' [X]', command=lambda: butts[i].destroy()))
-            butts[i].grid(row = buttonnum + 4, column = 4)
-        self.butts = butts
-        print(butts)
+        # global buttonnum
+        # buttonnum += 1
+        # butts = []
+        # label = "Button " + str(buttonnum)
+        # for i in range(buttonnum):
+        #     butts.append(Button(self.frame, text=str(self.cropTypeVar.get()) + ' [X]', command=lambda: butts[i].destroy()))
+        #     butts[i].grid(row = buttonnum + 4, column = 4)
+        # self.butts = butts
+        # print(butts)
+    
+        # Rest of GUI depends on property type selected
+       # Dictionary holding different prop types
+        self.newcropstypes.add(self.cropTypeVar.get())
+        newcropsTypeVar = StringVar()
+        newcropsTypeVar.set(' ')   # Set garden as the default prop type
+        newcropsType_menu = OptionMenu(self.frame, newcropsTypeVar, self.cropTypeVar.get(), *self.newcropstypes)
+        newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
 
 
 app = Atlanta()
