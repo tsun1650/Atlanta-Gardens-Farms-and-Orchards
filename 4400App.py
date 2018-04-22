@@ -33,8 +33,8 @@ class Atlanta(Tk):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
-        self.show_frame(loginPage)
-        #self.show_frame(ownerFunctionality)
+        #self.show_frame(loginPage)
+        self.show_frame(visitorView)
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -202,33 +202,35 @@ class visitorView(Frame):
         props.grid(row=1, column=0)
 
         frame = Frame(self)
+        self.table = Treeview(frame, selectmode='browse')
+        self.table.bind("<Button-1>", self.onClick)
+        self.selectedVisitorprop = []
 
-        table = Treeview(frame)
-        table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'visits', 'rating')
-        table.heading('#0', text='Name', anchor='w')
-        table.column('#0', anchor='w')
-        table.heading('address', text='Address')
-        table.column('address', anchor='center', width = 100)
-        table.heading('city', text='City')
-        table.column('city', anchor='center', width = 100)
-        table.heading('zip', text='Zip')
-        table.column('zip', anchor='center', width = 100)
-        table.heading('size', text='Size')
-        table.column('size', anchor='center', width = 100)
-        table.heading('type', text='Type')
-        table.column('type', anchor='center', width = 100)
-        table.heading('public', text='Public')
-        table.column('public', anchor='center', width = 100)
-        table.heading('commercial', text='Commercial')
-        table.column('commercial', anchor='center', width = 100)
-        table.heading('id', text='ID')
-        table.column('id', anchor='center', width = 100)
-        table.heading('visits', text='Visits')
-        table.column('visits', anchor='center', width = 100)
-        table.heading('rating', text='Avg Rating')
-        table.column('rating', anchor='center', width = 100)
-        table.grid(sticky=(N,S,W,E))
-        frame.treeview = table
+        self.table['columns'] = ('address', 'city', 'zip', 'size', 'type', 'public', 'commercial', 'id', 'visits', 'rating')
+        self.table.heading('#0', text='Name', anchor='w')
+        self.table.column('#0', anchor='w')
+        self.table.heading('address', text='Address')
+        self.table.column('address', anchor='center', width = 100)
+        self.table.heading('city', text='City')
+        self.table.column('city', anchor='center', width = 100)
+        self.table.heading('zip', text='Zip')
+        self.table.column('zip', anchor='center', width = 100)
+        self.table.heading('size', text='Size')
+        self.table.column('size', anchor='center', width = 100)
+        self.table.heading('type', text='Type')
+        self.table.column('type', anchor='center', width = 100)
+        self.table.heading('public', text='Public')
+        self.table.column('public', anchor='center', width = 100)
+        self.table.heading('commercial', text='Commercial')
+        self.table.column('commercial', anchor='center', width = 100)
+        self.table.heading('id', text='ID')
+        self.table.column('id', anchor='center', width = 100)
+        self.table.heading('visits', text='Visits')
+        self.table.column('visits', anchor='center', width = 100)
+        self.table.heading('rating', text='Avg Rating')
+        self.table.column('rating', anchor='center', width = 100)
+        self.table.grid(sticky=(N,S,W,E))
+        frame.treeview = self.table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
 
@@ -276,7 +278,7 @@ class visitorView(Frame):
         searchprop = Button(self, text="Search Properties", command=lambda: controller.show_frame(loginPage))
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        viewprop = Button(self, text="View Property", command=lambda: controller.show_frame(loginPage))
+        viewprop = Button(self, text="View Property", command=lambda: controller.show_frame(visitorPropertyPage))
         viewprop.grid(row=3, column=0, padx=50, pady=10)
 
         viewhist = Button(self, text="View Visit History", command=lambda: controller.show_frame(visitHistory))
@@ -284,6 +286,14 @@ class visitorView(Frame):
 
         logout = Button(self, text="Log Out", command=lambda: controller.show_frame(loginPage))
         logout.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+    
+    def onClick(self, event):
+        item = self.table.identify('item',event.x,event.y) 
+        i = [self.table.item(item, "text") ]
+        for x in self.table.item(item, "values"):
+            i.append(x)
+        self.selectedVisitorprop = i
+        print(self.selectedVisitorprop)
 
 
 class visitHistory(Frame):
@@ -1008,10 +1018,9 @@ class addNewProperty(Frame):
         button2 = Button(frame, text="Cancel", command=lambda: controller.show_frame(loginPage))
         button2.grid(row=6, column=1, sticky='w')
 
-
-
 class visitorPropertyPage(Frame):
     def __init__(self, parent, controller):
+
         Frame.__init__(self, parent)
         name = Label(self, text="Name: ")
         name.pack()
@@ -1053,6 +1062,7 @@ class visitorPropertyPage(Frame):
         logvisit.pack()
         back = Button(self, text="Back", command=lambda: controller.show_frame(visitorView))
         back.pack()
+       
         
 
 class propertyDetails(Frame):
