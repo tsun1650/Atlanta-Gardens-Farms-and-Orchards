@@ -97,6 +97,40 @@ class DBManager:
             conn.close()
 
     """
+            getEmail:
+                Gets the email of the current user
+                Only call this after a username is verified
+                Inputs:
+                    The current users username
+                Returns:
+                    The email of this user
+            """
+    def getEmail(self, username):
+        # SQL statement to execute
+        sql = "SELECT Email from User WHERE Username = %s;"
+
+        # User input to check for in SQL statement
+        userin = (username)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchone()
+
+            return result
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
         checkEmail:
             Checks if email is already taken in the User table
             Inputs:
@@ -599,7 +633,6 @@ class DBManager:
 
             conn.close()
 
-
     def getPublicProperties(self):
         # SQL statement to execute
         sql = "SELECT * FROM Property WHERE IsPublic = %s AND ApprovedBy <> %s ;"
@@ -627,6 +660,7 @@ class DBManager:
         finally:
 
             conn.close()
+
     def getPropertyDetails(self, propID):
         # SQL statement to execute
         sql = "SELECT * FROM Property WHERE ID = %s;"
@@ -651,6 +685,7 @@ class DBManager:
             print(logging.exception("error happened"))
         finally:
             conn.close()
+
     def getVisitHistory(self, username):
         # SQL statement to execute
         sql = "SELECT Name, VisitDate, Rating FROM Visit JOIN Property ON ID = PropertyID AND Username = %s"
@@ -679,7 +714,7 @@ class DBManager:
 
     def getOwners(self):
         # SQL statement to execute
-        sql = "CREATE VIEW own_over AS SELECT Email, Username, COUNT(Owner) AS NumProp FROM User JOIN Property ON Username = Owner GROUP BY Owner"
+        sql = "SELECT Email, Username, COUNT(Owner) AS NumProp FROM User JOIN Property ON Username = Owner GROUP BY Owner"
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -704,7 +739,7 @@ class DBManager:
 
     def getVisitors(self):
         # SQL statement to execute
-        sql = "CREATE VIEW vis_over AS SELECT User.Email, User.Username, COUNT(Visit.Username) as LoggedVisits FROM User JOIN Visit ON Visit.Username = User.Username GROUP BY Visit.Username"
+        sql = "SELECT User.Email, User.Username, COUNT(Visit.Username) as LoggedVisits FROM User JOIN Visit ON Visit.Username = User.Username GROUP BY Visit.Username"
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -727,3 +762,99 @@ class DBManager:
         finally:
 
             conn.close()
+
+    def getConfirmedProps(self):
+        # SQL statement to execute
+        sql = "SELECT Property.Name, Property.Street as Address, Property.City, Property.Zip, Property.Size, Property.PropertyType AS Type, Property.IsPublic as Public, Property.IsCommercial as Commercial, Property.ID, Property.ApprovedBy as VerifiedBy,  AVG(Visit.Rating) AS AvgRatingFROM Property LEFT JOIN Visit ON Property.ID = Visit.PropertyID WHERE ApprovedBy IS NOT NULL GROUP BY Property.ID"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+
+            conn.close()
+
+    """
+        getOtherOwnerProperties:
+            Gets all the confirmed properties owned by other owners; ordered by name asc
+            Inputs:
+                Current owners username
+            Returns:
+                A list of all the other properties
+        """
+    def getOtherOwnerProperties(self, username):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE Owner <> %s AND ApprovedBy <> %s ORDER BY Name ASC;"
+
+        # Format user input to add to sql statement
+        userin = (username, 'NULL')
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    getPropertyCrops:
+        Gets the list of crops for a property
+        Inputs:
+            The property ID
+        Returns:
+            A list of crops associated with this property
+    """
+    def getPropertyCrops(self, propID):
+        # SQL statement to execute
+        sql = "SELECT ItemName FROM Has WHERE PropertyID = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, propID)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
