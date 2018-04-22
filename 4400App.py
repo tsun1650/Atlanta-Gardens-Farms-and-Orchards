@@ -501,63 +501,33 @@ class ownerRegistration(Frame):
         
         self.propTypeVar = StringVar()
         self.propTypeVar.set(' ')
-        propType_menu = OptionMenu(frame, self.propTypeVar, "Garden", *types, command=self.func)
+        propType_menu = OptionMenu(frame, self.propTypeVar, "Farm", *types, command=self.func)
         propType_menu.grid(row=9, column=1, padx=20, pady=10)
 
-        if self.propTypeVar.get() == 'Garden':
-            # Garden GUI
-            crop = Label(frame, text="Crop:* ")
-            crop.grid(row=10, column=0, padx=20, pady=10)
+        # Create crop label
+        crop = Label(frame, text="Crop:* ")
+        crop.grid(row=10, column=0, padx=20, pady=10)
 
-            # Get approved vegetables and flowers from DB
-            veggies = DBManager.getApprovedVegetables(self)
-            flowers = DBManager.getApprovedFlowers(self)
-            crops = veggies + flowers
+        # Get list of approved, fruits, nuts, veggies, and flowers (since farm is default)
+        fruits = DBManager.getApprovedFruits(self)
+        nuts = DBManager.getApprovedNuts(self)
+        veggies = DBManager.getApprovedVegetables(self)
+        flowers = DBManager.getApprovedFlowers(self)
+        crops = fruits + nuts + veggies + flowers
 
-            # Create option menu with the approved crops
-            cropVar = StringVar()
-            cropMenu = OptionMenu(frame, cropVar, *crops)
-            cropMenu.grid(row=10, column=1, padx=20, pady=10)
+        # Get approved animals
+        self.animal = Label(frame, text="Animal:* ")
+        self.animal.grid(row=10, column=2, padx=20, pady=10)
 
-        elif self.propTypeVar.get() == 'Farm':
-            # Farm GUI
-            crop = Label(frame, text="Crop:* ")
-            crop.grid(row=10, column=0, padx=20, pady=10)
+        animals = DBManager.getApprovedAnimals(self)
+        self.animalVar = StringVar()
+        self.animalMenu = OptionMenu(frame, self.animalVar, *animals)
+        self.animalMenu.grid(row=10, column=3, padx=20, pady=10)
 
-            # Get list of approved, fruits, nuts, veggies, and flowers
-            fruits = DBManager.getApprovedFruits(self)
-            nuts = DBManager.getApprovedNuts(self)
-            veggies = DBManager.getApprovedVegetables(self)
-            flowers = DBManager.getApprovedFlowers(self)
-            crops = fruits + nuts + veggies + flowers
-
-            # Create drop down menu with approved crops
-            cropVar = StringVar()
-            cropMenu = OptionMenu(frame, cropVar, *crops)
-            cropMenu.grid(row=10, column=1, padx=20, pady=10)
-
-            # Get approved animals
-            animal = Label(frame, text="Animal:* ")
-            animal.grid(row=10, column=2, padx=20, pady=10)
-
-            animals = DBManager.getApprovedAnimals(self)
-            animalVar = StringVar()
-            animalMenu = OptionMenu(frame, animalVar, *animals)
-            animalMenu.grid(row=10, column=3, padx=20, pady=10)
-        else:
-            # Orchard GUI
-            crop = Label(frame, text="Crop:* ")
-            crop.grid(row=10, column=0, padx=20, pady=10)
-
-            # Get approved vegetables and flowers from DB
-            fruits = DBManager.getApprovedFruits(self)
-            nuts = DBManager.getApprovedNuts(self)
-            crops = fruits + nuts
-
-            # Create option menu with the approved crops
-            cropVar = StringVar()
-            cropMenu = OptionMenu(frame, cropVar, *crops)
-            cropMenu.grid(row=10, column=1, padx=20, pady=10)
+        # Create option menu with the approved crops
+        self.cropVar = StringVar()
+        self.cropMenu = OptionMenu(frame, self.cropVar, *crops)
+        self.cropMenu.grid(row=10, column=1, padx=20, pady=10)
 
         # Add yes/no drop down for isPublic
         yesno = ["Yes", "No"]
@@ -583,6 +553,7 @@ class ownerRegistration(Frame):
     def func(self, value):
         if value == 'Farm':
             # Farm GUI
+            self.cropMenu.destroy()
 
             # Get list of approved, fruits, nuts, veggies, and flowers
             fruits = DBManager.getApprovedFruits(self)
@@ -596,12 +567,13 @@ class ownerRegistration(Frame):
             self.animal.grid(row=10, column=2, padx=20, pady=10)
 
             animals = DBManager.getApprovedAnimals(self)
-            animalVar = StringVar()
-            self.animalMenu = OptionMenu(self.frame, animalVar, *animals)
+            self.animalVar = StringVar()
+            self.animalMenu = OptionMenu(self.frame, self.animalVar, *animals)
             self.animalMenu.grid(row=10, column=3, padx=20, pady=10)
 
         elif value == 'Garden':
             # Garden
+            self.cropMenu.destroy()
             self.animal.destroy()
             self.animalMenu.destroy()
             self.cropMenu.destroy()
@@ -612,17 +584,18 @@ class ownerRegistration(Frame):
 
         else:
             # Orchard
+            self.cropMenu.destroy()
             self.animal.destroy()
             self.animalMenu.destroy()
             self.cropMenu.destroy()
             # Get approved vegetables and flowers from DB
-            veggies = DBManager.getApprovedVegetables(self)
-            flowers = DBManager.getApprovedFlowers(self)
-            crops = veggies + flowers
+            fruits = DBManager.getApprovedFruits(self)
+            nuts = DBManager.getApprovedNuts(self)
+            crops = fruits + nuts
 
-        # Create drop down menu with approved crops
-        cropVar = StringVar()
-        self.cropMenu = OptionMenu(self.frame, cropVar, *crops)
+        # Recreate drop down menu with new approved crops
+        self.cropVar = StringVar()
+        self.cropMenu = OptionMenu(self.frame, self.cropVar, *crops)
         self.cropMenu.grid(row=10, column=1, padx=20, pady=10)
 
         return value
@@ -630,15 +603,15 @@ class ownerRegistration(Frame):
     def registerowner(self):
         msg = StringVar()
 
-        if (len(self.password.get()) < 8):
+        if len(self.password.get()) < 8:
             messagebox.showerror("Error", "Password must be at least 8 character")
-        elif (self.password.get() != self.confirmPassword.get()):
+        elif self.password.get() != self.confirmPassword.get():
             messagebox.showerror("Error", "Confirm password does not match")
-        elif("@" not in self.email.get()):
+        elif "@" not in self.email.get():
             messagebox.showerror("Error", "Invalid email")
         else:
             temp = self.email.get().split("@")
-            if ("." not in temp[1]):
+            if "." not in temp[1]:
                 messagebox.showerror("Error", "Invalid email")
             else:
                 hashfunc = hashlib.sha256()
@@ -658,31 +631,55 @@ class ownerRegistration(Frame):
                         # Verify property name isn't already taken
                         propNameExists = DBManager.checkPropertyName(self, self.propName.get())
                         if not propNameExists:
-                            # Tests all passed, add user and property
+                            # Tests all passed, Add property and crop first
+
+                            # Change public and commercial to 1 or 0
+                            if self.publicVar.get() == 'Yes':
+                                public = 1
+                            else:
+                                public = 0
+
+                            if self.commVar.get() == 'Yes':
+                                comm = 1
+                            else:
+                                comm = 0
 
                             # register user
                             register = DBManager.registerNewUser(self, self.email.get(),
-                                                                 self.username.get(), hashPass, 'Owner')
+                                                                self.username.get(), hashPass, 'Owner')
 
                             # Add the property
                             addProp = DBManager.addProperty(self, self.propName.get(), self.propAddress.get(),
-                                                            self.propCity, self.propZip, self.publicVar.get(),
-                                                            self.commVar.get(), self.propTypeVar.get(),
-                                                            self.username.get(), self.propAcres.get())
+                                                            self.propCity.get(), self.propZip.get(), public,
+                                                            comm, self.propTypeVar.get(), self.username.get(),
+                                                            self.propAcres.get())
 
                             # Get property ID for the new property
                             propID = DBManager.getPropertyID(self, self.propName.get())
 
-                            # TODO: Add crop to Has
-                            # TODO: If proptype is farm --> add animal to Has also
+                            # Add crop to Has table
+                            crop = self.cropVar.get()
+                            cropAdded = DBManager.addItem(self, propID, crop)
 
+                            # If property is a farm then add animal also
+                            if self.propTypeVar.get() == 'Farm':
+                                animal = self.animalVar.get()
+                                animalAdded = DBManager.addItem(self, propID, animal)
 
-                            if register and addProp:
-                                messagebox.showerror("Account Created", "Registration was a success!"
-                                                    "You can now login on the login page.")
-
+                                # Make sure everything was successful (including animal)
+                                if register and addProp and cropAdded and animalAdded:
+                                    # Now add user to User table
+                                    messagebox.showerror("Account Created", "Registration was a success!"
+                                                                            "You can now login on the login page.")
+                                else:
+                                    messagebox.showerror("Error", "Something went wrong")
                             else:
-                                messagebox.showerror("Error", "Something went wrong")
+                                # Garden and orchard; Make sure everything was successful
+                                if register and addProp and cropAdded:
+                                    messagebox.showerror("Account Created", "Registration was a success!"
+                                                                            "You can now login on the login page.")
+                                else:
+                                    messagebox.showerror("Error", "Something went wrong")
                         else:
                             messagebox.showerror("Error", "Property name is taken. Please choose a new name.")
 

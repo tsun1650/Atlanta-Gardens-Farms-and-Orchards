@@ -196,16 +196,16 @@ class DBManager:
         try:
             # Execute query
             cursor = conn.cursor()
-            cursor.execute(sql, userin)
+            rowsAffected = cursor.execute(sql, userin)
 
             # Commit changes to db
             conn.commit()
 
-            # Get result
-            result = cursor.fetchall()
-            print("Query result: ", result)
-
-            return True
+            # Check that the query was successful
+            if rowsAffected > 0:
+                return True
+            else:
+                return False
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
@@ -263,12 +263,11 @@ class DBManager:
     """
     def addProperty(self, name, address, city, addyZip, public, commercial, propType, owner, size):
         # SQL statement to execute
-        sql = "INSERT INTO Property (Name, Address, City, ZIP, " \
-              "isPublic, isCommercial, PropertyType, OwnedBy, NumVisits, AvgRating, Size) " \
-              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 0, 0.0, %s);"
+        sql = "INSERT INTO Property (Name, Size, IsCommercial, IsPublic, Street, City, Zip, PropertyType, Owner)" \
+              "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"
 
         # User input to check for in SQL statement
-        userin = (name, address, city, addyZip, public, commercial, propType, owner, size, name)
+        userin = (name, float(size), commercial, public, address, city, addyZip, propType, owner)
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -276,23 +275,49 @@ class DBManager:
         try:
             # Execute query
             cursor = conn.cursor()
-            cursor.execute(sql, userin)
+            rowsAffected = cursor.execute(sql, userin)
 
             # Commit changes to db
             conn.commit()
 
-            # Get result
-            result = cursor.fetchall()
-
-            if len(result) > 0:
-                # Insert was a success
+            # Check that the query was successful
+            if rowsAffected > 0:
                 return True
             else:
-                # Insert failed
                 return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    getMaxPropID:
+        Returns the current max ID in Property table so we can create a new
+    """
+    def getMaxPropID(self):
+        # SQL statement to execute
+        sql = "SELECT MAX(ID) FROM Property"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql)
+
+            # Get result
+            result = cursor.fetchone()
+
+            if result is None:
+                return 1
+            else:
+                return result
 
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -306,7 +331,7 @@ class DBManager:
     """
     def getPropertyID(self, propName):
         # SQL statement to execute
-        sql = "SELECT PropertyID from Property WHERE Name = %s;"
+        sql = "SELECT ID from Property WHERE Name = %s;"
 
         # User input to check for in SQL statement
         userin = (propName)
@@ -325,6 +350,7 @@ class DBManager:
             return result
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
@@ -351,23 +377,19 @@ class DBManager:
         try:
             # Execute query
             cursor = conn.cursor()
-            cursor.execute(sql, userin)
+            rowsAffected = cursor.execute(sql, userin)
 
             # Commit changes to db
             conn.commit()
 
-            # Get result
-            result = cursor.fetchall()
-
-            if len(result) > 0:
-                # Insert was a success
+            # Check that the query was successful
+            if rowsAffected > 0:
                 return True
             else:
-                # Insert failed
                 return False
-
         except Exception as e:
             print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
         finally:
             conn.close()
 
