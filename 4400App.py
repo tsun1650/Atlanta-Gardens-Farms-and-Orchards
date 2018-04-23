@@ -1405,12 +1405,21 @@ class pendingOrganisms(Frame):
         approveB = Button(self, text="Approve Selection", command=self.approveOrganism)
         approveB.grid(row=4, column=0)
 
-        deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
+        deleteselection = Button(self, text="Delete Selection", command= self.deleteSelection)
         deleteselection.grid(row=5, column=0)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e')
-
+    def deleteSelection(self):
+        approveMe = (self.element)
+        an = str(approveMe[1])
+        ab = str(approveMe[0])
+        deleted = DBManager.deleteCrop(self, an, ab)
+        if deleted:
+            messagebox.showerror("","Selection Deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
     def approveOrganism(self, item=''):
         approveMe = (self.element)
         an = str(approveMe[1])
