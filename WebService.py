@@ -858,3 +858,55 @@ class DBManager:
         finally:
             conn.close()
 
+    """
+    getPropertyVisits:
+        Gets the number of visitors that have visited this property
+        Inputs:
+            The property's ID
+        Returns:
+            The total number of visits logged
+    """
+    def getPropertyVisits(self, propID):
+        # SQL statement to execute
+        sql = "SELECT COUNT(PropertyID) FROM Visit WHERE PropertyID = %s;"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, propID)
+
+            # Get result
+            result = cursor.fetchone()
+
+            return result[0]
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    def getPropertySumRatings(self, propID):
+        # SQL statement to execute
+        sql = "SELECT SUM(Rating) FROM Visit WHERE PropertyID = %s;"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, propID)
+
+            # Get result
+            result = cursor.fetchone()
+
+            return result[0]
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+

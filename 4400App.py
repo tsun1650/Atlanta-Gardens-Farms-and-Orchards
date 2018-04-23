@@ -42,7 +42,7 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(adminFunctions)
+        self.show_frame(loginPage)
 
     def show_frame(self, frame):
         # frame = self.frames[cont]
@@ -1990,13 +1990,31 @@ class propertyDetails(Frame):
         # Get crops
         crops = DBManager.getPropertyCrops(self, self.controller.propID)
 
+        # Get total number of visits
+        visits = DBManager.getPropertyVisits(self, self.controller.propID)
+        print("visits: ", visits)
+
+        # Get sum of all the ratings
+        sumratings = DBManager.getPropertySumRatings(self, self.controller.propID)
+        print("sum of ratings: ", sumratings)
+
+        # Calculate avg rating
+        if sumratings is None:
+            avgRating = "No ratings yet"
+        else:
+            avgRating = visits/sumratings
+
+        # Create UI with retrieved info
+        titletxt = name + "Details:"
+        title = Label(self, text=titletxt, font=LARGE_FONT)
+        title.pack()
         name = Label(self, text="Name: " + name)
         name.pack()
         owner = Label(self, text="Owner: " + owner)
         owner.pack()
         ownerEmail = Label(self, text="Owner Email: " + email)
         ownerEmail.pack()
-        visits = Label(self, text="Visits: ")
+        visits = Label(self, text="Visits: " + str(visits))
         visits.pack()
         address = Label(self, text="Address: " + street)
         address.pack()
@@ -2006,7 +2024,7 @@ class propertyDetails(Frame):
         zipcode.pack()
         size = Label(self, text="Size (acres): " + str(size))
         size.pack()
-        rating = Label(self, text="Avg Rating: ")
+        rating = Label(self, text="Avg Rating: " + str(avgRating))
         rating.pack()
         typeProp = Label(self, text="Type: " + proptype)
         typeProp.pack()
