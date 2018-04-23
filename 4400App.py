@@ -45,10 +45,6 @@ class Atlanta(Tk):
         self.show_frame(loginPage)
 
 
-<<<<<<< HEAD
-        self.show_frame(adminFunctions)
-=======
->>>>>>> af1c2f3f212b463a2b7e65207cccba5f7f5ab554
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
@@ -2691,9 +2687,9 @@ class ownerFunctionality(Frame):
             else:
                 approved = True
 
-<<<<<<< HEAD
+
             newProp = [name, size, commercial, public, st, city, zip, type]
-=======
+
             # Get num visits
             visits = DBManager.getPropertyVisits(self, id)
 
@@ -2705,7 +2701,7 @@ class ownerFunctionality(Frame):
                 avgRating = ratingSum / visits
 
             newProp = [name, size, commercial, public, st, city, zip, type, owner, approved, visits, avgRating]
->>>>>>> af1c2f3f212b463a2b7e65207cccba5f7f5ab554
+
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
@@ -2747,21 +2743,13 @@ class ownerFunctionality(Frame):
         # Make sure user inputted something to search
         if self.term.get() != '' or len(self.term.get()) != 0:
             index = 0
-<<<<<<< HEAD
-            if (self.search.get() == "Name"):
-                index = 1
-            elif (self.search.get() == "City"):
-                index = 6
-            elif (self.search.get() == "Type"):
-                index = 8
-            elif (self.search.get() == "Visits"):
-=======
+
             if self.search.get() == "Name":
                 index = 1
             elif self.search.get() == "City":
                 index = 7
             elif self.search.get() == "Type":
->>>>>>> af1c2f3f212b463a2b7e65207cccba5f7f5ab554
+
                 index = 9
             elif self.search.get() == "Visits":
                 index = 12
@@ -2830,22 +2818,18 @@ class ownerFunctionality(Frame):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
 
-<<<<<<< HEAD
-            if item == '#6':
-=======
+
             if item == '#7':
->>>>>>> af1c2f3f212b463a2b7e65207cccba5f7f5ab554
+
                 #City
 
                 temp.sort(key=lambda x: x[6])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-<<<<<<< HEAD
-            if item == '#8':
-=======
+
             if item == '#9':
->>>>>>> af1c2f3f212b463a2b7e65207cccba5f7f5ab554
+
                 #Type
 
                 temp.sort(key=lambda x: x[8])
