@@ -1319,7 +1319,7 @@ class approvedOrganisms(Frame):
             
             DBManager.addPendingCrop(self, newName, OT)
             messagebox.showerror("","Added to Pending Approval")
-            self.controller.show_frame(adminFunctions)
+            self.controller.show_frame(approvedOrganisms)
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("can't add this"))
@@ -1332,7 +1332,7 @@ class approvedOrganisms(Frame):
         deleted = DBManager.deleteCrop(self, an, ab)
         if deleted:
             messagebox.showerror("","Selection Deleted")
-            self.controller.show_frame(adminFunctions)
+            self.controller.show_frame(approvedOrganisms)
         else:
             messagebox.showerror("Error", "Something went wrong")
 
@@ -1478,20 +1478,18 @@ class pendingOrganisms(Frame):
         deleted = DBManager.deleteCrop(self, an, ab)
         if deleted:
             messagebox.showerror("","Selection Deleted")
-            self.controller.show_frame(adminFunctions)
+            self.controller.show_frame(pendingOrganisms)
         else:
             messagebox.showerror("Error", "Something went wrong")
     def approveOrganism(self, item=''):
         approveMe = (self.element)
         an = str(approveMe[1])
-
-        try:
-            DBManager.approveCrop(self, an)
+        approved = DBManager.approveCrop(self, an)
+        if approved:
             messagebox.showinfo("Title", "Crop Approved!")
-            self.controller.show_frame(adminFunctions)
-        except Exception as e:
-            print("ERROR: {}".format(e))
-            print(logging.exception("can't add this"))
+            self.controller.show_frame(pendingOrganisms)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)

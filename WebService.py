@@ -1284,8 +1284,7 @@ class DBManager:
             cursor = conn.cursor()
 
             rowsAffected = cursor.execute(sql, cropin)
-
-            print('done')
+            conn.commit()
             return True
 
         except Exception as e:
