@@ -1061,3 +1061,34 @@ class DBManager:
         finally:
             conn.close()
 
+    #approve crops
+    def approveCrop(self, name):
+        # SQL statement to execute
+        print (name, "here")
+        sql = " UPDATE FarmItem SET IsApproved = 1 WHERE Name = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+        cropin = (name)
+        try:
+            # Execute query
+            cursor = conn.cursor()
+
+            rowsAffected = cursor.execute(sql, cropin)
+
+            # Commit changes to db
+            conn.commit()
+
+            # Check that the query was successful
+            if rowsAffected > 0:
+                print('done')
+                return True
+
+            else:
+                print('not done')
+                return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()

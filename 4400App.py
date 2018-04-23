@@ -1366,7 +1366,7 @@ class pendingOrganisms(Frame):
             
             frame.treeview.insert('', 'end', text=Name, values=newProp)
 
-        approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
+        approveB = Button(self, text="Approve Selection", command=self.approveOrganism)
         approveB.grid(row=4, column=0)
 
         deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
@@ -1374,6 +1374,20 @@ class pendingOrganisms(Frame):
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e')
+
+    def approveOrganism(self, item=''):
+        approveMe = (self.element)
+        an = str(approveMe[1])
+        
+        print (an)
+        
+        try:
+            DBManager.approveCrop(self, an)
+            messagebox.showinfo("Title", "Crop Approved!")
+            self.controller.show_frame(adminFunctions)
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("can't add this"))
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1408,7 +1422,7 @@ class pendingOrganisms(Frame):
     def onClick(self, event):
         item = self.table.identify_column(event.x)
         self.element = self.table.identify_row(event.y)
-        self.element = self.table.item(self.element, "text")
+        self.element = self.table.item(self.element, "values")
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
