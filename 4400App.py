@@ -42,7 +42,7 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(adminFunctions)
+        self.show_frame(loginPage)
 
 
     def show_frame(self, frame):
