@@ -765,7 +765,33 @@ class DBManager:
 
     def getConfirmedProps(self):
         # SQL statement to execute
-        sql = "SELECT Property.Name, Property.Street as Address, Property.City, Property.Zip, Property.Size, Property.PropertyType AS Type, Property.IsPublic as Public, Property.IsCommercial as Commercial, Property.ID, Property.ApprovedBy as VerifiedBy,  AVG(Visit.Rating) AS AvgRatingFROM Property LEFT JOIN Visit ON Property.ID = Visit.PropertyID WHERE ApprovedBy IS NOT NULL GROUP BY Property.ID"
+        sql = "SELECT Property.Name, Property.Street as Address, Property.City, Property.Zip, Property.Size, Property.PropertyType AS Type, Property.IsPublic as Public, Property.IsCommercial as Commercial, Property.ID, Property.ApprovedBy as VerifiedBy,  AVG(Visit.Rating) AS AvgRating FROM Property LEFT JOIN Visit ON Property.ID = Visit.PropertyID WHERE ApprovedBy IS NOT NULL GROUP BY Property.ID"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+
+            conn.close()
+
+    def getUnconfirmedProps(self):
+        # SQL statement to execute
+        sql = "SELECT Property.Name, Property.Street as Address, Property.City, Property.Zip, Property.Size, Property.PropertyType AS Type, Property.IsPublic as Public, Property.IsCommercial as Commercial, Property.ID, Property.Owner FROM Property WHERE ApprovedBy IS NULL"
 
         # Create connection
         conn = DBManager.getConnection(self)

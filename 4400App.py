@@ -1143,9 +1143,13 @@ class approvedOrganisms(Frame):
 
         frame = Frame(self)
         self.frame = frame
+
+
         table = Treeview(frame,selectmode='browse')
         self.table = table
         table['columns'] = ('Type')
+        table.bind("<Button-1>", self.onClick)
+
         table.heading('#0', text='Name', anchor='w')
         table.column('#0', anchor='w')
         table.heading('Type', text='Type')
@@ -1162,6 +1166,39 @@ class approvedOrganisms(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
+        crops = []
+
+        v = DBManager.getApprovedVegetables(self)
+        for x in v:
+            crops.append((x, "Vegetable"))
+
+        f = DBManager.getApprovedFlowers(self)
+        for x in f:
+            crops.append((x, "Flower"))
+
+        n = DBManager.getApprovedNuts(self)
+        for x in n:
+            crops.append((x, "Nut"))
+
+        a = DBManager.getApprovedAnimals(self)
+        for x in a:
+            crops.append((x, "Animal"))
+
+        fr= DBManager.getApprovedFruits(self)
+        for x in fr:
+            crops.append((x, "Fruit"))
+
+        if crops is None:
+            crops = []
+
+        for c in crops:
+
+            Name = c[0]
+            Type = c[1]
+
+            newProp = [Type,Name]
+
+            frame.treeview.insert('', 'end', text=Name, values=newProp)
 
         types = {'Fruit', 'Vegetable', 'Nut', 'Flower', 'Animal'}
         
@@ -1236,6 +1273,9 @@ class approvedOrganisms(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
+
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
@@ -1267,7 +1307,7 @@ class pendingOrganisms(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
         Frame.__init__(self, parent)
-        label = Label(self, text="Pending Owners/Crops", font =LARGE_FONT)
+        label = Label(self, text="Pending Animals/Crops", font =LARGE_FONT)
         label.grid(row=0, column=0)
 
         frame = Frame(self)
@@ -1292,7 +1332,40 @@ class pendingOrganisms(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-   
+        crops = []
+
+        v = DBManager.getApprovedVegetables(self)
+        for x in v:
+            crops.append((x, "Vegetable"))
+
+        f = DBManager.getApprovedFlowers(self)
+        for x in f:
+            crops.append((x, "Flower"))
+
+        n = DBManager.getApprovedNuts(self)
+        for x in n:
+            crops.append((x, "Nut"))
+
+        a = DBManager.getApprovedAnimals(self)
+        for x in a:
+            crops.append((x, "Animal"))
+
+        fr= DBManager.getApprovedFruits(self)
+        for x in fr:
+            crops.append((x, "Fruit"))
+
+        if crops is None:
+            crops = []
+
+        for c in crops:
+
+            Name = c[0]
+            Type = c[1]
+
+            newProp = [Type,Name]
+
+            frame.treeview.insert('', 'end', text=Name, values=newProp)
+
         approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
         approveB.grid(row=4, column=0)
 
@@ -1334,6 +1407,8 @@ class pendingOrganisms(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
@@ -1370,6 +1445,11 @@ class confirmedProperties(Frame):
         frame = Frame(self)
 
         table = Treeview(frame)
+
+        propList = DBManager.getConfirmedProps(self)
+        if propList is None:
+            propList = []
+
         self.frame = frame
         self.table = table
         self.table.bind("<Button-1>", self.onClick)
@@ -1404,6 +1484,37 @@ class confirmedProperties(Frame):
         frame.grid(sticky=(N,S,W,E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
+
+        for prop in propList:
+            name = prop[0]
+            address = prop[1]
+            city = prop[2]
+            zip = prop[3]
+            size = prop[4]
+            type = prop[5]
+            public = prop[6]
+            commercial = prop[7]
+            id = prop[8]
+            verified = prop[9]
+            rating = prop[10]
+
+            if commercial == 1:
+                commercial = True
+            else:
+                commercial = False
+
+            if public == 1:
+                public = True
+            else:
+                public = False
+
+            # Change approved value from null or 1 to true/false
+
+
+            newProp = [address, city, zip, size, type, public, commercial, id, verified, rating]
+
+            frame.treeview.insert('', 'end', text=name, values=newProp)
+
 
         types = {'Name', 'Zip', 'Type', 'Verified By','Avg Rating'}
         
@@ -1540,6 +1651,11 @@ class unconfirmedProperties(Frame):
         frame = Frame(self)
 
         table = Treeview(frame)
+        propList = DBManager.getUnconfirmedProps(self)
+
+        if propList is None:
+            propList = []
+
         self.frame = frame
         self.table = table
         self.table.bind("<Button-1>", self.onClick)
@@ -1574,7 +1690,35 @@ class unconfirmedProperties(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-   
+        for prop in propList:
+            name = prop[0]
+            address = prop[1]
+            city = prop[2]
+            zip = prop[3]
+            size = prop[4]
+            type = prop[5]
+            public = prop[6]
+            commercial = prop[7]
+            id = prop[8]
+            owner = prop[9]
+
+
+            if commercial == 1:
+                commercial = True
+            else:
+                commercial = False
+
+            if public == 1:
+                public = True
+            else:
+                public = False
+
+            # Change approved value from null or 1 to true/false
+
+            newProp = [address, city, zip, size, type, public, commercial, id, owner]
+
+            frame.treeview.insert('', 'end', text=name, values=newProp)
+
         types = {'Name', 'Size', 'Owner'}
         
         search = StringVar()
