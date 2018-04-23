@@ -45,8 +45,6 @@ class Atlanta(Tk):
         self.show_frame(loginPage)
 
 
-        self.show_frame(pendingOrganisms)
-
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
