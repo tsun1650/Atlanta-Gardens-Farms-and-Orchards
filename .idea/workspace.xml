@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="66dd1a34-1db2-48fd-80dd-849e266f54d6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/4400App.py" afterPath="$PROJECT_DIR$/4400App.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -27,10 +28,22 @@
       <file leaf-file-name="4400App.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/4400App.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1702">
-              <caret line="327" column="0" lean-forward="false" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
+            <state relative-caret-position="424">
+              <caret line="45" column="8" lean-forward="false" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="8" />
               <folding>
-                <element signature="e#208#1960#0" expanded="false" />
+                <element signature="e#8616#18388#0" expanded="false" />
+                <element signature="e#18422#22270#0" expanded="false" />
+                <element signature="e#22308#35027#0" expanded="false" />
+                <element signature="e#35062#36386#0" expanded="false" />
+                <element signature="e#36422#42886#0" expanded="false" />
+                <element signature="e#42920#48814#0" expanded="false" />
+                <element signature="e#48852#55499#0" expanded="false" />
+                <element signature="e#55537#60886#0" expanded="false" />
+                <element signature="e#60926#69797#0" expanded="false" />
+                <element signature="e#69851#77594#0" expanded="false" />
+                <element signature="e#77630#86323#0" expanded="false" />
+                <element signature="e#86364#90027#0" expanded="false" />
+                <element signature="e#90063#92890#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -401,7 +414,14 @@
       <option name="project" value="LOCAL" />
       <updated>1524454321173</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="merged">
+      <created>1524454415818</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1524454415818</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TodoView">
@@ -534,10 +554,22 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/4400App.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1702">
-          <caret line="327" column="0" lean-forward="false" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
+        <state relative-caret-position="424">
+          <caret line="45" column="8" lean-forward="false" selection-start-line="45" selection-start-column="8" selection-end-line="45" selection-end-column="8" />
           <folding>
-            <element signature="e#208#1960#0" expanded="false" />
+            <element signature="e#8616#18388#0" expanded="false" />
+            <element signature="e#18422#22270#0" expanded="false" />
+            <element signature="e#22308#35027#0" expanded="false" />
+            <element signature="e#35062#36386#0" expanded="false" />
+            <element signature="e#36422#42886#0" expanded="false" />
+            <element signature="e#42920#48814#0" expanded="false" />
+            <element signature="e#48852#55499#0" expanded="false" />
+            <element signature="e#55537#60886#0" expanded="false" />
+            <element signature="e#60926#69797#0" expanded="false" />
+            <element signature="e#69851#77594#0" expanded="false" />
+            <element signature="e#77630#86323#0" expanded="false" />
+            <element signature="e#86364#90027#0" expanded="false" />
+            <element signature="e#90063#92890#0" expanded="false" />
           </folding>
         </state>
       </provider>

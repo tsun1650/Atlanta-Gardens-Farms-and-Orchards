@@ -42,7 +42,10 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
+
         self.show_frame(loginPage)
+
+        #self.show_frame(adminFunctions)
 
 
     def show_frame(self, frame):
@@ -298,8 +301,7 @@ class visitorView(Frame):
             city = prop[6]
             zip = prop[7]
             type = prop[8]
-
-            
+            owner = prop[9]
 
             # Change tinyint values into true/false for commercial and public
             if comm == 1:
@@ -2453,7 +2455,7 @@ class otherOwnerProperties(Frame):
             else:
                 approved = True
 
-            newProp = [name, size, commercial, public, st, city, zip, type]
+            newProp = [name, size, commercial, public, st, city, zip, type, owner, approved]
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
@@ -2477,7 +2479,7 @@ class otherOwnerProperties(Frame):
         viewprop = Button(self, text="View Property Details", command=self.viewPropertyOnClick)
         viewprop.grid(row=3, column=0, padx=50, pady=10)
         ## TO DO: BACK MUST GO TO THE RIGHT PAGE
-        back = Button(self, text="Back", command=lambda: self.controller.show_frame(loginPage))
+        back = Button(self, text="Back", command=lambda: self.controller.show_frame(ownerFunctionality))
         back.grid(row=4, column=0, sticky='e', padx=50, pady=10)
 
     def searchfunc(self, item=''):
