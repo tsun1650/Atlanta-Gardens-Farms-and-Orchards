@@ -450,14 +450,17 @@ class visitorView(Frame):
         #     i.append(x)
         # self.selectedVisitorprop = i
         # print(self.selectedVisitorprop)
+
     def viewProperty(self):
         if self.element is not None:
             self.controller.propID = self.element
             self.controller.show_frame(visitorPropertyPage)
 
+
 class visitHistory(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
+        self.element = None
         Frame.__init__(self, parent)
         label = Label(self, text="Your Visit History", font=LARGE_FONT)
         label.grid(row=0, column=0, padx=50, pady=20)
@@ -511,7 +514,7 @@ class visitHistory(Frame):
 
         # loads temp data
         
-        propdetails = Button(self, text="View Property Details", command=lambda: self.controller.show_frame(loginPage))
+        propdetails = Button(self, text="View Property Details", command=self.viewPropOnClick)
         propdetails.grid(row=2, column=0, pady=10)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(visitorView))
@@ -519,6 +522,8 @@ class visitHistory(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element, "text")
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
 
@@ -554,6 +559,17 @@ class visitHistory(Frame):
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2]))
+
+    def viewPropOnClick(self):
+        if self.element is not None:
+            name = self.element
+
+            # Get propID for this property
+            id = DBManager.getPropertyID(self, name)[0]
+
+            # Redirect to info page
+            self.controller.propID = id
+            self.controller.show_frame(visitorPropertyPage)
 
 class ownerRegistration(Frame):
     def __init__(self, parent, controller):
@@ -2098,7 +2114,6 @@ class visitorPropertyPage(Frame):
         # Get property details
         temp = DBManager.getPropertyDetails(self, self.controller.propID)
         propDeets = temp[0]
-        print(propDeets)
         name = propDeets[1]
         size = propDeets[2]
         comm = propDeets[3]
@@ -2108,28 +2123,23 @@ class visitorPropertyPage(Frame):
         zipcode = propDeets[7]
         proptype = propDeets[8]
         owner = propDeets[9]
-        print("prop deets: ", propDeets)
 
         # Change tinyint values into true/false for commercial and public
         if comm == 1:
             commercial = "True"
         else:
             commercial = "False"
-        print("commercial: ", commercial)
 
         if pub == 1:
             public = "True"
         else:
             public = "False"
-        print("public: ", public)
 
         # Get owner email
         email = DBManager.getEmail(self, owner)[0]
-        print("email: ", email)
 
         # Get crops
         crops = DBManager.getPropertyCrops(self, self.controller.propID)
-        print("crops: ", crops)
 
         # Get total number of visits
         visits = DBManager.getPropertyVisits(self, self.controller.propID)
@@ -2192,11 +2202,14 @@ class visitorPropertyPage(Frame):
     def logBtnOnClick(self):
         rating = self.rateVar.get()
         log = DBManager.logVisit(self, self.controller.username, self.controller.propID, rating)
-        if log > 0:
-            messagebox.showerror("Thanks!", "Visit was successfully logged")
-            self.controller.show_frame(visitorView)
+        if log is None:
+            messagebox.showerror("Error", "You have already rated this property!")
         else:
-            messagebox.showerror("Error", "Something went wrong.")
+            if log > 0:
+                messagebox.showerror("Thanks!", "Visit was successfully logged")
+                self.controller.show_frame(visitorView)
+            else:
+                messagebox.showerror("Error", "Something went wrong.")
 
 class propertyDetails(Frame):
     def __init__(self, parent, controller):
@@ -2285,6 +2298,8 @@ class propertyDetails(Frame):
 class otherOwnerProperties(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
+        self.element = None
+
         Frame.__init__(self, parent)
         label = Label(self, text="All Other Valid Properties", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -2507,8 +2522,9 @@ class otherOwnerProperties(Frame):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
     def viewPropertyOnClick(self):
-        self.controller.propID = self.element
-        self.controller.show_frame(propertyDetails)
+        if self.element is not None:
+            self.controller.propID = self.element
+            self.controller.show_frame(propertyDetails)
 
 class ownerFunctionality(Frame):
     def __init__(self, parent, controller):
