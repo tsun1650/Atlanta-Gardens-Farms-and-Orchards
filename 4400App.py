@@ -204,6 +204,7 @@ class visitorRegistration(Frame):
                         if register:
                             messagebox.showerror("Account Created", "Registration was a success!"
                                                                     "You can now login on the login page.")
+                            self.controller.show_frame(loginPage)
 
 
                         else:
@@ -235,7 +236,7 @@ class visitorView(Frame):
         self.frame = frame
         self.table = table
         table['columns'] = ('Name', 'Size', 'Commercial', 'Public', 'Street', 'City', 'ZIP', 'Type', 'Owner',
-                            'visits', 'rating')
+                            'Visits', 'Rating')
 
         table.column('#0', anchor='w', width=50)
         table.heading('#0', text='ID', anchor='w')
@@ -267,11 +268,11 @@ class visitorView(Frame):
         table.column('Owner', anchor='center', width=100)
         table.heading('Owner', text='Owner')
 
-        table.heading('visits', text='Visits')
-        table.column('visits', anchor='center', width = 100)
+        table.heading('Visits', text='Visits')
+        table.column('Visits', anchor='center', width = 100)
 
-        table.heading('rating', text='Avg Rating')
-        table.column('rating', anchor='center', width = 100)
+        table.heading('Rating', text='Avg Rating')
+        table.column('Rating', anchor='center', width = 100)
         table.grid(sticky=(N,S,W,E))
         frame.treeview = self.table
         frame.grid_rowconfigure(0, weight=1)
@@ -298,7 +299,6 @@ class visitorView(Frame):
             zip = prop[7]
             type = prop[8]
             owner = prop[9]
-            
 
             # Change tinyint values into true/false for commercial and public
             if comm == 1:
@@ -311,12 +311,20 @@ class visitorView(Frame):
             else:
                 public = False
 
+            # Get num visits
+            visits = DBManager.getPropertyVisits(self, id)
 
-            newProp = [name, size, commercial, public, st, city, zip, type, owner]
+            # Get sum of ratings
+            ratingSum = DBManager.getPropertySumRatings(self, id)
+            if ratingSum is None:
+                avgRating = "0.0"
+            else:
+                avgRating = ratingSum / visits
+
+            newProp = [name, size, commercial, public, st, city, zip, type, owner, visits, avgRating]
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
-     
         types = {'Name', 'City', 'Type', 'Visits','Avg Rating'}
     
         search = StringVar()
@@ -823,6 +831,7 @@ class ownerRegistration(Frame):
                                     # Now add user to User table
                                     messagebox.showerror("Account Created", "Registration was a success!"
                                                                             "You can now login on the login page.")
+                                    self.controller.show_frame(loginPage)
                                 else:
                                     messagebox.showerror("Error", "Something went wrong")
                             else:
@@ -830,6 +839,7 @@ class ownerRegistration(Frame):
                                 if register and addProp and cropAdded:
                                     messagebox.showerror("Account Created", "Registration was a success!"
                                                                             "You can now login on the login page.")
+                                    self.controller.show_frame(loginPage)
                                 else:
                                     messagebox.showerror("Error", "Something went wrong")
                         else:
@@ -2555,7 +2565,7 @@ class ownerFunctionality(Frame):
         Frame.__init__(self, parent)
 
         frame = Frame(self)
-
+        self.element = None
         # Get owners username
         self.controller = controller
         username = self.controller.username
@@ -2620,13 +2630,16 @@ class ownerFunctionality(Frame):
         table.heading('Rating', text='Avg. Rating')
 
         table.grid(sticky=(N,S,W,E))
-        frame.treeview = table
+        self.frame.treeview = table
         frame.grid_rowconfigure(0, weight=1)
         frame.grid_columnconfigure(0, weight=1)
 
         frame.grid(sticky=(N,S,W,E))
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
+
+        self.visitList = {}
+        self.avgRateList = {}
 
         for prop in propList:
             id = prop[0]
@@ -2670,7 +2683,7 @@ class ownerFunctionality(Frame):
 
             newProp = [name, size, commercial, public, st, city, zip, type, owner, approved, visits, avgRating]
 
-            frame.treeview.insert('', 'end', text=id, values=newProp)
+            self.frame.treeview.insert('', 'end', text=id, values=newProp)
 
         types = {'Name', 'City', 'Type', 'Visits', 'Avg Rating'}
         
@@ -2684,7 +2697,7 @@ class ownerFunctionality(Frame):
         term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
         self.term = term
 
-        searchprop = Button(self, text="Search Properties", command=self.searchfunc)
+        searchprop = Button(self, text="Search Properties", command=self.searchFor)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
         manage = Button(self, text="Manage Property", command=self.manageProp)
@@ -2699,63 +2712,128 @@ class ownerFunctionality(Frame):
         viewOthers = Button(self, text="View Other Properties", command=lambda: self.controller.show_frame(otherOwnerProperties))
         viewOthers.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
-    def searchfunc(self, item=''):
-        children = self.frame.treeview.get_children(item)
-        print('children:', children)
-        print('item: ', item)
-        #if(self.term.get() ==  ''):
-            #for i in range(len(self.removed)):
-                #self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1], self.removed[i][2], self.removed[i][3], self.removed[i][4], self.removed[i][5], self.removed[i][6], self.removed[i][7], self.removed[i][8], self.removed[i][9], self.removed[i][10]))
-            #self.removed = []
+    def searchFor(self):
         # Make sure user inputted something to search
         if self.term.get() != '' or len(self.term.get()) != 0:
-            index = 0
-            if self.search.get() == "Name":
-                index = 1
-            elif self.search.get() == "City":
-                index = 7
-            elif self.search.get() == "Type":
-                index = 9
-            elif self.search.get() == "Visits":
-                index = 12
-            elif self.search.get() == "Avg Rating":
-                index = 13
+            # Get search attribute
+            attrName = self.search.get()
+            attrVal = self.term.get()
 
-            for child in children:
-                print("child: ", child)
-                temp1 = []
-                text = self.frame.treeview.item(child, 'text')
-                print("text:", text)
-                temp1.append(text)
-                print("temp: ", temp1)
-                print(self.table.item(child, "values"))
-                for x in self.table.item(child, "values"):
-                        temp1.append(x)
-                # print(self.table.item(child, "values"))
-                if temp1[index] == self.term.get():
-                    self.frame.treeview.selection_set(child)
+            if attrName == 'Name':
+                # Call search function
+                searchResult = DBManager.searchName(self, attrVal, self.controller.username)
+                if searchResult is None:
+                    searchResult = []
+            elif attrName == 'City':
+                # Call search function
+                searchResult = DBManager.searchCity(self, attrVal, self.controller.username)
+                if searchResult is None:
+                    searchResult = []
+            elif attrName == 'Type':
+                # Call search function
+                searchResult = DBManager.searchType(self, attrVal, self.controller.username)
+                if searchResult is None:
+                    searchResult = []
+
+            children = self.frame.treeview.get_children()
+            self.frame.treeview.delete(*children)
+
+            for prop in searchResult:
+                id = prop[0]
+                name = prop[1]
+                size = prop[2]
+                comm = prop[3]
+                pub = prop[4]
+                st = prop[5]
+                city = prop[6]
+                zip = prop[7]
+                type = prop[8]
+                owner = prop[9]
+                appr = prop[10]
+
+                # Change tinyint values into true/false for commercial and public
+                if comm == 1:
+                    commercial = True
                 else:
-                    if ('-' in self.term.get()):
-                        tempterm = self.term.get().split("-")
-                        # print(float(temp1[index]))
-                        # print(float(tempterm[0]))
-                        if (float(temp1[index]) >= float(tempterm[0]) and float(temp1[index]) <= float(tempterm[1])):
-                            self.frame.treeview.selection_set(child)
-                        else:
-                            res = self.searchfunc(child)
+                    commercial = False
 
-                            self.removed.append(temp1)
-                            self.frame.treeview.delete(child)
-                            if res:
-                                break
+                if pub == 1:
+                    public = True
+                else:
+                    public = False
 
-                    else:
-                        res = self.searchfunc(child)
+                # Change approved value from null or 1 to true/false
+                if appr is None:
+                    approved = False
+                else:
+                    approved = True
 
-                        self.removed.append(temp1)
-                        self.frame.treeview.delete(child)
-                        if res:
-                            break
+                # Get num visits
+                visits = DBManager.getPropertyVisits(self, id)
+
+                # Get sum of ratings
+                ratingSum = DBManager.getPropertySumRatings(self, id)
+                if ratingSum is None:
+                    avgRating = "0.0"
+                else:
+                    avgRating = ratingSum / visits
+
+                newProp = [name, size, commercial, public, st, city, zip, type, owner, approved, visits, avgRating]
+
+                self.frame.treeview.insert('', 'end', text=id, values=newProp)
+        else:
+            # Get a list with all of the owners properties
+            propList = DBManager.getOwnerProperties(self, self.controller.username)
+            if propList is None:
+                propList = []
+
+            children = self.frame.treeview.get_children()
+            self.frame.treeview.delete(*children)
+
+            for prop in propList:
+                id = prop[0]
+                name = prop[1]
+                size = prop[2]
+                comm = prop[3]
+                pub = prop[4]
+                st = prop[5]
+                city = prop[6]
+                zip = prop[7]
+                type = prop[8]
+                owner = prop[9]
+                appr = prop[10]
+
+                # Change tinyint values into true/false for commercial and public
+                if comm == 1:
+                    commercial = True
+                else:
+                    commercial = False
+
+                if pub == 1:
+                    public = True
+                else:
+                    public = False
+
+                # Change approved value from null or 1 to true/false
+                if appr is None:
+                    approved = False
+                else:
+                    approved = True
+
+                # Get num visits
+                visits = DBManager.getPropertyVisits(self, id)
+
+                # Get sum of ratings
+                ratingSum = DBManager.getPropertySumRatings(self, id)
+                if ratingSum is None:
+                    avgRating = "0.0"
+                else:
+                    avgRating = ratingSum / visits
+
+                newProp = [name, size, commercial, public, st, city, zip, type, owner, approved, visits, avgRating]
+
+                self.frame.treeview.insert('', 'end', text=id, values=newProp)
+
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
@@ -2814,10 +2892,11 @@ class ownerFunctionality(Frame):
 
     def manageProp(self):
         global prop
-        
-        prop = DBManager.getPropertyDetails(self, propID = self.element)
-        #print("manageprop", self.prop)
-        self.controller.show_frame(propertyManagement)
+
+        if self.element is not None:
+            prop = DBManager.getPropertyDetails(self, propID = self.element)
+            #print("manageprop", self.prop)
+            self.controller.show_frame(propertyManagement)
 
 class propertyManagement(Frame):
     def __init__(self, parent, controller):
@@ -2952,7 +3031,7 @@ class propertyManagement(Frame):
         button4 = Button(frame, text="Delete Property", command=lambda: self.controller.show_frame(loginPage))
         button4.grid(row=10, column=0, sticky='w')
 
-        button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(loginPage))
+        button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(ownerFunctionality))
         button5.grid(row=10, column=1, sticky='w')
 
     def addCrop(self):

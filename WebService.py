@@ -575,8 +575,6 @@ class DBManager:
             conn.close()
 
 
-   
-
     ####UNAPPROVED STARTS HERE
 
 
@@ -1272,3 +1270,87 @@ class DBManager:
             print(logging.exception("error happened"))
         finally:
             conn.close()
+
+    def searchName(self, attrVal, username):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE Name = %s AND Owner = %s"
+
+        userin = (attrVal, username)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, attrVal)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    def searchCity(self, attrVal, username):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE City = %s AND Owner = %s"
+
+        userin = (attrVal, username)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    def searchType(self, attrVal, username):
+        # SQL statement to execute
+        sql = "SELECT * FROM Property WHERE PropertyType = %s AND Owner = %s"
+
+        userin = (attrVal, username)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, userin)
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+
+
