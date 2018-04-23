@@ -918,7 +918,7 @@ class viewVisitorList(Frame):
         self.searchprop = Button(self, text="Search Visitors", command=self.searchfunc)
         self.searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        deletevisitor = Button(self, text="Delete Visitor Account", command=lambda: self.controller.show_frame(adminFunctions))
+        deletevisitor = Button(self, text="Delete Visitor Account", command=self.deletevisitor)
         deletevisitor.grid(row=3, column=0, padx=50, pady=10)
 
         deletelog = Button(self, text="Delete Log History", command=lambda: self.controller.show_frame(adminFunctions))
@@ -927,6 +927,20 @@ class viewVisitorList(Frame):
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
+    def deletevisitor(self):
+        temp = []
+        element = self.table.item(self.element1, "values")
+        element2 = self.table.item(self.element1, "text")
+        temp.append(element2)
+        for i in range(len(element)):
+            temp.append(element[i])
+
+        deleted = DBManager.deleteVisitor(self, temp[0], temp[1])
+        if deleted:
+            messagebox.showerror("Account Deleted", str(temp[0]) + "'s account has been deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -961,6 +975,10 @@ class viewVisitorList(Frame):
                     if res:
                         break
     def onClick(self, event):
+        self.item1 = self.table.identify_column(event.x)
+        self.element1 = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element1, "text")
+        
         item = self.table.identify_column(event.x)
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
@@ -1057,12 +1075,26 @@ class viewOwnerList(Frame):
         searchowners = Button(self, text="Search Owners", command=self.searchfunc)
         searchowners.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        deletelog = Button(self, text="Delete Owner Account", command=lambda: controller.show_frame(adminFunctions))
+        deletelog = Button(self, text="Delete Owner Account", command=self.deleteowner)
         deletelog.grid(row=4, column=0, padx=50, pady=10)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
+    def deleteowner(self):
+        temp = []
+        element = self.table.item(self.element1, "values")
+        element2 = self.table.item(self.element1, "text")
+        temp.append(element2)
+        for i in range(len(element)):
+            temp.append(element[i])
+
+        deleted = DBManager.deleteOwner(self, temp[0], temp[1])
+        if deleted:
+            messagebox.showerror("Account Deleted", str(temp[0]) + "'s account has been deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1097,6 +1129,10 @@ class viewOwnerList(Frame):
                         break
 
     def onClick(self, event):
+        self.item1 = self.table.identify_column(event.x)
+        self.element1 = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element1, "text")
+        
         item = self.table.identify_column(event.x)
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
