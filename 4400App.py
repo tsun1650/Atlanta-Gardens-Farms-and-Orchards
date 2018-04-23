@@ -3098,11 +3098,12 @@ class propertyManagement(Frame):
         button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(ownerFunctionality))
         button5.grid(row=10, column=1, sticky='w')
 
-
+        ##
+        # THIS IS THE AVAILABLE ITEMS FOR A PROP
         self.variable = StringVar()
         self.variable.set("")
         allitems = DBManager.getPropertyCrops(self,prop[0][0])
-        self.newcropsType_menu = OptionMenu(self.frame, self.variable, self.cropTypeVar.get(), *allitems)
+        self.newcropsType_menu = OptionMenu(self.frame, self.variable, *allitems)
         self.newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
     def update(self):
         global prop
