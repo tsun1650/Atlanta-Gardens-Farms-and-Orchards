@@ -33,7 +33,7 @@ class Atlanta(Tk):
         #          your new page here           #
         #########################################
         allPages = (loginPage, visitorRegistration, ownerRegistration, adminFunctions, visitorView, visitHistory, viewVisitorList, 
-            viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties, visitorPropertyPage, propertyDetails, otherOwnerProperties, ownerFunctionality, addNewProperty)
+            viewOwnerList, approvedOrganisms, pendingOrganisms, unconfirmedProperties, confirmedProperties, visitorPropertyPage, propertyDetails, otherOwnerProperties, ownerFunctionality, addNewProperty, adminPropertyManagement)
 
         #for F in allPages:
             #frame = F(container, self)
@@ -43,7 +43,7 @@ class Atlanta(Tk):
         #mainFrame = loginPage(self.container, self)
         self._frame = None
 
-        self.show_frame(pendingOrganisms)
+        self.show_frame(adminFunctions)
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
@@ -300,7 +300,7 @@ class visitorView(Frame):
             city = prop[6]
             zip = prop[7]
             type = prop[8]
-            owner = prop[9]
+
             
 
             # Change tinyint values into true/false for commercial and public
@@ -315,7 +315,7 @@ class visitorView(Frame):
                 public = False
 
 
-            newProp = [name, size, commercial, public, st, city, zip, type, owner]
+            newProp = [name, size, commercial, public, st, city, zip, type]
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
@@ -352,11 +352,11 @@ class visitorView(Frame):
         else:
             index = 0
             if (self.search.get() == "Name"):
-                index = 0
+                index = 1
             elif (self.search.get() == "City"):
-                index = 2
+                index = 6
             elif (self.search.get() == "Type"):
-                index = 5
+                index = 8
             elif (self.search.get() == "Visits"):
                 index = 9
             elif (self.search.get() == "Avg Rating"):
@@ -411,25 +411,25 @@ class visitorView(Frame):
                 temp.append(temp1)
                 self.frame.treeview.delete(child)
 
-            if item == '#0':
-                #Name
-
-                temp.sort(key=lambda x: x[0])
-                for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
-
-
             if item == '#2':
-                #City
+                #Name
 
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#5':
+
+            if item == '#6':
+                #City
+
+                temp.sort(key=lambda x: x[6])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
+            if item == '#8':
                 #Type
 
-                temp.sort(key=lambda x: x[5])
+                temp.sort(key=lambda x: x[8])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
@@ -921,11 +921,20 @@ class viewVisitorList(Frame):
         deletevisitor = Button(self, text="Delete Visitor Account", command=self.deletevisitor)
         deletevisitor.grid(row=3, column=0, padx=50, pady=10)
 
-        deletelog = Button(self, text="Delete Log History", command=lambda: self.controller.show_frame(adminFunctions))
+        deletelog = Button(self, text="Delete Log History", command=self.deletelogvisit)
         deletelog.grid(row=4, column=0, padx=50, pady=10)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
+    def deletelogvisit(self):
+        element2 = self.table.item(self.element1, "text")
+        delete = DBManager.deleteLoggedVisits(self, element2)
+        if deleted:
+            messagebox.showerror("Deleted Log History", str(element2) + "'s log history has been deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def deletevisitor(self):
         temp = []
@@ -1589,11 +1598,18 @@ class confirmedProperties(Frame):
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
         self.search = search
         self.term = term
-        mprop = Button(self, text="Manage Selected Property", command=lambda: self.controller.show_frame(loginPage))
+        mprop = Button(self, text="Manage Selected Property", command=self.manageProp)
         mprop.grid(row=3, column=0, padx=50, pady=10)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
+    def manageProp(self):
+        global prop
+        
+        prop = DBManager.getPropertyDetails(self, propID = self.element)
+        #print("manageprop", self.prop)
+        self.controller.show_frame(adminPropertyManagement)
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1648,6 +1664,9 @@ class confirmedProperties(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element1 = self.table.identify_row(event.y)
+        self.element1 = self.table.item(self.element1, "values")
+        self.element = self.element1[7]
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
@@ -1792,11 +1811,18 @@ class unconfirmedProperties(Frame):
         searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        mprop = Button(self, text="Manage Selected Property", command=lambda: self.controller.show_frame(loginPage))
+        mprop = Button(self, text="Manage Selected Property", command=self.manageProp)
         mprop.grid(row=3, column=0, padx=50, pady=10)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
+
+    def manageProp(self):
+        global prop
+        prop = DBManager.getPropertyDetails(self, propID = self.element)
+
+        #print("manageprop", self.prop)
+        self.controller.show_frame(adminPropertyManagement)
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1848,6 +1874,9 @@ class unconfirmedProperties(Frame):
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
+        self.element1 = self.table.identify_row(event.y)
+        self.element1 = self.table.item(self.element1, "values")
+        self.element = self.element1[7]
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#4', '#9']:
 
@@ -2317,7 +2346,7 @@ class otherOwnerProperties(Frame):
             else:
                 approved = True
 
-            newProp = [name, size, commercial, public, st, city, zip, type, owner, approved]
+            newProp = [name, size, commercial, public, st, city, zip, type]
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
@@ -2353,11 +2382,11 @@ class otherOwnerProperties(Frame):
         else:
             index = 0
             if (self.search.get() == "Name"):
-                index = 0
-            elif (self.search.get() == "City"):
                 index = 2
+            elif (self.search.get() == "City"):
+                index = 6
             elif (self.search.get() == "Public"):
-                index = 5
+                index = 8
             elif (self.search.get() == "Visits"):
                 index = 9
             elif (self.search.get() == "Avg Rating"):
@@ -2413,25 +2442,25 @@ class otherOwnerProperties(Frame):
                 temp.append(temp1)
                 self.frame.treeview.delete(child)
 
-            if item == '#0':
-                #Name
-
-                temp.sort(key=lambda x: x[0])
-                for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
-
-
             if item == '#2':
-                #City
+                #Name
 
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
+
             if item == '#6':
-                #Type
+                #City
 
                 temp.sort(key=lambda x: x[6])
+                for i in range(len(temp)):
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+
+            if item == '#8':
+                #Type
+
+                temp.sort(key=lambda x: x[8])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
@@ -2555,7 +2584,7 @@ class ownerFunctionality(Frame):
             else:
                 approved = True
 
-            newProp = [name, size, commercial, public, st, city, zip, type, owner, approved]
+            newProp = [name, size, commercial, public, st, city, zip, type]
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
@@ -2595,11 +2624,11 @@ class ownerFunctionality(Frame):
         else:
             index = 0
             if (self.search.get() == "Name"):
-                index = 0
+                index = 1
             elif (self.search.get() == "City"):
-                index = 2
+                index = 6
             elif (self.search.get() == "Type"):
-                index = 5
+                index = 8
             elif (self.search.get() == "Visits"):
                 index = 9
             elif (self.search.get() == "Avg Rating"):
@@ -2655,25 +2684,25 @@ class ownerFunctionality(Frame):
                 temp.append(temp1)
                 self.frame.treeview.delete(child)
 
-            if item == '#0':
+            if item == '#1':
                 #Name
 
-                temp.sort(key=lambda x: x[0])
+                temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
 
-            if item == '#2':
+            if item == '#6':
                 #City
 
-                temp.sort(key=lambda x: x[2])
+                temp.sort(key=lambda x: x[6])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#5':
+            if item == '#8':
                 #Type
 
-                temp.sort(key=lambda x: x[5])
+                temp.sort(key=lambda x: x[8])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
@@ -2853,6 +2882,201 @@ class propertyManagement(Frame):
         newcropsTypeVar.set(' ')   # Set garden as the default prop type
         newcropsType_menu = OptionMenu(self.frame, newcropsTypeVar, self.cropTypeVar.get(), *self.newcropstypes)
         newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
+
+class adminPropertyManagement(Frame):
+    def __init__(self, parent, controller):
+        #self.prop = prop
+        #print(self.prop)
+        global prop
+        
+        
+        self.controller = controller
+        Frame.__init__(self, parent)
+        
+        label = Label(self, text="Manage", font =LARGE_FONT)
+        label.pack(pady=10,padx=10)
+
+        frame = Frame(self)
+        frame.pack(padx=5, pady=20, side=LEFT)
+        self.frame = frame
+
+        name = Label(frame, text="Name: ")
+        name.grid(row=0, column=0, sticky='w')
+        self.name = Entry(frame, background='white', width=24)
+        self.name.insert(0, prop[0][1])
+        self.name.grid(row=0, column=1, sticky='w')
+        self.name.focus_set()
+
+        typ = Label(frame, text="Type: " + prop[0][8])
+        typ.grid(row=0, column=2, sticky='w')
+        
+        street = Label(frame, text="Address: ")
+        street.grid(row=1, column=0, sticky='w')
+        self.street = Entry(frame, background='white', width=24)
+        self.street.insert(0, prop[0][5])
+        self.street.grid(row=1, column=1, sticky='w')
+        self.street.focus_set()
+
+        pub = Label(frame, text="Public: ")
+        pub.grid(row=1, column=2, sticky='w')
+
+        # Rest of GUI depends on property type selected
+        pubtypes = {'True', 'False'}   # Dictionary holding different prop types
+        
+        pubTypeVar = StringVar()
+        pubTypeVar.set('False')   # Set garden as the default prop type
+        temp5 = 'False'
+        if prop[0][4] == 1:
+            temp5 = 'True'
+        pubType_menu = OptionMenu(frame, pubTypeVar, temp5, *pubtypes)
+        pubType_menu.grid(row=1, column=3, padx=5, pady=10)
+
+        city = Label(frame, text="City: ")
+        city.grid(row=2, column=0, sticky='w')
+        self.city = Entry(frame, background='white', width=24)
+        self.city.insert(0, prop[0][6])
+        self.city.grid(row=2, column=1, sticky='w')
+        self.city.focus_set()
+
+        com = Label(frame, text="Commercial: ")
+        com.grid(row=2, column=2, sticky='w')
+
+        comtypes = {'True', 'False'}   # Dictionary holding different prop types
+        temp6 = 'False'
+        if prop[0][3] == 1:
+            temp6 = 'True'
+        comTypeVar = StringVar()
+        comTypeVar.set('False')   # Set garden as the default prop type
+        comType_menu = OptionMenu(frame, comTypeVar, temp6, *comtypes)
+        comType_menu.grid(row=2, column=3, padx=5, pady=10)
+
+        zipcode = Label(frame, text="Zip: ")
+        zipcode.grid(row=3, column=0, sticky='w')
+        self.zipcode = Entry(frame, background='white', width=24)
+        self.zipcode.insert(0, prop[0][7])
+        self.zipcode.grid(row=3, column=1, sticky='w')
+        self.zipcode.focus_set()
+
+        ID = Label(frame, text="ID: " + str(prop[0][0]))
+        ID.grid(row=3, column=2, sticky='w')
+
+        acres = Label(frame, text="Size(Acres): ")
+        acres.grid(row=4, column=0, sticky='w')
+        self.acres = Entry(frame, background='white', width=24)
+        self.acres.insert(0, prop[0][2])
+        self.acres.grid(row=4, column=1, sticky='w')
+        self.acres.focus_set()
+
+        if prop[0][8] == "FARM":
+            an = Label(frame, text="Add new animal: ")
+            an.grid(row=5, column=0, sticky='w')
+            animals = DBManager.getApprovedAnimals(self)
+            antypes = set()   # Dictionary holding different prop types
+            for i in animals:
+                antypes.add(i)
+            
+            self.anType = StringVar()
+            self.anType.set(' ')   # Set garden as the default prop type
+
+            newans_menu = OptionMenu(frame, self.anType, animals[0], *antypes)
+            newans_menu.grid(row=5, column=1, padx=5, pady=10)
+
+            newans = StringVar()
+            self.newans = newans
+            self.newans1 = set()
+
+        
+
+        button11 = Button(frame, text="Add animal to property", command=self.addAnimal)
+        button11.grid(row=6, column=1, sticky='w')
+
+
+        cropType = Label(frame, text="Add new crop: ")
+        cropType.grid(row=5, column=2, sticky='w')
+        # Rest of GUI depends on property type selected
+        temp = []
+        cropslist = DBManager.getApprovedNuts(self)
+        for i in cropslist:
+            temp.append(i)
+        cropslist = DBManager.getApprovedVegetables(self)
+        for i in cropslist:
+            temp.append(i)
+        cropslist = DBManager.getApprovedFlowers(self)
+        for i in cropslist:
+            temp.append(i)
+        cropslist = DBManager.getApprovedFruits(self)
+        for i in cropslist:
+            temp.append(i)
+
+        croptypes = set()   # Dictionary holding different prop types
+        for i in temp:
+            croptypes.add(i)
+        self.cropTypeVar = StringVar()
+        self.cropTypeVar.set(' ')   # Set garden as the default prop type
+
+        cropType_menu = OptionMenu(frame, self.cropTypeVar, temp[0], *croptypes)
+        cropType_menu.grid(row=5, column=3, padx=5, pady=10)
+
+        crops = Label(frame, text="Crops: ")
+        crops.grid(row=5, column=4, sticky='w')
+        global buttonnum
+        buttonnum = 0
+        newan = Label(self.frame, text="New Animal Type")
+        newan.grid(row=7, column = 0)
+
+        
+
+
+
+        button1 = Button(frame, text="Add crop to property", command=self.addCrop)
+        button1.grid(row=6, column=2, sticky='w')
+
+        crop = Label(frame, text="Request crop approval: ")
+        crop.grid(row=7, column=2, sticky='w')
+        self.crop = Entry(frame, background='white', width=24)
+        self.crop.grid(row=7, column=3, sticky='w')
+        self.crop.focus_set()
+
+
+
+        newcropType = Label(frame, text="New crop type: ")
+        newcropType.grid(row=7, column=4, sticky='w')
+        # Rest of GUI depends on property type selected
+        newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
+        
+        newcropTypeVar = StringVar()
+        newcropTypeVar.set(' ')   # Set garden as the default prop type
+        newcropType_menu = OptionMenu(frame, newcropTypeVar, 'Fruit', *newcroptypes)
+        newcropType_menu.grid(row=7, column=3, padx=5, pady=10)
+        self.newcropTypeVar = newcropTypeVar
+        self.newcropstypes = set()
+        button2 = Button(frame, text="Submit Request", command=lambda: self.controller.show_frame(loginPage))
+        button2.grid(row=8, column=1, sticky='w')
+
+        button3 = Button(frame, text="Save Changes", command=lambda: self.controller.show_frame(loginPage))
+        button3.grid(row=9, column=1, sticky='w')
+
+        button4 = Button(frame, text="Delete Property", command=lambda: self.controller.show_frame(loginPage))
+        button4.grid(row=10, column=0, sticky='w')
+
+        button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(loginPage))
+        button5.grid(row=10, column=1, sticky='w')
+
+    def addCrop(self):
+        
+        self.newcropstypes.add(self.cropTypeVar.get())
+        newcropsTypeVar = StringVar()
+        newcropsTypeVar.set(' ')   # Set garden as the default prop type
+        newcropsType_menu = OptionMenu(self.frame, newcropsTypeVar, self.cropTypeVar.get(), *self.newcropstypes)
+        newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
+
+    def addAnimal(self):
+        
+        self.newans1.add(self.anType.get())
+        newans = StringVar()
+        newans.set(' ')   # Set garden as the default prop type
+        newans_menu = OptionMenu(self.frame, newans, self.anType.get(), *self.newans1)
+        newans_menu.grid(row=5, column=5, padx=5, pady=10)
 
 
 app = Atlanta()
