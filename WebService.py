@@ -326,7 +326,33 @@ class DBManager:
             print(logging.exception("error happened"))
         finally:
             conn.close()
+    def deleteProperty(self, propID):       
+        sql = "DELETE FROM Property WHERE ID = %s"
 
+        userin = (propID)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            rowsAffected = cursor.execute(sql, userin)
+
+            # Commit changes to db
+            conn.commit()
+
+            # Check that the query was successful
+            if rowsAffected > 0:
+
+                return True
+            else:
+                return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
     """
     getMaxPropID:
         Returns the current max ID in Property table so we can create a new

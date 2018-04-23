@@ -44,7 +44,7 @@ class Atlanta(Tk):
         self._frame = None
 
         self.show_frame(loginPage)
-
+        #start here
         #self.show_frame(adminFunctions)
 
 
@@ -80,7 +80,7 @@ class loginPage(Frame):
 
         self.emailEntry.grid(row=0, column=1, sticky='w')
         self.emailEntry.focus_set()
-
+        self.emailEntry.insert(0,'qwerty')
         password = Label(f, text="Password: ")
         password.grid(row=1, column=0, sticky='w')
         password.focus_set()
@@ -88,7 +88,7 @@ class loginPage(Frame):
         self.passwordEntry = Entry(f, background='white', width=24)
 
         self.passwordEntry.grid(row=1, column=1, sticky='w')
-
+        self.passwordEntry.insert(0,'qwertyuiop')
         button0 = Button(f, text="Login", command=self.login)
         button0.grid(row=2, column=1, sticky='w')
         button1 = Button(f, text="New Owner Registration", command=lambda: self.controller.show_frame(ownerRegistration))
@@ -1310,7 +1310,7 @@ class approvedOrganisms(Frame):
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e', padx=0, pady=10)
-    #working here
+
 
     def addToPending(self, item=''):
         OT = self.add.get()
@@ -2943,7 +2943,7 @@ class propertyManagement(Frame):
         #print(self.prop)
         global prop
         
-        print(prop)
+        #print('prop', prop[0][0])
         self.controller = controller
         Frame.__init__(self, parent)
         
@@ -3024,7 +3024,25 @@ class propertyManagement(Frame):
         cropType = Label(frame, text="Add new crop: ")
         cropType.grid(row=5, column=0, sticky='w')
         # Rest of GUI depends on property type selected
-        croptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
+        org = []
+        fruits = DBManager.getApprovedFruits(self)
+        nuts = DBManager.getApprovedNuts(self)
+        veggies = DBManager.getApprovedVegetables(self)
+        flowers = DBManager.getApprovedFlowers(self)
+        animals = DBManager.getApprovedAnimals(self)
+        #working here
+        for x in fruits:
+            org.append(x)
+        for x in nuts:
+            org.append(x)
+        for x in veggies:
+            org.append(x)
+        for x in flowers:
+            org.append(x)
+        for x in animals:
+            org.append(x)
+       
+        croptypes = org  # Dictionary holding different prop types
         
         self.cropTypeVar = StringVar()
         self.cropTypeVar.set(' ')   # Set garden as the default prop type
@@ -3053,34 +3071,57 @@ class propertyManagement(Frame):
         newcropType = Label(frame, text="New crop type: ")
         newcropType.grid(row=7, column=2, sticky='w')
         # Rest of GUI depends on property type selected
-        newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}   # Dictionary holding different prop types
+        newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable', 'Animal'}   # Dictionary holding different prop types
         
         newcropTypeVar = StringVar()
         newcropTypeVar.set(' ')   # Set garden as the default prop type
+
         newcropType_menu = OptionMenu(frame, newcropTypeVar, 'Fruit', *newcroptypes)
         newcropType_menu.grid(row=7, column=3, padx=5, pady=10)
         self.newcropTypeVar = newcropTypeVar
         self.newcropstypes = set()
-        button2 = Button(frame, text="Submit Request", command=lambda: self.controller.show_frame(loginPage))
+        button2 = Button(frame, text="Submit Request", command=self.addToPending)
         button2.grid(row=8, column=1, sticky='w')
 
         button3 = Button(frame, text="Save Changes", command=self.update)
         button3.grid(row=9, column=1, sticky='w')
 
-        button4 = Button(frame, text="Delete Property", command=lambda: self.controller.show_frame(loginPage))
+        button4 = Button(frame, text="Delete Property", command=self.deleteProperty)
         button4.grid(row=10, column=0, sticky='w')
 
         button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(ownerFunctionality))
         button5.grid(row=10, column=1, sticky='w')
     def update(self):
         global prop
-        update = DBManager.changeProp(self, self.name.get(), self.acres.get(), self.comTypeVar.get(), self.pubTypeVar.get(), self.street.get(), self.city.get(), self.zipcode.get(), prop[0][0])
+        #commericial and public must be changed to ints rather than boolean
+        com = 0
+        p = 0
+        if self.comTypeVar.get() == 'True':
+            com = 1
+        if self.comTypeVar.get() == 'False':
+            com = 0
+        if self.pubTypeVar.get() == 'True':
+            p = 1
+        if self.pubTypeVar.get() == 'False':
+            p = 0
+
+        update = DBManager.changeProp(self, self.name.get(), self.acres.get(), com, p, self.street.get(), self.city.get(), self.zipcode.get(), prop[0][0])
         if update:
             messagebox.showerror("Success", "Property type succesfully updated")
-            self.controller.show_frame(ownerFunctionality)
+            #self.controller.show_frame(ownerFunctionality)
         else:
             messagebox.showerror("Error", "Something went wrong")
-
+    def addToPending(self, item=''):
+        OT = self.newcropTypeVar.get()
+        newName = self.crop.get() 
+        try:
+            
+            DBManager.addPendingCrop(self, newName, OT)
+            messagebox.showerror("","Added to Pending Approval")
+            #self.controller.show_frame(adminFunctions)
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("can't add this"))
     def addCrop(self):
         # global buttonnum
         # buttonnum += 1
@@ -3099,7 +3140,18 @@ class propertyManagement(Frame):
         newcropsTypeVar.set(' ')   # Set garden as the default prop type
         newcropsType_menu = OptionMenu(self.frame, newcropsTypeVar, self.cropTypeVar.get(), *self.newcropstypes)
         newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
+    def deleteProperty(self):
+        temp = []
+        global prop
+        propID = prop[0][0]
+        
 
+        deleted = DBManager.deleteProperty(self,propID)
+        if deleted:
+            messagebox.showerror(",","Property Deleted")
+            self.controller.show_frame(ownerFunctionality)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 class adminPropertyManagement(Frame):
     def __init__(self, parent, controller):
         #self.prop = prop
