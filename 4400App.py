@@ -1370,23 +1370,23 @@ class pendingOrganisms(Frame):
 
         crops = []
        
-        v = DBManager.getApprovedVegetables(self)
+        v = DBManager.getUnapprovedVegetables(self)
         for x in v:    
             crops.append((x, "Vegetable"))
 
-        f = DBManager.getApprovedFlowers(self)
+        f = DBManager.getUnapprovedFlowers(self)
         for x in f:
             crops.append((x, "Flower"))
 
-        n = DBManager.getApprovedNuts(self)
+        n = DBManager.getUnapprovedNuts(self)
         for x in n:
             crops.append((x, "Nut"))
         
-        a = DBManager.getApprovedAnimals(self)
+        a = DBManager.getUnapprovedAnimals(self)
         for x in a:
             crops.append((x, "Animal"))
 
-        fr= DBManager.getApprovedFruits(self)
+        fr= DBManager.getUnapprovedFruits(self)
         for x in fr:
             crops.append((x, "Fruit"))
        
@@ -1402,7 +1402,7 @@ class pendingOrganisms(Frame):
             
             frame.treeview.insert('', 'end', text=Name, values=newProp)
 
-        approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
+        approveB = Button(self, text="Approve Selection", command=self.approveOrganism)
         approveB.grid(row=4, column=0)
 
         deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
@@ -1410,6 +1410,20 @@ class pendingOrganisms(Frame):
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e')
+
+    def approveOrganism(self, item=''):
+        approveMe = (self.element)
+        an = str(approveMe[1])
+        
+        print (an)
+        
+        try:
+            DBManager.approveCrop(self, an)
+            messagebox.showinfo("Title", "Crop Approved!")
+            self.controller.show_frame(adminFunctions)
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("can't add this"))
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1444,7 +1458,7 @@ class pendingOrganisms(Frame):
     def onClick(self, event):
         item = self.table.identify_column(event.x)
         self.element = self.table.identify_row(event.y)
-        self.element = self.table.item(self.element, "text")
+        self.element = self.table.item(self.element, "values")
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
