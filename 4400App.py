@@ -44,6 +44,7 @@ class Atlanta(Tk):
         self._frame = None
         self.show_frame(loginPage)
 
+
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
@@ -1279,17 +1280,43 @@ class approvedOrganisms(Frame):
 
         #TO DO- ADD TO PEDNING APPROVAL#
         #TO DO#
-        addB = Button(self, text="Add to Approval List", command=lambda: controller.show_frame(adminFunctions))
+        addB = Button(self, text="Add to Approval List", command=self.addToPending)
         addB.grid(row=5, column=0, sticky='w', padx=00, pady=10)
 
         #TO DO- ADD TO DELETE SELECTION#
         #TO DO#
-        deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
+        deleteselection = Button(self, text="Delete Selection", command=self.deleteSelection)
         deleteselection.grid(row=6, column=0, padx=50, pady=10)
 
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e', padx=0, pady=10)
+    #working here
+
+    def addToPending(self, item=''):
+        OT = self.add.get()
+        newName = self.nameterm.get() 
+        try:
+            
+            DBManager.addPendingCrop(self, newName, OT)
+            messagebox.showerror("","Added to Pending Approval")
+            self.controller.show_frame(adminFunctions)
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("can't add this"))
+
+    def deleteSelection(self):
+        approveMe = (self.element)
+        an = str(approveMe[1])
+        ab = str(approveMe[0])
+        
+        deleted = DBManager.deleteCrop(self, an, ab)
+        if deleted:
+            messagebox.showerror("","Selection Deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
+
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
         if(self.searchterm.get() ==  ''):
@@ -1319,12 +1346,14 @@ class approvedOrganisms(Frame):
                     self.frame.treeview.delete(child)
                     if res:
                         break
+        
+            
 
     def onClick(self, event):
         item = self.table.identify_column(event.x)
         self.element = self.table.identify_row(event.y)
-        self.element = self.table.item(self.element, "text")
-
+        self.element = self.table.item(self.element, "values")
+       
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
@@ -1436,8 +1465,6 @@ class pendingOrganisms(Frame):
     def approveOrganism(self, item=''):
         approveMe = (self.element)
         an = str(approveMe[1])
-
-        print (an)
 
         try:
             DBManager.approveCrop(self, an)
