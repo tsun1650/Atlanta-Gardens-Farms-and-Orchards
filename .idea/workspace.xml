@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="66dd1a34-1db2-48fd-80dd-849e266f54d6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/4400App.py" afterPath="$PROJECT_DIR$/4400App.py" />
-      <change beforePath="$PROJECT_DIR$/WebService.py" afterPath="$PROJECT_DIR$/WebService.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -29,31 +27,11 @@
       <file leaf-file-name="4400App.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/4400App.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-353">
-              <caret line="326" column="0" lean-forward="true" selection-start-line="326" selection-start-column="0" selection-end-line="326" selection-end-column="0" />
+            <state relative-caret-position="1507">
+              <caret line="327" column="0" lean-forward="false" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
               <folding>
-                <element signature="e#208#1935#0" expanded="false" />
-                <element signature="e#1966#4370#0" expanded="false" />
-                <element signature="e#6351#8515#0" expanded="false" />
-                <element signature="e#13206#15502#0" expanded="false" />
-                <element signature="e#15542#18144#0" expanded="false" />
-                <element signature="e#18354#22202#0" expanded="false" />
-                <element signature="e#22240#34959#0" expanded="false" />
-                <element signature="e#29390#34959#0" expanded="false" />
-                <element signature="e#34994#36318#0" expanded="false" />
-                <element signature="e#36354#42436#0" expanded="false" />
-                <element signature="e#42470#48364#0" expanded="false" />
-                <element signature="e#48402#55049#0" expanded="false" />
-                <element signature="e#55087#60436#0" expanded="false" />
-                <element signature="e#60476#68994#0" expanded="false" />
-                <element signature="e#69048#76438#0" expanded="false" />
-                <element signature="e#76474#85167#0" expanded="false" />
-                <element signature="e#85208#88871#0" expanded="false" />
-                <element signature="e#88907#91734#0" expanded="false" />
-                <element signature="e#91775#100902#0" expanded="false" />
-                <element signature="e#106296#110611#0" expanded="false" />
-                <element signature="e#110652#113097#0" expanded="false" />
-                <element signature="e#113402#119838#0" expanded="false" />
+                <element signature="e#208#1960#0" expanded="false" />
+                <element signature="e#120163#121002#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -63,7 +41,7 @@
         <entry file="file://$PROJECT_DIR$/WebService.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="1914">
-              <caret line="1353" column="0" lean-forward="true" selection-start-line="1353" selection-start-column="0" selection-end-line="1353" selection-end-column="0" />
+              <caret line="1385" column="0" lean-forward="true" selection-start-line="1385" selection-start-column="0" selection-end-line="1385" selection-end-column="0" />
               <folding>
                 <element signature="e#0#22#0" expanded="true" />
                 <element signature="e#112#265#1" expanded="false" />
@@ -135,7 +113,7 @@
                 <element signature="e#32730#33457#0" expanded="false" />
                 <element signature="e#33502#34220#0" expanded="false" />
                 <element signature="e#34282#34828#0" expanded="false" />
-                <element signature="e#34877#35618#0" expanded="false" />
+                <marker date="1524453894925" expanded="false" signature="36356:36381" ph="..." />
               </folding>
             </state>
           </provider>
@@ -230,7 +208,6 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="false" />
           <option name="myId" value="CREATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/README</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Deleted" />
@@ -238,7 +215,6 @@
           <option name="mySupportsDeletion" value="false" />
           <option name="myCanBeAbsent" value="true" />
           <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/projectcodefile</PATH>
         </FILE-GROUP>
         <FILE-GROUP>
           <option name="myUpdateName" value="Restored" />
@@ -449,7 +425,14 @@
       <option name="project" value="LOCAL" />
       <updated>1524450014424</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="random update">
+      <created>1524453883134</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1524453883134</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TodoView">
@@ -463,7 +446,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
-    <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2494043" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3287483" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -525,7 +507,8 @@
     <MESSAGE value="merged" />
     <MESSAGE value="View property pages and log visit works" />
     <MESSAGE value="visits and rating code" />
-    <option name="LAST_COMMIT_MESSAGE" value="visits and rating code" />
+    <MESSAGE value="random update" />
+    <option name="LAST_COMMIT_MESSAGE" value="random update" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -537,7 +520,7 @@
     <entry file="file://$PROJECT_DIR$/WebService.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1914">
-          <caret line="1353" column="0" lean-forward="true" selection-start-line="1353" selection-start-column="0" selection-end-line="1353" selection-end-column="0" />
+          <caret line="1385" column="0" lean-forward="true" selection-start-line="1385" selection-start-column="0" selection-end-line="1385" selection-end-column="0" />
           <folding>
             <element signature="e#0#22#0" expanded="true" />
             <element signature="e#112#265#1" expanded="false" />
@@ -609,38 +592,18 @@
             <element signature="e#32730#33457#0" expanded="false" />
             <element signature="e#33502#34220#0" expanded="false" />
             <element signature="e#34282#34828#0" expanded="false" />
-            <element signature="e#34877#35618#0" expanded="false" />
+            <marker date="1524453894925" expanded="false" signature="36356:36381" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/4400App.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-353">
-          <caret line="326" column="0" lean-forward="true" selection-start-line="326" selection-start-column="0" selection-end-line="326" selection-end-column="0" />
+        <state relative-caret-position="1507">
+          <caret line="327" column="0" lean-forward="false" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
           <folding>
-            <element signature="e#208#1935#0" expanded="false" />
-            <element signature="e#1966#4370#0" expanded="false" />
-            <element signature="e#6351#8515#0" expanded="false" />
-            <element signature="e#13206#15502#0" expanded="false" />
-            <element signature="e#15542#18144#0" expanded="false" />
-            <element signature="e#18354#22202#0" expanded="false" />
-            <element signature="e#22240#34959#0" expanded="false" />
-            <element signature="e#29390#34959#0" expanded="false" />
-            <element signature="e#34994#36318#0" expanded="false" />
-            <element signature="e#36354#42436#0" expanded="false" />
-            <element signature="e#42470#48364#0" expanded="false" />
-            <element signature="e#48402#55049#0" expanded="false" />
-            <element signature="e#55087#60436#0" expanded="false" />
-            <element signature="e#60476#68994#0" expanded="false" />
-            <element signature="e#69048#76438#0" expanded="false" />
-            <element signature="e#76474#85167#0" expanded="false" />
-            <element signature="e#85208#88871#0" expanded="false" />
-            <element signature="e#88907#91734#0" expanded="false" />
-            <element signature="e#91775#100902#0" expanded="false" />
-            <element signature="e#106296#110611#0" expanded="false" />
-            <element signature="e#110652#113097#0" expanded="false" />
-            <element signature="e#113402#119838#0" expanded="false" />
+            <element signature="e#208#1960#0" expanded="false" />
+            <element signature="e#120163#121002#0" expanded="false" />
           </folding>
         </state>
       </provider>
