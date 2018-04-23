@@ -282,7 +282,7 @@ class visitorView(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         
-        #WORKING HERE
+        
 
         #load data
         publicProps = DBManager.getPublicProperties(self)
@@ -918,7 +918,7 @@ class viewVisitorList(Frame):
         self.searchprop = Button(self, text="Search Visitors", command=self.searchfunc)
         self.searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        deletevisitor = Button(self, text="Delete Visitor Account", command=lambda: self.controller.show_frame(adminFunctions))
+        deletevisitor = Button(self, text="Delete Visitor Account", command=self.deletevisitor)
         deletevisitor.grid(row=3, column=0, padx=50, pady=10)
 
         deletelog = Button(self, text="Delete Log History", command=lambda: self.controller.show_frame(adminFunctions))
@@ -927,6 +927,20 @@ class viewVisitorList(Frame):
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
+    def deletevisitor(self):
+        temp = []
+        element = self.table.item(self.element1, "values")
+        element2 = self.table.item(self.element1, "text")
+        temp.append(element2)
+        for i in range(len(element)):
+            temp.append(element[i])
+
+        deleted = DBManager.deleteVisitor(self, temp[0], temp[1])
+        if deleted:
+            messagebox.showerror("Account Deleted", str(temp[0]) + "'s account has been deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -961,6 +975,10 @@ class viewVisitorList(Frame):
                     if res:
                         break
     def onClick(self, event):
+        self.item1 = self.table.identify_column(event.x)
+        self.element1 = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element1, "text")
+
         item = self.table.identify_column(event.x)
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
@@ -1057,12 +1075,26 @@ class viewOwnerList(Frame):
         searchowners = Button(self, text="Search Owners", command=self.searchfunc)
         searchowners.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
-        deletelog = Button(self, text="Delete Owner Account", command=lambda: controller.show_frame(adminFunctions))
+        deletelog = Button(self, text="Delete Owner Account", command=self.deleteowner)
         deletelog.grid(row=4, column=0, padx=50, pady=10)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
+    def deleteowner(self):
+        temp = []
+        element = self.table.item(self.element1, "values")
+        element2 = self.table.item(self.element1, "text")
+        temp.append(element2)
+        for i in range(len(element)):
+            temp.append(element[i])
+
+        deleted = DBManager.deleteOwner(self, temp[0], temp[1])
+        if deleted:
+            messagebox.showerror("Account Deleted", str(temp[0]) + "'s account has been deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1097,6 +1129,10 @@ class viewOwnerList(Frame):
                         break
 
     def onClick(self, event):
+        self.item1 = self.table.identify_column(event.x)
+        self.element1 = self.table.identify_row(event.y)
+        self.element = self.table.item(self.element1, "text")
+
         item = self.table.identify_column(event.x)
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
@@ -1334,23 +1370,23 @@ class pendingOrganisms(Frame):
 
         crops = []
 
-        v = DBManager.getApprovedVegetables(self)
+        v = DBManager.getUnapprovedVegetables(self)
         for x in v:
             crops.append((x, "Vegetable"))
 
-        f = DBManager.getApprovedFlowers(self)
+        f = DBManager.getUnapprovedFlowers(self)
         for x in f:
             crops.append((x, "Flower"))
 
-        n = DBManager.getApprovedNuts(self)
+        n = DBManager.getUnapprovedNuts(self)
         for x in n:
             crops.append((x, "Nut"))
-
-        a = DBManager.getApprovedAnimals(self)
+        
+        a = DBManager.getUnapprovedAnimals(self)
         for x in a:
             crops.append((x, "Animal"))
 
-        fr= DBManager.getApprovedFruits(self)
+        fr= DBManager.getUnapprovedFruits(self)
         for x in fr:
             crops.append((x, "Fruit"))
 
@@ -1366,14 +1402,37 @@ class pendingOrganisms(Frame):
 
             frame.treeview.insert('', 'end', text=Name, values=newProp)
 
-        approveB = Button(self, text="Approve Selection", command=lambda: controller.show_frame(adminFunctions))
+        approveB = Button(self, text="Approve Selection", command=self.approveOrganism)
         approveB.grid(row=4, column=0)
 
-        deleteselection = Button(self, text="Delete Selection", command=lambda: self.controller.show_frame(adminFunctions))
+        deleteselection = Button(self, text="Delete Selection", command= self.deleteSelection)
         deleteselection.grid(row=5, column=0)
 
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(adminFunctions))
         back.grid(row=6, column=0, sticky='e')
+    def deleteSelection(self):
+        approveMe = (self.element)
+        an = str(approveMe[1])
+        ab = str(approveMe[0])
+        deleted = DBManager.deleteCrop(self, an, ab)
+        if deleted:
+            messagebox.showerror("","Selection Deleted")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
+    def approveOrganism(self, item=''):
+        approveMe = (self.element)
+        an = str(approveMe[1])
+
+        print (an)
+
+        try:
+            DBManager.approveCrop(self, an)
+            messagebox.showinfo("Title", "Crop Approved!")
+            self.controller.show_frame(adminFunctions)
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("can't add this"))
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
@@ -1408,7 +1467,7 @@ class pendingOrganisms(Frame):
     def onClick(self, event):
         item = self.table.identify_column(event.x)
         self.element = self.table.identify_row(event.y)
-        self.element = self.table.item(self.element, "text")
+        self.element = self.table.item(self.element, "values")
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1']:
 
             children = self.frame.treeview.get_children('')
