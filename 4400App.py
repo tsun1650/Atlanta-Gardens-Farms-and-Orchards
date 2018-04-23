@@ -1334,23 +1334,23 @@ class pendingOrganisms(Frame):
 
         crops = []
        
-        v = DBManager.getApprovedVegetables(self)
+        v = DBManager.getUnapprovedVegetables(self)
         for x in v:    
             crops.append((x, "Vegetable"))
 
-        f = DBManager.getApprovedFlowers(self)
+        f = DBManager.getUnapprovedFlowers(self)
         for x in f:
             crops.append((x, "Flower"))
 
-        n = DBManager.getApprovedNuts(self)
+        n = DBManager.getUnapprovedNuts(self)
         for x in n:
             crops.append((x, "Nut"))
         
-        a = DBManager.getApprovedAnimals(self)
+        a = DBManager.getUnapprovedAnimals(self)
         for x in a:
             crops.append((x, "Animal"))
 
-        fr= DBManager.getApprovedFruits(self)
+        fr= DBManager.getUnapprovedFruits(self)
         for x in fr:
             crops.append((x, "Fruit"))
        

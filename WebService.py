@@ -575,6 +575,183 @@ class DBManager:
             conn.close()
 
     """
+    getApprovedVegetables:
+        Returns a list of approved vegetables
+    """
+    def getApprovedVegetables(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 1 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "VEGETABLE")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    ####UNAPPROVED STARTS HERE
+
+
+    """
+    getApprovedVegetables:
+        Returns a list of approved vegetables
+    """
+    def getUnapprovedVegetables(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 0 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "VEGETABLE")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    getUnapprovedFruits:
+       Returns a list of unapproved friuts
+    """
+    def getUnapprovedFruits(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 0 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "FRUIT")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    getUnapprovedFlowers:
+         Returns a list of unapproved flowers
+    """
+    def getUnapprovedFlowers(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 0 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "FLOWER")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    getUnapprovedNuts:
+        Returns a list of unapproved nuts
+    """
+    def getUnapprovedNuts(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 0 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "NUT")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
+    getUnapprovedAnimals:
+        Returns a list of approved animals
+    """
+    def getUnapprovedAnimals(self):
+        # SQL statement to execute
+        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 0 AND Type = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            cursor.execute(sql, "ANIMAL")
+
+            # Get result
+            result = cursor.fetchall()
+
+            # Put it in a list
+            resultList = [item[0] for item in result]
+
+            return resultList
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    """
     getOwnerProperties:
         Gets all of the properties owned by an owner
         Inputs:
