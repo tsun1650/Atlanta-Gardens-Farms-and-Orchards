@@ -914,6 +914,14 @@ class DBManager:
         finally:
             conn.close()
 
+    """
+        getPropertySumRatings:
+            Gets the sum of all the ratings for a property
+            Inputs:
+                The property's ID
+            Returns:
+                The sum of the ratings
+        """
     def getPropertySumRatings(self, propID):
         # SQL statement to execute
         sql = "SELECT SUM(Rating) FROM Visit WHERE PropertyID = %s;"
@@ -936,6 +944,43 @@ class DBManager:
         finally:
             conn.close()
 
+    """
+    logVisit:
+        Logs a visit to a property by a visitor
+        Inputs:
+            The username of the visitor, the property ID of the property, and the rating the visitor gave
+        Returns:
+            1 if the insert was successful; 0 otherwise
+    """
+    def logVisit(self, username, propID, rating):
+        # SQL statement to execute
+        sql = "INSERT INTO Visit (Username, PropertyID, Rating) " \
+              "VALUES (%s, %s, %s);"
+
+        # User input to check for in SQL statement
+        userin = (username, propID, rating)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            rowsAffected = cursor.execute(sql, userin)
+
+            # Commit changes to db
+            conn.commit()
+
+            # Check that the query was successful
+            if rowsAffected > 0:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
 
 
     def deleteVisitor(self, username, email):

@@ -83,7 +83,6 @@ class loginPage(Frame):
 
         self.passwordEntry = Entry(f, background='white', width=24)
 
-        
         self.passwordEntry.grid(row=1, column=1, sticky='w')
 
         button0 = Button(f, text="Login", command=self.login)
@@ -215,12 +214,12 @@ class visitorRegistration(Frame):
 
                 else:
                     messagebox.showerror("Error", "Email is already associated with an account")
-        
 
 
 class visitorView(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
+        self.element = None
         Frame.__init__(self, parent)
         label = Label(self, text="Welcome Visitor", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -452,11 +451,9 @@ class visitorView(Frame):
         # self.selectedVisitorprop = i
         # print(self.selectedVisitorprop)
     def viewProperty(self):
-        global prop
-       
-        prop = DBManager.getPropertyDetails(self, propID = self.element)
-       
-        self.controller.show_frame(visitorPropertyPage)
+        if self.element is not None:
+            self.controller.propID = self.element
+            self.controller.show_frame(visitorPropertyPage)
 
 class visitHistory(Frame):
     def __init__(self, parent, controller):
@@ -2096,68 +2093,110 @@ class addNewProperty(Frame):
 class visitorPropertyPage(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
-        global prop
-        print(prop)
         Frame.__init__(self, parent)
 
-        #[(0, 'Atwood Street Garden', 1.0, 0, 1, 'Atwood Street SW', 'Atlanta', 30308, 'GARDEN', 'gardenowner', 'admin1')]
-        
-        label = Label(self, text=str(prop[0][1]), font =LARGE_FONT)
-        label.pack()
-        n= "Name: "+str(prop[0][1])
-        name = Label(self, text=n)
+        # Get property details
+        temp = DBManager.getPropertyDetails(self, self.controller.propID)
+        propDeets = temp[0]
+        print(propDeets)
+        name = propDeets[1]
+        size = propDeets[2]
+        comm = propDeets[3]
+        pub = propDeets[4]
+        street = propDeets[5]
+        city = propDeets[6]
+        zipcode = propDeets[7]
+        proptype = propDeets[8]
+        owner = propDeets[9]
+        print("prop deets: ", propDeets)
+
+        # Change tinyint values into true/false for commercial and public
+        if comm == 1:
+            commercial = "True"
+        else:
+            commercial = "False"
+        print("commercial: ", commercial)
+
+        if pub == 1:
+            public = "True"
+        else:
+            public = "False"
+        print("public: ", public)
+
+        # Get owner email
+        email = DBManager.getEmail(self, owner)[0]
+        print("email: ", email)
+
+        # Get crops
+        crops = DBManager.getPropertyCrops(self, self.controller.propID)
+        print("crops: ", crops)
+
+        # Get total number of visits
+        visits = DBManager.getPropertyVisits(self, self.controller.propID)
+
+        # Get sum of all the ratings
+        sumratings = DBManager.getPropertySumRatings(self, self.controller.propID)
+
+        # Calculate avg rating
+        if sumratings is None:
+            avgRating = "No ratings yet"
+        else:
+            avgRating = visits / sumratings
+
+        # Create UI with retrieved info
+        titletxt = name + "Details:"
+        title = Label(self, text=titletxt, font=LARGE_FONT)
+        title.pack()
+        name = Label(self, text="Name: " + name)
         name.pack()
-        o= "Owner: "+prop[0][9]
-        owner = Label(self, text=o)
+        owner = Label(self, text="Owner: " + owner)
         owner.pack()
-        o = "Owner Email: "
-        ownerEmail = Label(self, text=o)
+        ownerEmail = Label(self, text="Owner Email: " + email)
         ownerEmail.pack()
-        v = "Visits: "
-        visits = Label(self, text=v)
+        visits = Label(self, text="Visits: " + str(visits))
         visits.pack()
-        a = "Address: "+prop[0][5]
-        address = Label(self, text=a)
+        address = Label(self, text="Address: " + street)
         address.pack()
-        c = 'City: '+ prop[0][6]
-        city = Label(self,text=c)
+        city = Label(self, text="City: " + city)
         city.pack()
-        z = "Zip : "+str(prop[0][7])
-        zipcode = Label(self, text=z)
+        zipcode = Label(self, text="Zip : " + str(zipcode))
         zipcode.pack()
-        s = "Size (acres): " + str(prop[0][2])
-        size = Label(self, text=s)
+        size = Label(self, text="Size (acres): " + str(size))
         size.pack()
-        r = "Avg Rating: "
-        rating = Label(self, text=r)
+        rating = Label(self, text="Avg Rating: " + str(avgRating))
         rating.pack()
-        tp = "Type: "+prop[0][8]
-        typeProp = Label(self, text=tp)
+        typeProp = Label(self, text="Type: " + proptype)
         typeProp.pack()
-        p = "Public: " + str(prop[0][4])
-        public = Label(self, text=p)
+        public = Label(self, text="Public: " + public)
         public.pack()
-        c = "Commercial: "+ str(prop[0][3])
-        commercial = Label(self, text=c)
+        commercial = Label(self, text="Commercial: " + commercial)
         commercial.pack()
-        i = "ID: "+ str(prop[0][0])
-        idnum = Label(self, text="ID: ")
+        idnum = Label(self, text="ID: " + str(self.controller.propID))
         idnum.pack()
-        c = "Crops: "
-        crops = Label(self, text=c)
+        crops = Label(self, text="Crops: " + str(crops))
         crops.pack()
 
-        types = {'1', '2', '3', '4', '5'}
-        search = StringVar()
-        rating = OptionMenu(self, search, *types)
-        rating.pack()
+        # Add area to rate a visit to this location
+        ratings = {1.0, 2.0, 3.0, 4.0, 5.0}
 
-        logvisit = Button(self, text="Log Visit", command=lambda: messagebox.showinfo("Title", "Visit Logged!"))
-        
-        logvisit.pack()
+        rate = Label(self, text="Rating: ")
+        rate.pack()
+        self.rateVar = StringVar()
+        rateMenu = OptionMenu(self, self.rateVar, "1.0", *ratings).pack()
+
+        logBtn = Button(self, text="Log Visit", command=self.logBtnOnClick)
+        logBtn.pack()
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(visitorView))
         back.pack()
 
+    def logBtnOnClick(self):
+        rating = self.rateVar.get()
+        log = DBManager.logVisit(self, self.controller.username, self.controller.propID, rating)
+        if log > 0:
+            messagebox.showerror("Thanks!", "Visit was successfully logged")
+            self.controller.show_frame(visitorView)
+        else:
+            messagebox.showerror("Error", "Something went wrong.")
 
 class propertyDetails(Frame):
     def __init__(self, parent, controller):
