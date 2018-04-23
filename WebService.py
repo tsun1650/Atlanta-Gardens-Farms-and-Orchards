@@ -574,34 +574,7 @@ class DBManager:
         finally:
             conn.close()
 
-    """
-    getApprovedVegetables:
-        Returns a list of approved vegetables
-    """
-    def getApprovedVegetables(self):
-        # SQL statement to execute
-        sql = "SELECT Name FROM FarmItem WHERE IsApproved = 1 AND Type = %s"
-
-        # Create connection
-        conn = DBManager.getConnection(self)
-
-        try:
-            # Execute query
-            cursor = conn.cursor()
-            cursor.execute(sql, "VEGETABLE")
-
-            # Get result
-            result = cursor.fetchall()
-
-            # Put it in a list
-            resultList = [item[0] for item in result]
-
-            return resultList
-        except Exception as e:
-            print("ERROR: {}".format(e))
-            print(logging.exception("error happened"))
-        finally:
-            conn.close()
+   
 
     ####UNAPPROVED STARTS HERE
 
@@ -1152,7 +1125,7 @@ class DBManager:
     #approve crops
     def approveCrop(self, name):
         # SQL statement to execute
-        print (name, "here")
+
         sql = " UPDATE FarmItem SET IsApproved = 1 WHERE Name = %s"
 
         # Create connection
@@ -1166,6 +1139,36 @@ class DBManager:
 
             print('done')
             return True
+
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
+
+    def addPendingCrop(self, name,ot):
+        # SQL statement to execute
+       
+        sql = " INSERT INTO FarmItem (Name, IsApproved, Type) VALUES(%s, 0, %s) "
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+        cropin = (name,ot)
+        try:
+            # Execute query
+            cursor = conn.cursor()
+
+            rowsAffected = cursor.execute(sql, cropin)
+
+            # Commit changes to db
+            conn.commit()
+
+            # Check that the query was successful
+            if rowsAffected > 0:
+
+                return True
+            else:
+                return False
 
         except Exception as e:
             print("ERROR: {}".format(e))
