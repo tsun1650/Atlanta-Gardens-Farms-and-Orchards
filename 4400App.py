@@ -45,7 +45,7 @@ class Atlanta(Tk):
 
         #self.show_frame(loginPage)
         #start here
-        self.show_frame(adminFunctions)
+        self.show_frame(loginPage)
 
 
     def show_frame(self, frame):
@@ -238,7 +238,7 @@ class visitorView(Frame):
         self.selectedVisitorprop = []
         self.frame = frame
         self.table = table
-        table['columns'] = ('Name', 'Size', 'Commercial', 'Public', 'Street', 'City', 'ZIP', 'Type', 'Owner',
+        table['columns'] = ('Name', 'Size', 'Commercial', 'Public', 'Street', 'City', 'ZIP', 'Type', 
                             'Visits', 'Rating')
 
         table.column('#0', anchor='w', width=50)
@@ -268,8 +268,6 @@ class visitorView(Frame):
         table.column('Type', anchor='center', width=100)
         table.heading('Type', text='Type')
 
-        table.column('Owner', anchor='center', width=100)
-        table.heading('Owner', text='Owner')
 
         table.heading('Visits', text='Visits')
         table.column('Visits', anchor='center', width = 100)
@@ -301,7 +299,7 @@ class visitorView(Frame):
             city = prop[6]
             zip = prop[7]
             type = prop[8]
-            owner = prop[9]
+
 
             # Change tinyint values into true/false for commercial and public
             if comm == 1:
@@ -324,7 +322,7 @@ class visitorView(Frame):
             else:
                 avgRating = ratingSum / visits
 
-            newProp = [name, size, commercial, public, st, city, zip, type, owner, visits, avgRating]
+            newProp = [name, size, commercial, public, st, city, zip, type, visits, avgRating]
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
@@ -406,7 +404,7 @@ class visitorView(Frame):
         item = self.table.identify_column(event.x)
         self.element = self.table.identify_row(event.y)
         self.element = self.table.item(self.element, "text")
-        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#1', '#6', '#8', '#9', '#10']:
 
             children = self.frame.treeview.get_children('')
             temp = []
@@ -419,10 +417,10 @@ class visitorView(Frame):
                 temp.append(temp1)
                 self.frame.treeview.delete(child)
 
-            if item == '#2':
+            if item == '#1':
                 #Name
 
-                temp.sort(key=lambda x: x[2])
+                temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
@@ -1714,7 +1712,8 @@ class confirmedProperties(Frame):
         item = self.table.identify_column(event.x)
         self.element1 = self.table.identify_row(event.y)
         self.element1 = self.table.item(self.element1, "values")
-        self.element = self.element1[7]
+        if self.table.identify_region(event.x, event.y) != "heading":
+            self.element = self.element1[7]
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
 
@@ -1924,7 +1923,9 @@ class unconfirmedProperties(Frame):
         item = self.table.identify_column(event.x)
         self.element1 = self.table.identify_row(event.y)
         self.element1 = self.table.item(self.element1, "values")
-        self.element = self.element1[7]
+        if self.table.identify_region(event.x, event.y) != "heading":
+            self.element = self.element1[7]
+
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#4', '#9']:
 
@@ -2372,7 +2373,7 @@ class otherOwnerProperties(Frame):
 
         # Get other owner properties
         propList = DBManager.getOtherOwnerProperties(self, self.controller.username)
-
+        print(propList)
         # Create owner property tables
         table = Treeview(frame)
         self.frame = frame
@@ -2489,15 +2490,15 @@ class otherOwnerProperties(Frame):
         else:
             index = 0
             if (self.search.get() == "Name"):
-                index = 2
+                index = 1
             elif (self.search.get() == "City"):
                 index = 6
             elif (self.search.get() == "Public"):
-                index = 8
-            elif (self.search.get() == "Visits"):
-                index = 9
-            elif (self.search.get() == "Avg Rating"):
-                index = 10
+                index = 4
+            # elif (self.search.get() == "Visits"):
+            #     index = 9
+            # elif (self.search.get() == "Avg Rating"):
+            #     index = 10
 
             for child in children:
                 temp1 = []
@@ -2536,7 +2537,7 @@ class otherOwnerProperties(Frame):
         self.element = self.table.identify_row(event.y)
         self.element = self.table.item(self.element, "text")
 
-        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#6', '#9', '#10']:
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#1', '#6', '#4']:
 
             children = self.frame.treeview.get_children('')
             temp = []
@@ -2549,10 +2550,10 @@ class otherOwnerProperties(Frame):
                 temp.append(temp1)
                 self.frame.treeview.delete(child)
 
-            if item == '#2':
+            if item == '#1':
                 #Name
 
-                temp.sort(key=lambda x: x[2])
+                temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
@@ -2564,27 +2565,14 @@ class otherOwnerProperties(Frame):
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#8':
+            if item == '#4':
                 #Type
 
-                temp.sort(key=lambda x: x[8])
+                temp.sort(key=lambda x: x[4])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#9':
-                #Visits
-
-                temp.sort(key=lambda x: x[9])
-                for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
-
-            if item == '#10':
-                #Avg Rating
-
-                temp.sort(key=lambda x: x[10])
-                for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
-
+            
     def viewPropertyOnClick(self):
         if self.element is not None:
             self.controller.propID = self.element
@@ -2730,7 +2718,7 @@ class ownerFunctionality(Frame):
         term.grid(row=3, column = 0, sticky='w', padx=50, pady=10)
         self.term = term
 
-        searchprop = Button(self, text="Search Properties", command=self.searchFor)
+        searchprop = Button(self, text="Search Properties", command=self.searchfunc)
         searchprop.grid(row=4, column=0, sticky='w', padx=50, pady=10)
 
         manage = Button(self, text="Manage Property", command=self.manageProp)
@@ -2745,127 +2733,60 @@ class ownerFunctionality(Frame):
         viewOthers = Button(self, text="View Other Properties", command=lambda: self.controller.show_frame(otherOwnerProperties))
         viewOthers.grid(row=3, column=0, sticky='e', padx=50, pady=10)
 
-    def searchFor(self):
-        # Make sure user inputted something to search
-        if self.term.get() != '' or len(self.term.get()) != 0:
-            # Get search attribute
-            attrName = self.search.get()
-            attrVal = self.term.get()
-
-            if attrName == 'Name':
-                # Call search function
-                searchResult = DBManager.searchName(self, attrVal, self.controller.username)
-                if searchResult is None:
-                    searchResult = []
-            elif attrName == 'City':
-                # Call search function
-                searchResult = DBManager.searchCity(self, attrVal, self.controller.username)
-                if searchResult is None:
-                    searchResult = []
-            elif attrName == 'Type':
-                # Call search function
-                searchResult = DBManager.searchType(self, attrVal, self.controller.username)
-                if searchResult is None:
-                    searchResult = []
-
-            children = self.frame.treeview.get_children()
-            self.frame.treeview.delete(*children)
-
-            for prop in searchResult:
-                id = prop[0]
-                name = prop[1]
-                size = prop[2]
-                comm = prop[3]
-                pub = prop[4]
-                st = prop[5]
-                city = prop[6]
-                zip = prop[7]
-                type = prop[8]
-                owner = prop[9]
-                appr = prop[10]
-
-                # Change tinyint values into true/false for commercial and public
-                if comm == 1:
-                    commercial = True
-                else:
-                    commercial = False
-
-                if pub == 1:
-                    public = True
-                else:
-                    public = False
-
-                # Change approved value from null or 1 to true/false
-                if appr is None:
-                    approved = False
-                else:
-                    approved = True
-
-                # Get num visits
-                visits = DBManager.getPropertyVisits(self, id)
-
-                # Get sum of ratings
-                ratingSum = DBManager.getPropertySumRatings(self, id)
-                if ratingSum is None:
-                    avgRating = "0.0"
-                else:
-                    avgRating = ratingSum / visits
-
-                newProp = [name, size, commercial, public, st, city, zip, type, owner, approved, visits, avgRating]
-
-                self.frame.treeview.insert('', 'end', text=id, values=newProp)
+    def searchfunc(self, item=''):
+        children = self.frame.treeview.get_children(item)
+        if(self.term.get() ==  ''):
+            for i in range(len(self.removed)):
+                self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1], self.removed[i][2], self.removed[i][3], self.removed[i][4], self.removed[i][5], self.removed[i][6], self.removed[i][7], self.removed[i][8], self.removed[i][9], self.removed[i][10], self.removed[i][11], self.removed[i][12]))
+            self.removed = []
         else:
-            # Get a list with all of the owners properties
-            propList = DBManager.getOwnerProperties(self, self.controller.username)
-            if propList is None:
-                propList = []
+            index = 0
+            if (self.search.get() == "Name"):
+                index = 1
+            elif (self.search.get() == "City"):
+                index = 6
+            elif (self.search.get() == "Type"):
+                index = 8
+            elif (self.search.get() == "Visits"):
+                index = 11
+            elif (self.search.get() == "Avg Rating"):
+                index = 12
+            # elif (self.search.get() == "Visits"):
+            #     index = 9
+            # elif (self.search.get() == "Avg Rating"):
+            #     index = 10
 
-            children = self.frame.treeview.get_children()
-            self.frame.treeview.delete(*children)
-
-            for prop in propList:
-                id = prop[0]
-                name = prop[1]
-                size = prop[2]
-                comm = prop[3]
-                pub = prop[4]
-                st = prop[5]
-                city = prop[6]
-                zip = prop[7]
-                type = prop[8]
-                owner = prop[9]
-                appr = prop[10]
-
-                # Change tinyint values into true/false for commercial and public
-                if comm == 1:
-                    commercial = True
+            for child in children:
+                temp1 = []
+                text = self.frame.treeview.item(child, 'text')
+                temp1.append(text)
+                for x in self.table.item(child, "values"):
+                        temp1.append(x)
+                #print(self.table.item(child, "values"))
+                if (temp1[index] == self.term.get()):
+                    self.frame.treeview.selection_set(child)
                 else:
-                    commercial = False
+                    if ('-' in self.term.get()):
+                        tempterm = self.term.get().split("-")
+                        # print(float(temp1[index]))
+                        # print(float(tempterm[0]))
+                        if (float(temp1[index]) >= float(tempterm[0]) and float(temp1[index]) <= float(tempterm[1])):
+                            self.frame.treeview.selection_set(child)
+                        else:
+                            res = self.searchfunc(child)
 
-                if pub == 1:
-                    public = True
-                else:
-                    public = False
+                            self.removed.append(temp1)
+                            self.frame.treeview.delete(child)
+                            if res:
+                                break
 
-                # Change approved value from null or 1 to true/false
-                if appr is None:
-                    approved = False
-                else:
-                    approved = True
+                    else:
+                        res = self.searchfunc(child)
 
-                # Get num visits
-                visits = DBManager.getPropertyVisits(self, id)
-
-                # Get sum of ratings
-                ratingSum = DBManager.getPropertySumRatings(self, id)
-                if ratingSum is None:
-                    avgRating = "0.0"
-                else:
-                    avgRating = ratingSum / visits
-
-                newProp = [name, size, commercial, public, st, city, zip, type, owner, approved, visits, avgRating]
-
-                self.frame.treeview.insert('', 'end', text=id, values=newProp)
+                        self.removed.append(temp1)
+                        self.frame.treeview.delete(child)
+                        if res:
+                            break
 
 
     def onClick(self, event):
@@ -2873,7 +2794,7 @@ class ownerFunctionality(Frame):
         self.element = self.table.identify_row(event.y)
         self.element = self.table.item(self.element, "text")
 
-        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#1', '#7', '#9', '#12', '#13']:
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#1', '#6', '#8', '#11', '#12']:
 
             children = self.frame.treeview.get_children('')
             temp = []
@@ -2891,40 +2812,40 @@ class ownerFunctionality(Frame):
 
                 temp.sort(key=lambda x: x[1])
                 for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10], temp[i][11], temp[i][12]))
 
 
 
-            if item == '#7':
+            if item == '#6':
 
                 #City
 
                 temp.sort(key=lambda x: x[6])
                 for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10], temp[i][11], temp[i][12]))
 
 
-            if item == '#9':
+            if item == '#8':
 
                 #Type
 
                 temp.sort(key=lambda x: x[8])
                 for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10], temp[i][11], temp[i][12]))
 
-            if item == '#12':
+            if item == '#11':
                 #Visits
 
-                temp.sort(key=lambda x: x[9])
+                temp.sort(key=lambda x: x[11])
                 for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10], temp[i][11], temp[i][12]))
 
-            if item == '#13':
+            if item == '#12':
                 #Avg Rating
 
-                temp.sort(key=lambda x: x[10])
+                temp.sort(key=lambda x: x[12])
                 for i in range(len(temp)):
-                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
+                    self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10], temp[i][11], temp[i][12]))
 
 
     def manageProp(self):
