@@ -42,8 +42,11 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
+        self.show_frame(loginPage)
 
-        self.show_frame(approvedOrganisms)
+
+        self.show_frame(pendingOrganisms)
+
     def show_frame(self, frame):
         # frame = self.frames[cont]
         # frame.tkraise()
@@ -83,7 +86,6 @@ class loginPage(Frame):
 
         self.passwordEntry = Entry(f, background='white', width=24)
 
-        
         self.passwordEntry.grid(row=1, column=1, sticky='w')
 
         button0 = Button(f, text="Login", command=self.login)
@@ -215,12 +217,12 @@ class visitorRegistration(Frame):
 
                 else:
                     messagebox.showerror("Error", "Email is already associated with an account")
-        
 
 
 class visitorView(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
+        self.element = None
         Frame.__init__(self, parent)
         label = Label(self, text="Welcome Visitor", font =LARGE_FONT)
         label.grid(row=0, column=0)
@@ -452,11 +454,9 @@ class visitorView(Frame):
         # self.selectedVisitorprop = i
         # print(self.selectedVisitorprop)
     def viewProperty(self):
-        global prop
-       
-        prop = DBManager.getPropertyDetails(self, propID = self.element)
-       
-        self.controller.show_frame(visitorPropertyPage)
+        if self.element is not None:
+            self.controller.propID = self.element
+            self.controller.show_frame(visitorPropertyPage)
 
 class visitHistory(Frame):
     def __init__(self, parent, controller):
@@ -978,7 +978,7 @@ class viewVisitorList(Frame):
         self.item1 = self.table.identify_column(event.x)
         self.element1 = self.table.identify_row(event.y)
         self.element = self.table.item(self.element1, "text")
-        
+
         item = self.table.identify_column(event.x)
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
@@ -1132,7 +1132,7 @@ class viewOwnerList(Frame):
         self.item1 = self.table.identify_column(event.x)
         self.element1 = self.table.identify_row(event.y)
         self.element = self.table.item(self.element1, "text")
-        
+
         item = self.table.identify_column(event.x)
 
         if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#1', '#2']:
@@ -1203,9 +1203,9 @@ class approvedOrganisms(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         crops = []
-       
+
         v = DBManager.getApprovedVegetables(self)
-        for x in v:    
+        for x in v:
             crops.append((x, "Vegetable"))
 
         f = DBManager.getApprovedFlowers(self)
@@ -1215,7 +1215,7 @@ class approvedOrganisms(Frame):
         n = DBManager.getApprovedNuts(self)
         for x in n:
             crops.append((x, "Nut"))
-        
+
         a = DBManager.getApprovedAnimals(self)
         for x in a:
             crops.append((x, "Animal"))
@@ -1223,7 +1223,7 @@ class approvedOrganisms(Frame):
         fr= DBManager.getApprovedFruits(self)
         for x in fr:
             crops.append((x, "Fruit"))
-       
+
         if crops is None:
             crops = []
 
@@ -1233,7 +1233,7 @@ class approvedOrganisms(Frame):
             Type = c[1]
 
             newProp = [Type,Name]
-            
+
             frame.treeview.insert('', 'end', text=Name, values=newProp)
 
         types = {'Fruit', 'Vegetable', 'Nut', 'Flower', 'Animal'}
@@ -1397,9 +1397,9 @@ class pendingOrganisms(Frame):
         parent.grid_columnconfigure(0, weight=1)
 
         crops = []
-       
+
         v = DBManager.getUnapprovedVegetables(self)
-        for x in v:    
+        for x in v:
             crops.append((x, "Vegetable"))
 
         f = DBManager.getUnapprovedFlowers(self)
@@ -1417,7 +1417,7 @@ class pendingOrganisms(Frame):
         fr= DBManager.getUnapprovedFruits(self)
         for x in fr:
             crops.append((x, "Fruit"))
-       
+
         if crops is None:
             crops = []
 
@@ -1427,7 +1427,7 @@ class pendingOrganisms(Frame):
             Type = c[1]
 
             newProp = [Type,Name]
-            
+
             frame.treeview.insert('', 'end', text=Name, values=newProp)
 
         approveB = Button(self, text="Approve Selection", command=self.approveOrganism)
@@ -1451,7 +1451,7 @@ class pendingOrganisms(Frame):
     def approveOrganism(self, item=''):
         approveMe = (self.element)
         an = str(approveMe[1])
-    
+
         try:
             DBManager.approveCrop(self, an)
             messagebox.showinfo("Title", "Crop Approved!")
@@ -1582,7 +1582,7 @@ class confirmedProperties(Frame):
             id = prop[8]
             verified = prop[9]
             rating = prop[10]
-            
+
             if commercial == 1:
                 commercial = True
             else:
@@ -1594,7 +1594,7 @@ class confirmedProperties(Frame):
                 public = False
 
             # Change approved value from null or 1 to true/false
-            
+
 
             newProp = [address, city, zip, size, type, public, commercial, id, verified, rating]
 
@@ -1786,8 +1786,8 @@ class unconfirmedProperties(Frame):
             commercial = prop[7]
             id = prop[8]
             owner = prop[9]
-            
-            
+
+
             if commercial == 1:
                 commercial = True
             else:
@@ -1799,11 +1799,11 @@ class unconfirmedProperties(Frame):
                 public = False
 
             # Change approved value from null or 1 to true/false
-            
+
             newProp = [address, city, zip, size, type, public, commercial, id, owner]
 
             frame.treeview.insert('', 'end', text=name, values=newProp)
-   
+
         types = {'Name', 'Size', 'Owner'}
         
         search = StringVar()
@@ -2122,68 +2122,110 @@ class addNewProperty(Frame):
 class visitorPropertyPage(Frame):
     def __init__(self, parent, controller):
         self.controller = controller
-        global prop
-        print(prop)
         Frame.__init__(self, parent)
 
-        #[(0, 'Atwood Street Garden', 1.0, 0, 1, 'Atwood Street SW', 'Atlanta', 30308, 'GARDEN', 'gardenowner', 'admin1')]
-        
-        label = Label(self, text=str(prop[0][1]), font =LARGE_FONT)
-        label.pack()
-        n= "Name: "+str(prop[0][1])
-        name = Label(self, text=n)
+        # Get property details
+        temp = DBManager.getPropertyDetails(self, self.controller.propID)
+        propDeets = temp[0]
+        print(propDeets)
+        name = propDeets[1]
+        size = propDeets[2]
+        comm = propDeets[3]
+        pub = propDeets[4]
+        street = propDeets[5]
+        city = propDeets[6]
+        zipcode = propDeets[7]
+        proptype = propDeets[8]
+        owner = propDeets[9]
+        print("prop deets: ", propDeets)
+
+        # Change tinyint values into true/false for commercial and public
+        if comm == 1:
+            commercial = "True"
+        else:
+            commercial = "False"
+        print("commercial: ", commercial)
+
+        if pub == 1:
+            public = "True"
+        else:
+            public = "False"
+        print("public: ", public)
+
+        # Get owner email
+        email = DBManager.getEmail(self, owner)[0]
+        print("email: ", email)
+
+        # Get crops
+        crops = DBManager.getPropertyCrops(self, self.controller.propID)
+        print("crops: ", crops)
+
+        # Get total number of visits
+        visits = DBManager.getPropertyVisits(self, self.controller.propID)
+
+        # Get sum of all the ratings
+        sumratings = DBManager.getPropertySumRatings(self, self.controller.propID)
+
+        # Calculate avg rating
+        if sumratings is None:
+            avgRating = "No ratings yet"
+        else:
+            avgRating = visits / sumratings
+
+        # Create UI with retrieved info
+        titletxt = name + "Details:"
+        title = Label(self, text=titletxt, font=LARGE_FONT)
+        title.pack()
+        name = Label(self, text="Name: " + name)
         name.pack()
-        o= "Owner: "+prop[0][9]
-        owner = Label(self, text=o)
+        owner = Label(self, text="Owner: " + owner)
         owner.pack()
-        o = "Owner Email: "
-        ownerEmail = Label(self, text=o)
+        ownerEmail = Label(self, text="Owner Email: " + email)
         ownerEmail.pack()
-        v = "Visits: "
-        visits = Label(self, text=v)
+        visits = Label(self, text="Visits: " + str(visits))
         visits.pack()
-        a = "Address: "+prop[0][5]
-        address = Label(self, text=a)
+        address = Label(self, text="Address: " + street)
         address.pack()
-        c = 'City: '+ prop[0][6]
-        city = Label(self,text=c)
+        city = Label(self, text="City: " + city)
         city.pack()
-        z = "Zip : "+str(prop[0][7])
-        zipcode = Label(self, text=z)
+        zipcode = Label(self, text="Zip : " + str(zipcode))
         zipcode.pack()
-        s = "Size (acres): " + str(prop[0][2])
-        size = Label(self, text=s)
+        size = Label(self, text="Size (acres): " + str(size))
         size.pack()
-        r = "Avg Rating: "
-        rating = Label(self, text=r)
+        rating = Label(self, text="Avg Rating: " + str(avgRating))
         rating.pack()
-        tp = "Type: "+prop[0][8]
-        typeProp = Label(self, text=tp)
+        typeProp = Label(self, text="Type: " + proptype)
         typeProp.pack()
-        p = "Public: " + str(prop[0][4])
-        public = Label(self, text=p)
+        public = Label(self, text="Public: " + public)
         public.pack()
-        c = "Commercial: "+ str(prop[0][3])
-        commercial = Label(self, text=c)
+        commercial = Label(self, text="Commercial: " + commercial)
         commercial.pack()
-        i = "ID: "+ str(prop[0][0])
-        idnum = Label(self, text="ID: ")
+        idnum = Label(self, text="ID: " + str(self.controller.propID))
         idnum.pack()
-        c = "Crops: "
-        crops = Label(self, text=c)
+        crops = Label(self, text="Crops: " + str(crops))
         crops.pack()
 
-        types = {'1', '2', '3', '4', '5'}
-        search = StringVar()
-        rating = OptionMenu(self, search, *types)
-        rating.pack()
+        # Add area to rate a visit to this location
+        ratings = {1.0, 2.0, 3.0, 4.0, 5.0}
 
-        logvisit = Button(self, text="Log Visit", command=lambda: messagebox.showinfo("Title", "Visit Logged!"))
-        
-        logvisit.pack()
+        rate = Label(self, text="Rating: ")
+        rate.pack()
+        self.rateVar = StringVar()
+        rateMenu = OptionMenu(self, self.rateVar, "1.0", *ratings).pack()
+
+        logBtn = Button(self, text="Log Visit", command=self.logBtnOnClick)
+        logBtn.pack()
         back = Button(self, text="Back", command=lambda: self.controller.show_frame(visitorView))
         back.pack()
 
+    def logBtnOnClick(self):
+        rating = self.rateVar.get()
+        log = DBManager.logVisit(self, self.controller.username, self.controller.propID, rating)
+        if log > 0:
+            messagebox.showerror("Thanks!", "Visit was successfully logged")
+            self.controller.show_frame(visitorView)
+        else:
+            messagebox.showerror("Error", "Something went wrong.")
 
 class propertyDetails(Frame):
     def __init__(self, parent, controller):
@@ -2219,13 +2261,31 @@ class propertyDetails(Frame):
         # Get crops
         crops = DBManager.getPropertyCrops(self, self.controller.propID)
 
+        # Get total number of visits
+        visits = DBManager.getPropertyVisits(self, self.controller.propID)
+        print("visits: ", visits)
+
+        # Get sum of all the ratings
+        sumratings = DBManager.getPropertySumRatings(self, self.controller.propID)
+        print("sum of ratings: ", sumratings)
+
+        # Calculate avg rating
+        if sumratings is None:
+            avgRating = "No ratings yet"
+        else:
+            avgRating = visits/sumratings
+
+        # Create UI with retrieved info
+        titletxt = name + "Details:"
+        title = Label(self, text=titletxt, font=LARGE_FONT)
+        title.pack()
         name = Label(self, text="Name: " + name)
         name.pack()
         owner = Label(self, text="Owner: " + owner)
         owner.pack()
         ownerEmail = Label(self, text="Owner Email: " + email)
         ownerEmail.pack()
-        visits = Label(self, text="Visits: ")
+        visits = Label(self, text="Visits: " + str(visits))
         visits.pack()
         address = Label(self, text="Address: " + street)
         address.pack()
@@ -2235,7 +2295,7 @@ class propertyDetails(Frame):
         zipcode.pack()
         size = Label(self, text="Size (acres): " + str(size))
         size.pack()
-        rating = Label(self, text="Avg Rating: ")
+        rating = Label(self, text="Avg Rating: " + str(avgRating))
         rating.pack()
         typeProp = Label(self, text="Type: " + proptype)
         typeProp.pack()
