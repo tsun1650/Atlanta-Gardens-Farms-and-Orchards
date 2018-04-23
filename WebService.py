@@ -1241,6 +1241,34 @@ class DBManager:
         finally:
             conn.close()
 
+    def deleteLoggedVisits(self, username):
+        # SQL statement to execute
+        sql = "DELETE FROM Visit WHERE Username = %s"
+
+        userin = (username)
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+
+        try:
+            # Execute query
+            cursor = conn.cursor()
+            rowsAffected = cursor.execute(sql, userin)
+
+            # Commit changes to db
+            conn.commit()
+
+            # Check that the query was successful
+            if rowsAffected > 0:
+
+                return True
+            else:
+                return False
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+            conn.close()
     def addPendingCrop(self, name,ot):
         # SQL statement to execute
        
@@ -1255,6 +1283,7 @@ class DBManager:
 
             rowsAffected = cursor.execute(sql, cropin)
 
+
             # Commit changes to db
             conn.commit()
 
@@ -1265,10 +1294,13 @@ class DBManager:
             else:
                 return False
 
+
+
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("error happened"))
         finally:
+
             conn.close()
 
     def searchName(self, attrVal, username):
