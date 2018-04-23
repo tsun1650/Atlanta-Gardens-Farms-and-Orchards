@@ -3048,15 +3048,16 @@ class propertyManagement(Frame):
         self.cropTypeVar = StringVar()
         self.cropTypeVar.set(' ')   # Set garden as the default prop type
 
-        cropType_menu = OptionMenu(frame, self.cropTypeVar, 'Fruit', *croptypes)
+        cropType_menu = OptionMenu(frame, self.cropTypeVar, *croptypes)
         cropType_menu.grid(row=5, column=1, padx=5, pady=10)
 
         crops = Label(frame, text="Crops/Animals: ")
         crops.grid(row=5, column=3, sticky='w')
+
         global buttonnum
         buttonnum = 0
     
-
+        #NEED DELETE ADDED CROP/ANIMAL
         button1 = Button(frame, text="Add crop/animal to property", command=self.addCrop)
         button1.grid(row=6, column=1, sticky='w')
 
@@ -3083,6 +3084,8 @@ class propertyManagement(Frame):
         newcropType_menu.grid(row=7, column=3, padx=5, pady=10)
         self.newcropTypeVar = newcropTypeVar
         self.newcropstypes = set()
+        deleteCropB = Button(frame, text="Delete Crop/Animal", command=self.deleteCropAnimal)
+        deleteCropB.grid(row=7, column=4)
         button2 = Button(frame, text="Submit Request", command=self.addToPending)
         button2.grid(row=8, column=1, sticky='w')
 
@@ -3094,6 +3097,13 @@ class propertyManagement(Frame):
 
         button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(ownerFunctionality))
         button5.grid(row=10, column=1, sticky='w')
+
+
+        self.variable = StringVar()
+        self.variable.set("")
+        allitems = DBManager.getPropertyCrops(self,prop[0][0])
+        self.newcropsType_menu = OptionMenu(self.frame, self.variable, self.cropTypeVar.get(), *allitems)
+        self.newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
     def update(self):
         global prop
         #commericial and public must be changed to ints rather than boolean
@@ -3118,31 +3128,46 @@ class propertyManagement(Frame):
         OT = self.newcropTypeVar.get()
         newName = self.crop.get() 
         try:
-            
-            DBManager.addPendingCrop(self, newName, OT)
-            messagebox.showerror("","Added to Pending Approval")
+            if (newName != ""):
+                DBManager.addPendingCrop(self, newName, OT)
+                messagebox.showerror("","Added to Pending Approval")
+
             #self.controller.show_frame(adminFunctions)
         except Exception as e:
             print("ERROR: {}".format(e))
             print(logging.exception("can't add this"))
+    def deleteCropAnimal(self, item=''):
+        global prop 
+        nm = (self.variable.get())
+        allitems = DBManager.getPropertyCrops(self,prop[0][0])
+        if len(allitems) > 1:
+            DBManager.deleteItem(self,prop[0][0], nm)
+        else:
+            messagebox.showerror(",","Can't delete the last item")
+        self.controller.show_frame(propertyManagement)
     def addCrop(self):
-        # global buttonnum
-        # buttonnum += 1
-        # butts = []
-        # label = "Button " + str(buttonnum)
-        # for i in range(buttonnum):
-        #     butts.append(Button(self.frame, text=str(self.cropTypeVar.get()) + ' [X]', command=lambda: butts[i].destroy()))
-        #     butts[i].grid(row = buttonnum + 4, column = 4)
-        # self.butts = butts
-        # print(butts)
-    
-        # Rest of GUI depends on property type selected
-       # Dictionary holding different prop types
-        self.newcropstypes.add(self.cropTypeVar.get())
-        newcropsTypeVar = StringVar()
-        newcropsTypeVar.set(' ')   # Set garden as the default prop type
-        newcropsType_menu = OptionMenu(self.frame, newcropsTypeVar, self.cropTypeVar.get(), *self.newcropstypes)
-        newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
+        
+        global prop
+        nm = (self.cropTypeVar.get())
+        allitems = DBManager.getPropertyCrops(self,prop[0][0])
+        if nm not in allitems:
+            DBManager.addItem(self, prop[0][0],nm)
+        else:
+            messagebox.showerror(",","Already have this crop/animal")
+
+        self.controller.show_frame(propertyManagement)
+        # self.variable = StringVar()
+        # self.variable.set("")
+        #self.newcropsType_menu = OptionMenu(self.frame, self.variable, self.cropTypeVar.get(), *allitems)
+        #self.newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
+
+
+
+        # self.newcropstypes.add(self.cropTypeVar.get())
+        # newcropsTypeVar = StringVar()
+        # newcropsTypeVar.set(' ')   # Set garden as the default prop type
+        # newcropsType_menu = OptionMenu(self.frame, newcropsTypeVar, self.cropTypeVar.get(), *self.newcropstypes)
+        # newcropsType_menu.grid(row=5, column=4, padx=5, pady=10)
     def deleteProperty(self):
         temp = []
         global prop
@@ -3331,9 +3356,9 @@ class adminPropertyManagement(Frame):
         button3 = Button(frame, text="Save Changes", command=self.update)
         button3.grid(row=9, column=1, sticky='w')
 
-        button4 = Button(frame, text="Delete Property", command=lambda: self.controller.show_frame(loginPage))
+        button4 = Button(frame, text="Delete Property", command=self.deleteProperty)
         button4.grid(row=10, column=0, sticky='w')
-
+        #if(confirmed)
         button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(loginPage))
         button5.grid(row=10, column=1, sticky='w')
 
@@ -3362,6 +3387,17 @@ class adminPropertyManagement(Frame):
         newans_menu = OptionMenu(self.frame, newans, self.anType.get(), *self.newans1)
         newans_menu.grid(row=5, column=5, padx=5, pady=10)
 
+    def deleteProperty(self):
+        temp = []
+        global prop
+        propID = prop[0][0]
+        
 
+        deleted = DBManager.deleteProperty(self,propID)
+        if deleted:
+            messagebox.showerror(",","Property Deleted")
+            #self.controller.show_frame(Functionality)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 app = Atlanta()
 app.mainloop()
