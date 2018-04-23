@@ -2898,12 +2898,12 @@ class propertyManagement(Frame):
         # Rest of GUI depends on property type selected
         pubtypes = {'True', 'False'}   # Dictionary holding different prop types
         
-        pubTypeVar = StringVar()
-        pubTypeVar.set('False')   # Set garden as the default prop type
+        self.pubTypeVar = StringVar()
+        self.pubTypeVar.set('False')   # Set garden as the default prop type
         temp5 = 'False'
         if prop[0][4] == 1:
             temp5 = 'True'
-        pubType_menu = OptionMenu(frame, pubTypeVar, temp5, *pubtypes)
+        pubType_menu = OptionMenu(frame, self.pubTypeVar, temp5, *pubtypes)
         pubType_menu.grid(row=1, column=3, padx=5, pady=10)
 
         city = Label(frame, text="City: ")
@@ -2920,9 +2920,9 @@ class propertyManagement(Frame):
         temp6 = 'False'
         if prop[0][3] == 1:
             temp6 = 'True'
-        comTypeVar = StringVar()
-        comTypeVar.set('False')   # Set garden as the default prop type
-        comType_menu = OptionMenu(frame, comTypeVar, temp6, *comtypes)
+        self.comTypeVar = StringVar()
+        self.comTypeVar.set('False')   # Set garden as the default prop type
+        comType_menu = OptionMenu(frame, self.comTypeVar, temp6, *comtypes)
         comType_menu.grid(row=2, column=3, padx=5, pady=10)
 
         zipcode = Label(frame, text="Zip: ")
@@ -2985,7 +2985,7 @@ class propertyManagement(Frame):
         button2 = Button(frame, text="Submit Request", command=lambda: self.controller.show_frame(loginPage))
         button2.grid(row=8, column=1, sticky='w')
 
-        button3 = Button(frame, text="Save Changes", command=lambda: self.controller.show_frame(loginPage))
+        button3 = Button(frame, text="Save Changes", command=self.update)
         button3.grid(row=9, column=1, sticky='w')
 
         button4 = Button(frame, text="Delete Property", command=lambda: self.controller.show_frame(loginPage))
@@ -2993,6 +2993,14 @@ class propertyManagement(Frame):
 
         button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(loginPage))
         button5.grid(row=10, column=1, sticky='w')
+    def update(self):
+        global prop
+        update = DBManager.changeProp(self, self.name.get(), self.acres.get(), self.comTypeVar.get(), self.pubTypeVar.get(), self.street.get(), self.city.get(), self.zipcode.get(), prop[0][0])
+        if update:
+            messagebox.showerror("Success", "Property type succesfully updated")
+            self.controller.show_frame(ownerFunctionality)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def addCrop(self):
         # global buttonnum
