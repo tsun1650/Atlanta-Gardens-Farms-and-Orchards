@@ -3021,7 +3021,7 @@ class propertyManagement(Frame):
         self.acres.grid(row=4, column=1, sticky='w')
         self.acres.focus_set()
 
-        cropType = Label(frame, text="Add new crop: ")
+        cropType = Label(frame, text="Add new crop/animal: ")
         cropType.grid(row=5, column=0, sticky='w')
         # Rest of GUI depends on property type selected
         org = []
@@ -3039,8 +3039,9 @@ class propertyManagement(Frame):
             org.append(x)
         for x in flowers:
             org.append(x)
-        for x in animals:
-            org.append(x)
+        if prop[0][8] == 'FARM':
+            for x in animals:
+                org.append(x)
        
         croptypes = org  # Dictionary holding different prop types
         
@@ -3050,29 +3051,31 @@ class propertyManagement(Frame):
         cropType_menu = OptionMenu(frame, self.cropTypeVar, 'Fruit', *croptypes)
         cropType_menu.grid(row=5, column=1, padx=5, pady=10)
 
-        crops = Label(frame, text="Crops: ")
+        crops = Label(frame, text="Crops/Animals: ")
         crops.grid(row=5, column=3, sticky='w')
         global buttonnum
         buttonnum = 0
     
 
-        button1 = Button(frame, text="Add crop to property", command=self.addCrop)
+        button1 = Button(frame, text="Add crop/animal to property", command=self.addCrop)
         button1.grid(row=6, column=1, sticky='w')
 
-        crop = Label(frame, text="Request crop approval: ")
+        crop = Label(frame, text="Request crop/animal approval: ")
         crop.grid(row=7, column=0, sticky='w')
         self.crop = Entry(frame, background='white', width=24)
         self.crop.grid(row=7, column=1, sticky='w')
         self.crop.focus_set()
 
-        newcrops = Label(self.frame, text="New crop type: ")
-        newcrops.grid(row=7, column=2, sticky='w')
+        #newcrops = Label(self.frame, text="New crop/animal type: ")
+        #newcrops.grid(row=7, column=2, sticky='w')
 
-        newcropType = Label(frame, text="New crop type: ")
+        newcropType = Label(frame, text="New crop/animal type: ")
         newcropType.grid(row=7, column=2, sticky='w')
         # Rest of GUI depends on property type selected
-        newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable', 'Animal'}   # Dictionary holding different prop types
-        
+        if prop[0][8] == 'FARM':
+            newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable', 'Animal'}   # Dictionary holding different prop types
+        else:
+            newcroptypes = {'Fruit', 'Nut', 'Flower', 'Vegetable'}
         newcropTypeVar = StringVar()
         newcropTypeVar.set(' ')   # Set garden as the default prop type
 
@@ -3153,6 +3156,7 @@ class propertyManagement(Frame):
         else:
             messagebox.showerror("Error", "Something went wrong")
 class adminPropertyManagement(Frame):
+    #now here
     def __init__(self, parent, controller):
         #self.prop = prop
         #print(self.prop)
