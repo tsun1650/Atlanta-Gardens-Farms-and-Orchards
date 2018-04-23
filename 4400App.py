@@ -281,9 +281,6 @@ class visitorView(Frame):
         parent.grid_rowconfigure(0, weight=1)
         parent.grid_columnconfigure(0, weight=1)
 
-        
-        
-
         #load data
         publicProps = DBManager.getPublicProperties(self)
         if publicProps is None:
@@ -2581,15 +2578,15 @@ class ownerFunctionality(Frame):
         self.table = table
         self.table.bind("<Button-1>", self.onClick)
         table['columns'] = ('Name', 'Size', 'Commercial', 'Public', 'Street', 'City', 'ZIP', 'Type', 'Owner',
-                            'Approved')
+                            'Approved', 'Visits', 'Rating')
 
-        table.column('#0', anchor='w')
+        table.column('#0', anchor='w', width=50)
         table.heading('#0', text='ID', anchor='w')
 
         table.column('Name', anchor='center', width=100)
         table.heading('Name', text='Name')
 
-        table.column('Size', anchor='center', width=100)
+        table.column('Size', anchor='center', width=50)
         table.heading('Size', text='Size')
 
         table.column('Commercial', anchor='center', width=100)
@@ -2615,6 +2612,12 @@ class ownerFunctionality(Frame):
 
         table.column('Approved', anchor='center', width=100)
         table.heading('Approved', text='Approved')
+
+        table.column('Visits', anchor='center', width=50)
+        table.heading('Visits', text='Visits')
+
+        table.column('Rating', anchor='center', width=75)
+        table.heading('Rating', text='Avg. Rating')
 
         table.grid(sticky=(N,S,W,E))
         frame.treeview = table
@@ -2655,7 +2658,17 @@ class ownerFunctionality(Frame):
             else:
                 approved = True
 
-            newProp = [name, size, commercial, public, st, city, zip, type, owner, approved]
+            # Get num visits
+            visits = DBManager.getPropertyVisits(self, id)
+
+            # Get sum of ratings
+            ratingSum = DBManager.getPropertySumRatings(self, id)
+            if ratingSum is None:
+                avgRating = "0.0"
+            else:
+                avgRating = ratingSum / visits
+
+            newProp = [name, size, commercial, public, st, city, zip, type, owner, approved, visits, avgRating]
 
             frame.treeview.insert('', 'end', text=id, values=newProp)
 
@@ -2688,31 +2701,38 @@ class ownerFunctionality(Frame):
 
     def searchfunc(self, item=''):
         children = self.frame.treeview.get_children(item)
-        if(self.term.get() ==  ''):
-            for i in range(len(self.removed)):
-                self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1], self.removed[i][2], self.removed[i][3], self.removed[i][4], self.removed[i][5], self.removed[i][6], self.removed[i][7], self.removed[i][8], self.removed[i][9], self.removed[i][10]))
-            self.removed = []
-        else:
+        print('children:', children)
+        print('item: ', item)
+        #if(self.term.get() ==  ''):
+            #for i in range(len(self.removed)):
+                #self.frame.treeview.insert('', 'end', text=self.removed[i][0], values=(self.removed[i][1], self.removed[i][2], self.removed[i][3], self.removed[i][4], self.removed[i][5], self.removed[i][6], self.removed[i][7], self.removed[i][8], self.removed[i][9], self.removed[i][10]))
+            #self.removed = []
+        # Make sure user inputted something to search
+        if self.term.get() != '' or len(self.term.get()) != 0:
             index = 0
-            if (self.search.get() == "Name"):
-                index = 0
-            elif (self.search.get() == "City"):
-                index = 2
-            elif (self.search.get() == "Type"):
-                index = 5
-            elif (self.search.get() == "Visits"):
+            if self.search.get() == "Name":
+                index = 1
+            elif self.search.get() == "City":
+                index = 7
+            elif self.search.get() == "Type":
                 index = 9
-            elif (self.search.get() == "Avg Rating"):
-                index = 10
+            elif self.search.get() == "Visits":
+                index = 12
+            elif self.search.get() == "Avg Rating":
+                index = 13
 
             for child in children:
+                print("child: ", child)
                 temp1 = []
                 text = self.frame.treeview.item(child, 'text')
+                print("text:", text)
                 temp1.append(text)
+                print("temp: ", temp1)
+                print(self.table.item(child, "values"))
                 for x in self.table.item(child, "values"):
                         temp1.append(x)
-                #print(self.table.item(child, "values"))
-                if (temp1[index] == self.term.get()):
+                # print(self.table.item(child, "values"))
+                if temp1[index] == self.term.get():
                     self.frame.treeview.selection_set(child)
                 else:
                     if ('-' in self.term.get()):
@@ -2742,7 +2762,7 @@ class ownerFunctionality(Frame):
         self.element = self.table.identify_row(event.y)
         self.element = self.table.item(self.element, "text")
 
-        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#0', '#2', '#5', '#9', '#10']:
+        if self.table.identify_region(event.x, event.y) == "heading" and item in ['#1', '#7', '#9', '#12', '#13']:
 
             children = self.frame.treeview.get_children('')
             temp = []
@@ -2755,7 +2775,7 @@ class ownerFunctionality(Frame):
                 temp.append(temp1)
                 self.frame.treeview.delete(child)
 
-            if item == '#0':
+            if item == '#1':
                 #Name
 
                 temp.sort(key=lambda x: x[0])
@@ -2763,28 +2783,28 @@ class ownerFunctionality(Frame):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
 
-            if item == '#2':
+            if item == '#7':
                 #City
 
                 temp.sort(key=lambda x: x[2])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#5':
+            if item == '#9':
                 #Type
 
                 temp.sort(key=lambda x: x[5])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#9':
+            if item == '#12':
                 #Visits
 
                 temp.sort(key=lambda x: x[9])
                 for i in range(len(temp)):
                     self.frame.treeview.insert('', 'end', text=temp[i][0], values=(temp[i][1], temp[i][2], temp[i][3], temp[i][4], temp[i][5], temp[i][6], temp[i][7], temp[i][8], temp[i][9], temp[i][10]))
 
-            if item == '#10':
+            if item == '#13':
                 #Avg Rating
 
                 temp.sort(key=lambda x: x[10])
