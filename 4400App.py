@@ -42,7 +42,7 @@ class Atlanta(Tk):
         #self.show_frame(login_page)
         #mainFrame = loginPage(self.container, self)
         self._frame = None
-        self.show_frame(loginPage)
+        self.show_frame(adminFunctions)
 
 
     def show_frame(self, frame):
@@ -3066,6 +3066,7 @@ class adminPropertyManagement(Frame):
         temp5 = 'False'
         if prop[0][4] == 1:
             temp5 = 'True'
+        self.pubTypeVar = pubTypeVar
         pubType_menu = OptionMenu(frame, pubTypeVar, temp5, *pubtypes)
         pubType_menu.grid(row=1, column=3, padx=5, pady=10)
 
@@ -3085,6 +3086,7 @@ class adminPropertyManagement(Frame):
             temp6 = 'True'
         comTypeVar = StringVar()
         comTypeVar.set('False')   # Set garden as the default prop type
+        self.comTypeVar = comTypeVar
         comType_menu = OptionMenu(frame, comTypeVar, temp6, *comtypes)
         comType_menu.grid(row=2, column=3, padx=5, pady=10)
 
@@ -3191,7 +3193,7 @@ class adminPropertyManagement(Frame):
         button2 = Button(frame, text="Submit Request", command=lambda: self.controller.show_frame(loginPage))
         button2.grid(row=8, column=1, sticky='w')
 
-        button3 = Button(frame, text="Save Changes", command=lambda: self.controller.show_frame(loginPage))
+        button3 = Button(frame, text="Save Changes", command=self.update)
         button3.grid(row=9, column=1, sticky='w')
 
         button4 = Button(frame, text="Delete Property", command=lambda: self.controller.show_frame(loginPage))
@@ -3199,6 +3201,15 @@ class adminPropertyManagement(Frame):
 
         button5 = Button(frame, text="Back (Don't Save)", command=lambda: self.controller.show_frame(loginPage))
         button5.grid(row=10, column=1, sticky='w')
+
+    def update(self):
+        global prop
+        update = DBManager.changeProp(self, self.name.get(), self.acres.get(), self.comTypeVar.get(), self.pubTypeVar.get(), self.street.get(), self.city.get(), self.zipcode.get(), prop[0][0])
+        if update:
+            messagebox.showerror("Success", "Property type succesfully updated")
+            self.controller.show_frame(adminFunctions)
+        else:
+            messagebox.showerror("Error", "Something went wrong")
 
     def addCrop(self):
         
