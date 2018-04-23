@@ -1384,5 +1384,36 @@ class DBManager:
         finally:
             conn.close()
 
+    def changeProp(self, name, size, com, pub, street, city, zip, id):
+        # SQL statement to execute
+
+        sql = "UPDATE Property SET Name = %s, Size = %s, IsCommercial = %s, IsPublic = %s, Street =%s, City = %s, Zip = %s WHERE Property.ID = %s"
+
+        # Create connection
+        conn = DBManager.getConnection(self)
+        cropin = (name, size, com, pub, street, city, zip, id)
+        try:
+            # Execute query
+            cursor = conn.cursor()
+
+            rowsAffected = cursor.execute(sql, cropin)
 
 
+            # Commit changes to db
+            conn.commit()
+
+            # Check that the query was successful
+            if rowsAffected > 0:
+
+                return True
+            else:
+                return False
+
+
+
+        except Exception as e:
+            print("ERROR: {}".format(e))
+            print(logging.exception("error happened"))
+        finally:
+
+            conn.close()
