@@ -80,7 +80,7 @@ class loginPage(Frame):
 
         self.emailEntry.grid(row=0, column=1, sticky='w')
         self.emailEntry.focus_set()
-        self.emailEntry.insert(0,'qwerty')
+        self.emailEntry.insert(0,'a')
         password = Label(f, text="Password: ")
         password.grid(row=1, column=0, sticky='w')
         password.focus_set()
@@ -88,7 +88,7 @@ class loginPage(Frame):
         self.passwordEntry = Entry(f, background='white', width=24)
 
         self.passwordEntry.grid(row=1, column=1, sticky='w')
-        self.passwordEntry.insert(0,'qwertyuiop')
+        self.passwordEntry.insert(0,'newpassword')
         button0 = Button(f, text="Login", command=self.login)
         button0.grid(row=2, column=1, sticky='w')
         button1 = Button(f, text="New Owner Registration", command=lambda: self.controller.show_frame(ownerRegistration))
@@ -101,10 +101,12 @@ class loginPage(Frame):
     def login(self):
         # Initialize hash function
         hashfunc = hashlib.md5()
+        hashfunc = hashlib.sha256()
         # Add the password string inputted into hash function
         hashfunc.update(str(self.passwordEntry.get()).encode())
         # Get hashed password
-        hashPass = hashfunc.hexdigest()
+        #hashPass = hashfunc.hexdigest()
+        hashPass = hashfunc.digest()
 
         # Call verifyLogin function from web service
         verify = DBManager.verifyLogin(self, self.emailEntry.get(), hashPass)
@@ -285,6 +287,7 @@ class visitorView(Frame):
 
         #load data
         publicProps = DBManager.getPublicProperties(self)
+        
         if publicProps is None:
             publicProps = []
 

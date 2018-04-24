@@ -836,9 +836,10 @@ class DBManager:
 
     def getPublicProperties(self):
         # SQL statement to execute
-        sql = "SELECT * FROM Property WHERE IsPublic = %s AND ApprovedBy <> %s ;"
-
-        userin = (1, 'NULL')
+        #sql = "SELECT * FROM Property WHERE IsPublic = %s AND ApprovedBy <> %s ;"
+        sql = "SELECT * FROM Property WHERE IsPublic = 1 AND ApprovedBy IS NOT NULL;"
+        #working here 
+        #userin = (1, 'NULL')
 
         # Create connection
         conn = DBManager.getConnection(self)
@@ -846,14 +847,14 @@ class DBManager:
         try:
             # Execute query
             cursor = conn.cursor()
-            cursor.execute(sql, userin)
+            cursor.execute(sql)
 
             # Get result
             result = cursor.fetchall()
 
             # Put it in a list
             resultList = [item for item in result]
-
+           
             return resultList
         except Exception as e:
             print("ERROR: {}".format(e))
