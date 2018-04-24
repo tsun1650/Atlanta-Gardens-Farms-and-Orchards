@@ -100,11 +100,11 @@ class loginPage(Frame):
     #login onclick event
     def login(self):
         # Initialize hash function
-        hashfunc = hashlib.sha256()
+        hashfunc = hashlib.md5()
         # Add the password string inputted into hash function
         hashfunc.update(str(self.passwordEntry.get()).encode())
         # Get hashed password
-        hashPass = hashfunc.digest()
+        hashPass = hashfunc.hexdigest()
 
         # Call verifyLogin function from web service
         verify = DBManager.verifyLogin(self, self.emailEntry.get(), hashPass)
